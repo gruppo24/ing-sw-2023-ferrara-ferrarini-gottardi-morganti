@@ -260,13 +260,30 @@
 											"underline": true,
 											"text": "-viewThreadLock: Object",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAGHEwwx8GFyNxE=",
+											"_parent": {
+												"$ref": "AAAAAAGG5UcCvwQwFLU="
+											},
+											"model": {
+												"$ref": "AAAAAAGHEwwxxGFvPRk="
+											},
+											"font": "Arial;13;0",
+											"left": 1085,
+											"top": 649,
+											"width": 373.94677734375,
+											"height": 13,
+											"text": "+gameLock: Object",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 1080,
 									"top": 569,
 									"width": 383.94677734375,
-									"height": 83
+									"height": 98
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -289,7 +306,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1085,
-											"top": 657,
+											"top": 672,
 											"width": 373.94677734375,
 											"height": 13,
 											"text": "+updateLibrary(int playerIndex): void",
@@ -306,7 +323,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1085,
-											"top": 672,
+											"top": 687,
 											"width": 373.94677734375,
 											"height": 13,
 											"text": "+shouldRefillBoard(): boolean",
@@ -341,7 +358,7 @@
 											},
 											"font": "Arial;13;0",
 											"left": 1085,
-											"top": 687,
+											"top": 702,
 											"width": 373.94677734375,
 											"height": 13,
 											"text": "+obtainedCommons(int playerIndex, int whichCommon): boolean",
@@ -368,7 +385,7 @@
 									],
 									"font": "Arial;13;0",
 									"left": 1080,
-									"top": 652,
+									"top": 667,
 									"width": 383.94677734375,
 									"height": 53
 								},
@@ -4942,6 +4959,15 @@
 							"visibility": "private",
 							"isStatic": true,
 							"type": "Object"
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAGHEwwxxGFvPRk=",
+							"_parent": {
+								"$ref": "AAAAAAGG5UcCvQQo1Ow="
+							},
+							"name": "gameLock",
+							"type": "Object"
 						}
 					],
 					"operations": [
@@ -4959,7 +4985,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG5gtzPJFJVNI="
 									},
-									"name": "int playerIndex"
+									"name": "int playerIndex",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -5024,7 +5051,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG5hpeULWTw/c="
 									},
-									"name": "int playerIndex"
+									"name": "int playerIndex",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -5060,7 +5088,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGHBN9QDj3BfS8="
 									},
-									"name": "int order"
+									"name": "int order",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -5883,7 +5912,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG5XlxFMoUN+w="
 									},
-									"name": "int x"
+									"name": "int x",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -5891,7 +5921,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG5XlxFMoUN+w="
 									},
-									"name": "int y"
+									"name": "int y",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -6004,7 +6035,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG6gZhC48MeMc="
 									},
-									"name": "TileType[5][6] library"
+									"name": "TileType[5][6] library",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -6061,7 +6093,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG6gw068Dxk/Y="
 									},
-									"name": "int players"
+									"name": "int players",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -6069,7 +6102,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGG6gw068Dxk/Y="
 									},
-									"name": "int order"
+									"name": "int order",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -6097,7 +6131,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGHBGq0zjKkXYI="
 									},
-									"name": "int x"
+									"name": "int x",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -6105,7 +6140,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGHBGq0zjKkXYI="
 									},
-									"name": "int y"
+									"name": "int y",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
@@ -6113,7 +6149,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGHBGq0zjKkXYI="
 									},
-									"name": "int numPlayers"
+									"name": "int numPlayers",
+									"type": ""
 								},
 								{
 									"_type": "UMLParameter",
