@@ -16,6 +16,7 @@ public class Player implements Serializable {
     // Game interaction attributes
     public final String nickname;
     private TileType[][] library = new TileType[5][6];
+    private PrivateCard privateCard;
 
     // Point related attribute: we compute them and store them here for faster retrieval
     private int privatePoints = 0;
