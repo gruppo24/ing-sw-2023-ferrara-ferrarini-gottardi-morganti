@@ -15,7 +15,7 @@ public class CommonCard8 extends CommonCard {
     }
 
     /**
-     * Method that check if the tiles at the corners are equal
+     * Method that checks if the tiles at the corners are equals
      * @param library library to check for objective matching
      * @return boolean that represent the achievement of the common-objective
      */

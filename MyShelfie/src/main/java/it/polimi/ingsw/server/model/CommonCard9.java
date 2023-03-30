@@ -15,7 +15,7 @@ public class CommonCard9 extends CommonCard{
     }
 
     /**
-     * Method that check if there are 8 equals tiles in the grid
+     * Method that checks if there are 8 equals tiles in the player grid
      * @param library library to check for objective matching
      * @return boolean that represents the achievement of the common objective
      */
