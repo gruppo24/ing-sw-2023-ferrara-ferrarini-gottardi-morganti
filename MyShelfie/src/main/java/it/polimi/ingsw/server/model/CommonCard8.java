@@ -7,7 +7,6 @@ public class CommonCard8 extends CommonCard {
 
     /**
      * Class constructor
-     *
      * @param identifier  unique identifier associated to the card. Required to find asset location on client
      * @param description textual description of the common objective
      */
@@ -15,11 +14,17 @@ public class CommonCard8 extends CommonCard {
         super(identifier, description);
     }
 
+    /**
+     * Method that check if the tiles at the corners are equal
+     * @param library library to check for objective matching
+     * @return boolean that represent the achievement of the common-objective
+     */
     @Override
     public boolean checkObjective(TileType[][] library) {
         final int WIDTH = library.length;
         final int HEIGHT = library[0].length;
 
+        //coordinates to check
         TileType pos0 = library[0][0];
         TileType pos1 = library[0][HEIGHT-1];
         TileType pos2 = library[WIDTH-1][0];
