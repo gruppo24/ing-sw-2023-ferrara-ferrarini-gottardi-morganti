@@ -4,9 +4,15 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
+import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
+import it.polimi.ingsw.server.exceptions.SelectionBufferFullException;
+
+import static java.lang.Math.min;
+
 /**
- * @author Ferrarini Andrea
  * Class representing a player in a game
+ * @author Ferrarini Andrea
  */
 public class Player implements Serializable {
 
@@ -16,26 +22,28 @@ public class Player implements Serializable {
 
     // Game interaction attributes
     public final String nickname;
-    private TileType[][] library = new TileType[5][6];
-    private PrivateCard privateCard;
+    private final TileType[][] library = new TileType[5][6];
+    private final PrivateCard privateCard;
 
     // Point related attribute: we compute them and store them here for faster retrieval
     private int privatePoints = 0;
     private int clusterPoints = 0;
-    private int[] commonsOrder = {0, 0};
+    protected int[] commonsOrder = {0, 0};  // OK to read-write within same package
     private boolean firstFilled = false;
 
     // Game action attributes
     private int selectedColumn;
     private TileType[] selectionBuffer;
+    private int bufferTop = 0;
 
 
     /**
      * Class constructor
      * @param nickname username to be associated to this user
      */
-    public Player(String nickname) {
+    public Player(String nickname, PrivateCard privateCard) {
         this.nickname = nickname;
+        this.privateCard = privateCard;
     }
 
     /**
@@ -43,7 +51,21 @@ public class Player implements Serializable {
      * objectives the player has completed and mapping them to an amount of points
      */
     public void updatePrivatePoints() {
+        // We iterate over all private objectives and check how many matches we have in our library
+        int matches = 0;
+        for (TileType tile : privateCard.objectives.keySet())
+            if (this.library[privateCard.objectives.get(tile)[0]][privateCard.objectives.get(tile)[1]] == tile)
+                matches++;
 
+        this.privatePoints = PrivateCard.mapPrivatePoints(matches);
+    }
+
+    /**
+     * getter method for privatePoints attribute
+     * @return private points achieved by player
+     */
+    public int getPrivatePoints() {
+        return this.privatePoints;
     }
 
     /**
@@ -86,6 +108,165 @@ public class Player implements Serializable {
 
         // Finally, we add up all points achieved
         this.clusterPoints = found.get(3)*2 + found.get(4)*3 + found.get(5)*5 + found.get(6)*8;
+    }
+
+    /**
+     * getter method for clusterPoints attribute
+     * @return cluster points achieved by player
+     */
+    public int getClusterPoints() {
+        return this.clusterPoints;
+    }
+
+    /**
+     * This method is in charge of returning a deep-copy of the player's library
+     * @return a deep-copy of the player's library
+     */
+    public TileType[][] getLibrary() {
+        TileType[][] lib_copy = new TileType[5][6];
+        for (int column=0; column < library.length; column++)
+            for (int row = 0; row < library[0].length; row++)
+                lib_copy[column][row] = this.library[column][row];
+
+        return lib_copy;
+    }
+
+    /**
+     * This function is in charge of assigning a value to the selectedColumn attribute and allocating a selection
+     * buffer of the appropriate size (maximum size is constrained to 3)
+     * @param column desired column
+     * @throws IndexOutOfBoundsException when the selected column exceeds the library's width
+     */
+    public void selectColumn(int column) throws IndexOutOfBoundsException {
+        if (column >= this.library.length)
+            throw new IndexOutOfBoundsException("ERROR: libraries have " + this.library.length + " columns");
+        this.selectedColumn = column;
+
+        // Finding the first available row for tile insertion
+        int row;
+        for (row=0; row < this.library[0].length; row++)
+            if (this.library[column][row] == null)
+                break;
+
+        // Allocating selection buffer space
+        int cellsAvailable = this.library[0].length - row;
+        if (cellsAvailable > 0)
+            this.selectionBuffer = new TileType[min(cellsAvailable, 3)];
+        else
+            this.selectionBuffer = null;
+        this.bufferTop = 0;
+    }
+
+    /**
+     * getter function of the selectedColumn attribute
+     * @return selectedColumn attribute value
+     */
+    public int getSelectedColumn() {
+        return this.selectedColumn;
+    }
+
+    /**
+     * This function simply returns the number of available slots in the current selectionBuffer
+     * @return space remaining in current selection buffer
+     */
+    public int getSelectionBufferSize() {
+        // If buffer is uninitialized or flushed, we return 0
+        if (this.selectionBuffer == null) return 0;
+        return this.selectionBuffer.length - this.bufferTop;
+    }
+
+    /**
+     * Function in charge of pushing a new tile in the current selection buffer
+     * @param tile tile to be pushed in the selection buffer
+     * @return number of available slots in the selection buffer (after having pushed)
+     * @throws SelectionBufferFullException when a push is attempted and the buffer has already been filled
+     */
+    public int pushTileToSelectionBuffer(TileType tile) throws SelectionBufferFullException {
+        if (this.bufferTop == this.selectionBuffer.length)
+            throw new SelectionBufferFullException(this.selectedColumn);
+
+        // If there still is space, we push the provided tile and increment the buffer pointer
+        this.selectionBuffer[this.bufferTop] = tile;
+        this.bufferTop++;
+
+        // Finally, we return the remaining space inside the selection buffer
+        return getSelectionBufferSize();
+    }
+
+    /**
+     * Function in charge of returning a deep-copy of the current selection buffer
+     * @return a deep-copy of the current selection buffer
+     */
+    public TileType[] getSelectionBufferCopy() {
+        // If buffer is uninitialized or flushed, simply return null
+        if (this.selectionBuffer == null)
+            return null;
+
+        TileType[] deep_copy = new TileType[this.selectionBuffer.length];
+        for (int i=0; i < this.selectionBuffer.length; i++)
+            deep_copy[i] = this.selectionBuffer[i];
+
+        return deep_copy;
+    }
+
+    /**
+     * Function in charge of reordering the current selection buffer
+     * @param firstIndex index (inside the current selection buffer) of the NEW first tile
+     * @param secondIndex index (inside the current selection buffer) of the NEW second tile
+     * @param thirdIndex index (inside the current selection buffer) of the NEW third tile
+     * @throws AlreadyUsedIndex when the same index is provided more than once
+     * @throws InvalidReorderingIndices when the index of an unused cell (no tile pushed into
+     *                                  it) is provided for reordering
+     */
+    public void reorderSelectionBuffer(int firstIndex, int secondIndex, int thirdIndex)
+            throws AlreadyUsedIndex, InvalidReorderingIndices {
+        // Checking if the indices are all different
+        if (firstIndex == secondIndex) throw new AlreadyUsedIndex(1);
+        if (secondIndex == thirdIndex) throw new AlreadyUsedIndex(2);
+        if (firstIndex == thirdIndex) throw new AlreadyUsedIndex(2);
+
+        // Checking that all unused cells are untouched during reordering
+        if (this.selectionBuffer[0] == null && firstIndex != 0) throw new InvalidReorderingIndices(0);
+        if (this.selectionBuffer[1] == null && secondIndex != 1) throw new InvalidReorderingIndices(1);
+        if (this.selectionBuffer[2] == null && thirdIndex != 2) throw new InvalidReorderingIndices(2);
+
+        // Making a temp copy of the current buffer
+        TileType[] tmp = {
+                this.selectionBuffer[0],
+                this.selectionBuffer[1],
+                this.selectionBuffer[2]
+        };
+
+        // Reordering the selection buffer
+        this.selectionBuffer[0] = tmp[firstIndex];
+        this.selectionBuffer[1] = tmp[secondIndex];
+        this.selectionBuffer[2] = tmp[thirdIndex];
+    }
+
+    /**
+     * Function in charge of moving the tiles of the current selection buffer into the selected column. After having
+     * done so, current selection buffer is automatically flushed (set to null)
+     * NOTE: the tiles are moved to the column with a "gravity" logic starting from index=0. That
+     * is to say, going from index = 0 to index = this.bufferTop-1 the buffered tiles are pushed
+     * from the bottom, going up
+     * @throws NullPointerException if a flushed / null buffer is pushed
+     */
+    public void flushBufferIntoLibrary() throws NullPointerException {
+        if (this.selectionBuffer == null)
+            throw new NullPointerException("ERROR: current selection buffer hasn't been initialized!");
+
+        // Pushing tiles with "gravity" logic into the library
+        int row, buffer_pointer;
+        for (row=0, buffer_pointer=0; row < this.library[0].length && buffer_pointer < this.bufferTop; row++) {
+            if (this.library[selectedColumn][row] == null) {
+                this.library[selectedColumn][row] = this.selectionBuffer[buffer_pointer];
+                buffer_pointer++;
+            }
+        }
+
+        // Flushing buffer
+        this.selectionBuffer = null;
+        this.bufferTop = 0;
     }
 
     /**
