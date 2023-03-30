@@ -9,8 +9,8 @@ public class CommonCard5 extends CommonCard{
     /**
      * Class constructor
      *
-     * @param identifier
-     * @param description
+     * @param identifier unique identifier associated to the card. Required to find asset location on client
+     * @param description textual description of the common objective
      */
     public CommonCard5(String identifier, String description) {
         super(identifier, description);
