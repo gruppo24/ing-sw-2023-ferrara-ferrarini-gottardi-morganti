@@ -25,12 +25,10 @@ public class Board implements Serializable {
     private TileType[][] boardContent = new TileType[9][9];
 
     /**
-     * 2D array with the state of each cell on the board, where:
-     * - 0: cell cannot be picked
-     * - 1: cell can be picked immediately
-     * - 2: cell could be picked on subsequent picks
+     * 2D array with the state of each cell on the board, the meaning of which is
+     * documented at {@link TileState}
      */
-    private int[][] boardState = new int[9][9];
+    private TileState[][] boardState = new TileState[9][9];
 
     /**
      * Initializes the board with 22 tiles of each type in its bag
@@ -68,9 +66,35 @@ public class Board implements Serializable {
 
     /**
      * At the beginning of a player's turn, the board state is updated to reflect
-     * which cells can be picked
+     * which cells can be picked.
+     * Info on the game state is documented at {@link TileState}.
+     * 
+     * This method defines which cells are considered pickable at the beginning of a
+     * player's turn. Cells can either be pickable or not-pickable, PICKABLE_NEXT is
+     * set by the pick method, after a player picks his first tile.
      */
     public void definePickable() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (boardContent[i][j] == null) {
+                    // if the board content is null, the state should be not-pickable
+                    boardState[i][j] = TileState.NOT_PICKABLE;
+                } else if (i == 0 || i == 8 || j == 0 || j == 8) {
+                    // if it is a non-null border cell, it is always pickable
+                    boardState[i][j] = TileState.PICKABLE;
+
+                } else if (boardContent[i - 1][j] == null
+                        || boardContent[i + 1][j] == null
+                        || boardContent[i][j - 1] == null
+                        || boardContent[i][j + 1] == null) {
+                    // if at least one of adiacent cells is null, the state should
+                    // be pickable
+                    boardState[i][j] = TileState.PICKABLE;
+                } else {
+                    boardState[i][j] = TileState.NOT_PICKABLE;
+                }
+            }
+        }
     }
 
     /**
