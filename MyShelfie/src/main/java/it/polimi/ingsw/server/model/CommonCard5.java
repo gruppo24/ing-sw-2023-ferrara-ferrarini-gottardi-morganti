@@ -44,7 +44,7 @@ public class CommonCard5 extends CommonCard{
             check.put(TileType.TROPHY,0);
             //Boolean to check if the column is full
             boolean isFull = true;
-            //Attribute to count how many types of tile there are in a column
+            //Attribute to count how many types of tiles there are in a column
             int numDifferentElements = 0;
 
             //Increment occurrences for each TileType if the cell is != null
@@ -57,7 +57,7 @@ public class CommonCard5 extends CommonCard{
             }
             //If isFull == false --> The objective is not achieved for this column
             if(isFull) {
-                //Count how many types of tiles are in the map
+                //Count how many types of tiles there are in the map
                 //-->if the value is 0 means that the TileType isn't in the column
                 for (Integer value : check.values()) {
                     if (value != 0)
@@ -67,7 +67,6 @@ public class CommonCard5 extends CommonCard{
                 if (numDifferentElements <= 3)
                     numColumn++;
             }
-
         }
         //Return true if there are 3 columns that are "okay"
         return numColumn == 3;
