@@ -9,10 +9,29 @@ import java.util.Map;
  * Also keeps track of the tiles in the bag for statistical accuracy.
  * 
  * @author Morganti Tommaso
+ * @author Ferrarini Andrea
  */
 public class Board implements Serializable {
     @Serial
     public static final long serialVersionUID = 1L;
+
+    /**
+     * This is a helper attribute used to map how many players are required
+     * for each cell of the board to be usable during a game. A '0' in a cell
+     * means the cell is never to be used, while any number greater than 0
+     * is indicative of the exact minimum number of players required.
+     */
+    private static final int[][] usableTiles = {
+            {0, 0, 0, 3, 4, 0, 0, 0, 0},
+            {0, 0, 0, 2, 2, 4, 0, 0, 0},
+            {0, 0, 3, 2, 2, 2, 3, 0, 0},
+            {0, 4, 2, 2, 2, 2, 2, 2, 3},
+            {4, 2, 2, 2, 2, 2, 2, 2, 4},
+            {3, 2, 2, 2, 2, 2, 2, 4, 0},
+            {0, 0, 3, 2, 2, 2, 3, 0, 0},
+            {0, 0, 0, 4, 2, 2, 0, 0, 0},
+            {0, 0, 0, 0, 4, 3, 0, 0, 0}
+    };
 
     /**
      * Map with the number of tiles of each type in the bag
@@ -61,7 +80,45 @@ public class Board implements Serializable {
      * @return the type of the picked tile to be put in the player's pick buffer
      */
     public TileType pick(int x, int y, int constraint) {
-        return null;
+        // We simply iterate over the board...
+        for (int column=0; column < boardState.length; column++) {
+            for (int row=0; row < boardState[0].length; row++) {
+                if (constraint == 0) {
+                    // If, at current time, the player is limited to zero more picks, we simply
+                    // zero-out the entire boardState matrix
+                    boardState[column][row] = TileState.NOT_PICKABLE;
+                } else if (boardState[column][row] == TileState.PICKABLE) {
+                    // If the player can actually make some picks (constraint > 1), we check only
+                    // those cells which were already pick-able before (=they already had a free edge)
+                    if (((column == x && (row == x-2 || row == x+2)) || (row == y && (column == y-2 || column == y+2)))
+                            && constraint > 1) {
+                        // If constraint is even greater than 1, and the analysed cell is inline with the
+                        // picked one, we set the cell-state to PICKABLE_NEXT (= can be picked on subsequent pick)
+                        boardState[column][row] = TileState.PICKABLE_NEXT;
+                    } else if ( !(
+                            (column == x && (row == x-1 || row == x+1)) ||
+                            (row == y && (column == y-1 || column == y+1)))
+                                ) {
+                        // Any other cell (not inline with the current one, or which are "too far",
+                        // are not pick-able even in future picks
+                        boardState[column][row] = TileState.NOT_PICKABLE;
+                    }
+                } else if (boardState[column][row] == TileState.PICKABLE_NEXT) {
+                    // If a cell had state equal to 2 (and constraint != 0), then now,
+                    // if it is adjacent to the last picked cell, it will change state to 1
+                    if (column == x-1 || column == x+1 || row == y-1 || row == y+1)
+                        boardState[column][row] = TileState.PICKABLE;
+                    else
+                        boardState[column][row] = TileState.NOT_PICKABLE;
+                }
+            }
+        }
+
+        // Removing picked tile and returning it to caller
+        TileType picked_tile = this.boardContent[x][y];
+        this.boardContent[x][y] = null;
+        this.boardState[x][y] = TileState.NOT_PICKABLE;
+        return picked_tile;
     }
 
     /**
@@ -103,10 +160,10 @@ public class Board implements Serializable {
      * 
      * @param x          x coordinate of the tile
      * @param y          y coordinate of the tile
-     * @param numplayers number of players in the game
+     * @param numPlayers number of players in the game
      * @return true if the tile is valid, false otherwise
      */
-    public static boolean isTileUsable(int x, int y, int numplayers) {
-        return false;
+    public static boolean isTileUsable(int x, int y, int numPlayers) {
+        return usableTiles[x][y] <= numPlayers && usableTiles[x][y] != 0;
     }
 }
