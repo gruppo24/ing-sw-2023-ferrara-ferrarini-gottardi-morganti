@@ -23,7 +23,7 @@ public class GameState implements Serializable {
     private Board board;
 
     // attributes related to common objectives
-    private Integer[] nextCommons = {1,1};
+    private int[] nextCommons = {1,1};
     private CommonCard[] commonCards;
 
     public Object gameLock = new Object();
@@ -58,8 +58,19 @@ public class GameState implements Serializable {
      * method that checks if a Player has achieved or not any Common Objectives
      * @param currPlayerIndex index of player to check for common objectives
      */
-    public void obtainedCommons(int currPlayerIndex){
+    public void obtainedCommons(int currPlayerIndex) {
+        // We iterate through all common cards of the current player
+        for (int i=0; i < commonCards.length; i++) {
+            // If the player hasn't already obtained the common objective...
+            if (players[currPlayerIndex].commonsOrder[i] == 0) {
+                // ...We check whether they have completed it now...
+                if (commonCards[i].checkObjective(players[currPlayerIndex].getLibrary())) {
+                    // ...in which case we assign the current commonOrder value and then increment it
+                    players[currPlayerIndex].commonsOrder[i] = nextCommons[i];
+                    nextCommons[i]++;
+                }
+            }
+        }
     }
-
 
 }
