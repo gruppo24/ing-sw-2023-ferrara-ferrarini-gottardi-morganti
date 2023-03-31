@@ -49,12 +49,14 @@ public final class PrivateCard implements Serializable {
      * Maps the number of correct cells in the library as described in
      * PrivateCard.objectives to the number of points
      * 
-     * @param objectives
-     * @return
-     * @throws IllegalArgumentException
+     * @param objectives the number of cells in the library that correspond with
+     *                   PrivateCard.objectives TileType and coordinates entries
+     * @return the number of points
+     * @throws IllegalArgumentException if objectives is not between 0 and 6
      */
     public static int mapPrivatePoints(int objectives) throws IllegalArgumentException {
         return switch (objectives) {
+            case 0 -> 0;
             case 1 -> 1;
             case 2 -> 2;
             case 3 -> 4;
@@ -62,7 +64,7 @@ public final class PrivateCard implements Serializable {
             case 5 -> 9;
             case 6 -> 12;
             default -> throw new IllegalArgumentException(
-                    "Invalid number of objectives (must be between 1 and 6, is " + objectives + ")");
+                    "Invalid number of objectives (must be between 0 and 6, is " + objectives + ")");
         };
     }
 }
