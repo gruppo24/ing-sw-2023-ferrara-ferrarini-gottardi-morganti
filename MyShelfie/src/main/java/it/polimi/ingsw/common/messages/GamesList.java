@@ -5,9 +5,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * This class is in charge of forwarding server responses to
- * a client while the they still are in pregame (game selection,
- * game creation, game rejoin after crash)
+ * This class is in charge of returning to a client the list
+ * of all currently available games
  *
  * @author Ferrarini Andrea
  */
