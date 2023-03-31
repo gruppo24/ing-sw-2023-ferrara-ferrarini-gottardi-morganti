@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
+
 import java.io.Serializable;
 import java.util.Map;
 
