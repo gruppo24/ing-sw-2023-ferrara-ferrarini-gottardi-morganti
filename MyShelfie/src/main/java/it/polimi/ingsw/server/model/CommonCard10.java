@@ -1,4 +1,5 @@
 package it.polimi.ingsw.server.model;
+import it.polimi.ingsw.common.TileType;
 
 /**
  * This class defines if the player has achieved or not common-objective 10
@@ -29,7 +30,7 @@ public class CommonCard10 extends CommonCard{
         //we iterate through the matrix
         for (int column=0; column < WIDTH-2; column++) {
             for (int row=0; row < HEIGHT-2; row++) {
-                //we check if the cells forming an X configuration from the one considered are not null
+                //we check if there are cells forming an X configurations and are not null
                 if(library[column][row] != null && library[column][row+2] != null && library[column+1][row+1] != null
                         && library[column+2][row] != null && library[column+2][row+2] != null){
                     //we check if the cells forming an X configuration are equals

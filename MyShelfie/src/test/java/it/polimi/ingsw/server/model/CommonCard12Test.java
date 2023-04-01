@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -12,7 +13,7 @@ public class CommonCard12Test {
 
     @Before
     public void SetUp(){
-        testCard12 = new CommonCard12 ("Jpeg.12", "Description CommonCard12");
+        testCard12 = new CommonCard12 ("12.jpg", "Description CommonCard12");
     }
 
     @After
@@ -57,11 +58,23 @@ public class CommonCard12Test {
     @Test
     public void checkObjective_noConfiguration_false(){
         TileType[][] libTest =
-                {{TileType.BOOK, TileType.TROPHY, TileType.PLANT, TileType.CAT, TileType.BOOK, TileType.BOOK},
+                        {{TileType.BOOK, TileType.TROPHY, TileType.PLANT, TileType.CAT, TileType.BOOK, TileType.BOOK},
                         {TileType.TOY, TileType.PLANT, TileType.BOOK, TileType.FRAME, TileType.CAT, TileType.TROPHY},
                         {TileType.PLANT, TileType.PLANT, TileType.BOOK, TileType.TOY, TileType.BOOK, null},
                         {TileType.BOOK, TileType.TROPHY, TileType.PLANT, TileType.CAT, TileType.BOOK, TileType.BOOK},
                         {TileType.TOY, TileType.PLANT, TileType.BOOK, TileType.TROPHY, TileType.CAT, TileType.TROPHY}};
+
+        assertFalse(this.testCard12.checkObjective(libTest));
+    }
+
+    @Test
+    public void checkObjective_wrongRisingConfiguration_false() {
+        TileType[][] libTest =
+                        {{TileType.BOOK, TileType.TROPHY, TileType.PLANT, TileType.CAT, null, null},
+                        {TileType.TOY, TileType.PLANT, TileType.BOOK, null, null, null},
+                        {TileType.PLANT, TileType.PLANT, null, null, null, null},
+                        {TileType.BOOK, null, null, null, null, null},
+                        {null, null, null, null, null, null}};
 
         assertFalse(this.testCard12.checkObjective(libTest));
     }

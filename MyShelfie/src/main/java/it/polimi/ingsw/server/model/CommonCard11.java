@@ -1,4 +1,5 @@
 package it.polimi.ingsw.server.model;
+import it.polimi.ingsw.common.TileType;
 
 /**
  * This class defines if the player has achieved or not common-objective 11
@@ -22,7 +23,7 @@ public class CommonCard11 extends CommonCard {
      */
     @Override
     public boolean checkObjective(TileType[][] library) {
-        //the player achieve the common-objective if he has a right diagonal config. or a left diagonal config.
+        //the player achieve the common-objective if he/she has a right diagonal config. or a left diagonal config.
         return (diagonal1(library) || diagonal2(library));
     }
 
@@ -36,7 +37,7 @@ public class CommonCard11 extends CommonCard {
 
         //we iterate through the matrix checking only the cells in the right diagonal
         for(int column = 0; column < WIDTH; column++){
-            //we check the equality between the tile in the left bottom corner and the others in the diagonal
+            //we check the equality between the tile in the left bottom corner and the others on the diagonal
             if(library[column][row] != null && library[column][row] == cell){
                 row++;
             } else
@@ -55,7 +56,7 @@ public class CommonCard11 extends CommonCard {
 
         //we iterate through the matrix checking only the cells in the left diagonal
         for(int column = WIDTH-1; column >= 0; column--){
-            //we check the equality between the tile in the right bottom corner and the others in the diagonal
+            //we check the equality between the tile in the right bottom corner and the others on the diagonal
             if(library[column][row] != null && library[column][row] == cell){
                 row++;
             } else

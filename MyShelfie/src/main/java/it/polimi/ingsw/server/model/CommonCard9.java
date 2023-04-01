@@ -1,9 +1,7 @@
 package it.polimi.ingsw.server.model;
+import it.polimi.ingsw.common.TileType;
 
-import java.util.EnumMap;
-
-import static it.polimi.ingsw.server.model.TileType.*;
-
+import java.util.HashMap;
 
 /**
  * This class defines if the player has achieved or not common-objective 9
@@ -32,13 +30,13 @@ public class CommonCard9 extends CommonCard{
         final int HEIGHT = library[0].length;
 
         //Following map will assign to each tile the corresponding occurrence in the library
-        EnumMap<TileType, Integer> cells = new EnumMap<>(TileType.class);
-        cells.put(BOOK, 0);
-        cells.put(CAT, 0);
-        cells.put(FRAME, 0);
-        cells.put(PLANT, 0);
-        cells.put(TOY, 0);
-        cells.put(TROPHY, 0);
+        HashMap<TileType, Integer> cells = new HashMap<>();
+        cells.put(TileType.BOOK, 0);
+        cells.put(TileType.CAT, 0);
+        cells.put(TileType.FRAME, 0);
+        cells.put(TileType.PLANT, 0);
+        cells.put(TileType.TOY, 0);
+        cells.put(TileType.TROPHY, 0);
 
         //we iterate through the entire matrix...
         for (int column=0; column < WIDTH; column++) {
