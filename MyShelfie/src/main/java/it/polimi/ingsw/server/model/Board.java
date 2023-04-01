@@ -6,6 +6,8 @@ import it.polimi.ingsw.common.TileType;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Representation of the game board, one for each game.
@@ -25,15 +27,15 @@ public class Board implements Serializable {
      * is indicative of the exact minimum number of players required.
      */
     private static final int[][] usableTiles = {
-            {0, 0, 0, 3, 4, 0, 0, 0, 0},
-            {0, 0, 0, 2, 2, 4, 0, 0, 0},
-            {0, 0, 3, 2, 2, 2, 3, 0, 0},
-            {0, 4, 2, 2, 2, 2, 2, 2, 3},
-            {4, 2, 2, 2, 2, 2, 2, 2, 4},
-            {3, 2, 2, 2, 2, 2, 2, 4, 0},
-            {0, 0, 3, 2, 2, 2, 3, 0, 0},
-            {0, 0, 0, 4, 2, 2, 0, 0, 0},
-            {0, 0, 0, 0, 4, 3, 0, 0, 0}
+            { 0, 0, 0, 3, 4, 0, 0, 0, 0 },
+            { 0, 0, 0, 2, 2, 4, 0, 0, 0 },
+            { 0, 0, 3, 2, 2, 2, 3, 0, 0 },
+            { 0, 4, 2, 2, 2, 2, 2, 2, 3 },
+            { 4, 2, 2, 2, 2, 2, 2, 2, 4 },
+            { 3, 2, 2, 2, 2, 2, 2, 4, 0 },
+            { 0, 0, 3, 2, 2, 2, 3, 0, 0 },
+            { 0, 0, 0, 4, 2, 2, 0, 0, 0 },
+            { 0, 0, 0, 0, 4, 3, 0, 0, 0 }
     };
 
     /**
@@ -52,24 +54,88 @@ public class Board implements Serializable {
      */
     private TileState[][] boardState = new TileState[9][9];
 
+    public TileType[][] getBoardContent() {
+        return boardContent;
+    }
+
+    public TileState[][] getBoardState() {
+        return boardState;
+    }
+
     /**
      * Initializes the board with 22 tiles of each type in its bag
      */
     public Board() {
-        this.tilesInBag = Map.ofEntries(
+        // initialize the bag with 22 tiles of each type
+        // has to be a hashmap because ofEntries returns an immutable map
+        this.tilesInBag = new HashMap<>(Map.ofEntries(
                 Map.entry(TileType.BOOK, 22),
                 Map.entry(TileType.CAT, 22),
                 Map.entry(TileType.FRAME, 22),
                 Map.entry(TileType.PLANT, 22),
                 Map.entry(TileType.TOY, 22),
-                Map.entry(TileType.TROPHY, 22));
+                Map.entry(TileType.TROPHY, 22)));
+    }
+
+    /**
+     * Picks a random tile from the bag and returns it. If the bag is empty, the
+     * method returns null.
+     * 
+     * @return the type of the picked tile, or null if the bag is empty
+     */
+    private TileType pickRandomTile() {
+        // this method counts all the tiles, and pick a random number between 0 and
+        // the total number of tiles.
+        // The random number generated is a tile as if all the tiles were in a single
+        // array, ordered by type.
+
+        // count the total number of tiles in the bag
+        int totalTiles = 0;
+        for (TileType type : this.tilesInBag.keySet())
+            totalTiles += this.tilesInBag.get(type);
+
+        // if the bag is empty, return null
+        if (totalTiles == 0)
+            return null;
+
+        // pick a random tile
+        int randomTileNum = ThreadLocalRandom.current().nextInt(0, totalTiles);
+
+        // for each type, if the random number is smaller than the number of tiles
+        // of that type, return that type (as if the tile was picked in that position
+        // of an ordered list). Otherwise subtract the number of tiles of that type
+        // and continue with the next type.
+        for (TileType type : this.tilesInBag.keySet()) {
+            if (randomTileNum < this.tilesInBag.get(type)) {
+                this.tilesInBag.put(type, this.tilesInBag.get(type) - 1);
+                return type;
+            }
+            randomTileNum -= this.tilesInBag.get(type);
+        }
+
+        // this point should never be reached, generated number greater than total
+        // number of tiles ??
+        return null;
     }
 
     /**
      * Refills the board with tiles from the bag when there are not enough on the
      * board
      */
-    public void refillBoard() {
+    public void refillBoard(int numplayers) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (this.boardContent[i][j] == null && isTileUsable(i, j, numplayers)) {
+                    // if the board content is null on a usable tile, the cell is
+                    // empty and can be refilled
+                    TileType newTile = pickRandomTile();
+                    if (newTile == null) // if the bag is empty, no more tiles to add
+                        return;
+
+                    this.boardContent[i][j] = newTile;
+                }
+            }
+        }
     }
 
     /**
@@ -84,24 +150,26 @@ public class Board implements Serializable {
      */
     public TileType pick(int x, int y, int constraint) {
         // We simply iterate over the board...
-        for (int column=0; column < boardState.length; column++) {
-            for (int row=0; row < boardState[0].length; row++) {
+        for (int column = 0; column < boardState.length; column++) {
+            for (int row = 0; row < boardState[0].length; row++) {
                 if (constraint == 0) {
                     // If, at current time, the player is limited to zero more picks, we simply
                     // zero-out the entire boardState matrix
                     boardState[column][row] = TileState.NOT_PICKABLE;
                 } else if (boardState[column][row] == TileState.PICKABLE) {
                     // If the player can actually make some picks (constraint > 1), we check only
-                    // those cells which were already pick-able before (=they already had a free edge)
-                    if (((column == x && (row == x-2 || row == x+2)) || (row == y && (column == y-2 || column == y+2)))
+                    // those cells which were already pick-able before (=they already had a free
+                    // edge)
+                    if (((column == x && (row == x - 2 || row == x + 2))
+                            || (row == y && (column == y - 2 || column == y + 2)))
                             && constraint > 1) {
-                        // If constraint is even greater than 1, and the analysed cell is inline with the
-                        // picked one, we set the cell-state to PICKABLE_NEXT (= can be picked on subsequent pick)
+                        // If constraint is even greater than 1, and the analysed cell is inline with
+                        // the
+                        // picked one, we set the cell-state to PICKABLE_NEXT (= can be picked on
+                        // subsequent pick)
                         boardState[column][row] = TileState.PICKABLE_NEXT;
-                    } else if ( !(
-                            (column == x && (row == x-1 || row == x+1)) ||
-                            (row == y && (column == y-1 || column == y+1)))
-                                ) {
+                    } else if (!((column == x && (row == x - 1 || row == x + 1)) ||
+                            (row == y && (column == y - 1 || column == y + 1)))) {
                         // Any other cell (not inline with the current one, or which are "too far",
                         // are not pick-able even in future picks
                         boardState[column][row] = TileState.NOT_PICKABLE;
@@ -109,7 +177,7 @@ public class Board implements Serializable {
                 } else if (boardState[column][row] == TileState.PICKABLE_NEXT) {
                     // If a cell had state equal to 2 (and constraint != 0), then now,
                     // if it is adjacent to the last picked cell, it will change state to 1
-                    if (column == x-1 || column == x+1 || row == y-1 || row == y+1)
+                    if (column == x - 1 || column == x + 1 || row == y - 1 || row == y + 1)
                         boardState[column][row] = TileState.PICKABLE;
                     else
                         boardState[column][row] = TileState.NOT_PICKABLE;
