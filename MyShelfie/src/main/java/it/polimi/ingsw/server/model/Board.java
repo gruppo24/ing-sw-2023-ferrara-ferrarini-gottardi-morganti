@@ -83,7 +83,7 @@ public class Board implements Serializable {
      * 
      * @return the type of the picked tile, or null if the bag is empty
      */
-    private TileType pickRandomTile() {
+    private TileType drawRandomTile() {
         // this method counts all the tiles, and pick a random number between 0 and
         // the total number of tiles.
         // The random number generated is a tile as if all the tiles were in a single
@@ -128,7 +128,7 @@ public class Board implements Serializable {
                 if (this.boardContent[i][j] == null && isTileUsable(i, j, numplayers)) {
                     // if the board content is null on a usable tile, the cell is
                     // empty and can be refilled
-                    TileType newTile = pickRandomTile();
+                    TileType newTile = drawRandomTile();
                     if (newTile == null) // if the bag is empty, no more tiles to add
                         return;
 
@@ -160,16 +160,15 @@ public class Board implements Serializable {
                     // If the player can actually make some picks (constraint > 1), we check only
                     // those cells which were already pick-able before (=they already had a free
                     // edge)
-                    if (((column == x && (row == x - 2 || row == x + 2))
-                            || (row == y && (column == y - 2 || column == y + 2)))
+                    if (((column == x && (row == y - 1 || row == y + 1))
+                            || (row == y && (column == x - 1 || column == x + 1)))
                             && constraint > 1) {
                         // If constraint is even greater than 1, and the analysed cell is inline with
                         // the
                         // picked one, we set the cell-state to PICKABLE_NEXT (= can be picked on
                         // subsequent pick)
                         boardState[column][row] = TileState.PICKABLE_NEXT;
-                    } else if (!((column == x && (row == x - 1 || row == x + 1)) ||
-                            (row == y && (column == y - 1 || column == y + 1)))) {
+                    } else {
                         // Any other cell (not inline with the current one, or which are "too far",
                         // are not pick-able even in future picks
                         boardState[column][row] = TileState.NOT_PICKABLE;
