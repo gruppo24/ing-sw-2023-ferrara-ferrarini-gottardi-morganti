@@ -1,9 +1,10 @@
 package it.polimi.ingsw.server.model;
-
+import it.polimi.ingsw.common.TileType;
 import java.util.HashMap;
 
 /**
  * This class check if the player has achieved or not common objective 2
+ * @author Gottardi Arianna
  */
 public class CommonCard2 extends CommonCard{
     /**
@@ -54,6 +55,6 @@ public class CommonCard2 extends CommonCard{
         }
 
         //Return true if there are two columns that are "ok"
-       return numColumn==2;
+       return numColumn >= 2;
     }
 }

@@ -1,8 +1,9 @@
 package it.polimi.ingsw.server.model;
-
+import it.polimi.ingsw.common.TileType;
 import java.util.HashMap;
 /**
  * This class check if the player has achieved or not common objective 6
+ * @author Gottardi Arianna
  */
 public class CommonCard6 extends CommonCard{
     /**
@@ -33,7 +34,7 @@ public class CommonCard6 extends CommonCard{
 
         //Iteration through the entire matrix
         for(int row=0; row < HEIGHT; row++){
-            //clean the hashmap for each rows
+            //clean the hashmap for each row
             check.put(TileType.BOOK,0);
             check.put(TileType.CAT,0);
             check.put(TileType.FRAME,0);
@@ -59,7 +60,7 @@ public class CommonCard6 extends CommonCard{
                 numRows++;
         }
         //Return true if there are 2 rows that are "ok"
-        return numRows == 2;
+        return numRows >= 2;
     }
 }
 

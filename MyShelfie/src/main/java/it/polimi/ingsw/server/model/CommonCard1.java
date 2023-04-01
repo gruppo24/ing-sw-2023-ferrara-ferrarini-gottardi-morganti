@@ -1,6 +1,10 @@
 package it.polimi.ingsw.server.model;
+import it.polimi.ingsw.common.TileType;
+import java.util.HashMap;
+
 /**
  * This class check if the player has achieved or not common objective 1
+ * @author Gottardi Arianna
  */
 public class CommonCard1 extends CommonCard{
     /**
@@ -26,31 +30,33 @@ public class CommonCard1 extends CommonCard{
         //Matrix of boolean to check if a cell is already in a group
         boolean[][] used= new boolean[WIDTH][HEIGHT];
 
-        //Count the number of groups 2x2 of the same type of tile
-        int numSubMatrix = 0;
+        //Attribute to count the number of 2x2 groups ("ok groups")
+        int numGroups = 0;
 
         //Iteration through the matrix
-        for(int columns = 0; columns < WIDTH - 1; columns++){
-            for (int row = 0; row < HEIGHT - 1; row++){
-                //Check if a cell is equals to its "neighbors" and if they are still not used
-                if(library[columns][row] == library[columns+1][row] &&
-                        library[columns+1][row] == library[columns][row+1]
-                        && library[columns][row+1] == library[columns+1][row+1]
-                        && !used[columns][row] && !used[columns+1][row] && !used[columns][row+1]
-                        && !used[columns+1][row+1]) {
-                    //Create a new group --> Cells become "used"
-                    used[columns][row] = true;
-                    used[columns+1][row] = true;
-                    used[columns][row+1] = true;
-                    used[columns+1][row+1] = true;
-                    numSubMatrix++;
-
+        for(int column = 0; column< WIDTH-1 ; column++){
+            for(int row = 0; row < HEIGHT-1 ; row++){
+                //For each cell we check if it could be part of a group
+                //we check if it is not null + not used + equals to its "neighbours"
+                if(library[column][row] == library[column+1][row] &&
+                        library[column+1][row] == library[column][row+1]
+                        && library[column][row+1] == library[column+1][row+1]
+                        && !used[column][row] && !used[column+1][row] && !used[column][row+1]
+                        && !used[column+1][row+1] && library[column][row] != null
+                        && library[column+1][row] != null && library[column][row+1] != null
+                        && library[column+1][row+1] != null){
+                    //if it is "ok" --> the positions become used
+                    // --> we can increase the number of founded "ok groups"
+                    used[column][row] = true;
+                    used[column+1][row] = true;
+                    used[column][row+1] = true;
+                    used[column+1][row + 1] = true;
+                    numGroups ++;
                 }
-
             }
         }
-        //Return true if there are two groups
-        return numSubMatrix == 2;
-
+        //Return true if the number of "ok groups" are >=2
+        return numGroups >= 2;
     }
 }
+
