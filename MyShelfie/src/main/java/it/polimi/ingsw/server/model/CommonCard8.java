@@ -2,12 +2,13 @@ package it.polimi.ingsw.server.model;
 
 /**
  * This class defines if the player has achieved or not common-objective 8
+ * @author Ferrara Silvia
  */
 public class CommonCard8 extends CommonCard {
 
     /**
-     * Class constructor
-     * @param identifier  unique identifier associated to the card. Required to find asset location on client
+     * class constructor
+     * @param identifier unique identifier associated to the card. Required to find asset location on client
      * @param description textual description of the common objective
      */
     public CommonCard8(String identifier, String description) {
@@ -21,6 +22,7 @@ public class CommonCard8 extends CommonCard {
      */
     @Override
     public boolean checkObjective(TileType[][] library) {
+        //library dimensions
         final int WIDTH = library.length;
         final int HEIGHT = library[0].length;
 
