@@ -43,15 +43,7 @@ public class GameState implements Serializable {
      * method that updates the library of the player (identified with the currPlayerIndex) with the Tiles picked previously
      * @param currPlayerIndex the index associated to the player whose library will be updated
      */
-    public void updateLibrary(int currPlayerIndex){
-    }
-
-    /**
-     * method that checks at the end of the current player turn if there are "legal" available moves for the next player
-     * @return a boolean representing whether the board should be refilled or not
-     */
-    public boolean shouldRefillBoard(){
-        return false;
+    public void updateLibrary(int currPlayerIndex) {
     }
 
     /**

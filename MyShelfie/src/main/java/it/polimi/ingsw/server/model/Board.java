@@ -119,6 +119,35 @@ public class Board implements Serializable {
     }
 
     /**
+     * method that checks at the end of the current player turn if there are "legal"
+     * available moves for the next player
+     * 
+     * @return a boolean representing whether the board should be refilled or not
+     */
+    public boolean shouldBeRefilled() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (boardContent[i][j] != null) {
+                    // if there is at leas one not null neighbour, the board should not be refilled
+                    if (i > 0 && boardContent[i - 1][j] != null) {
+                        return false;
+                    }
+                    if (i < 8 && boardContent[i + 1][j] != null) {
+                        return false;
+                    }
+                    if (j > 0 && boardContent[i][j - 1] != null) {
+                        return false;
+                    }
+                    if (j < 8 && boardContent[i][j + 1] != null) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Refills the board with tiles from the bag when there are not enough on the
      * board
      */

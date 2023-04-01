@@ -22,6 +22,57 @@ public class BoardTest {
     public void tearDown() {
         /* Do nothing */ }
 
+    // ==================== shouldBeRefilled ====================
+    @Test
+    public void shouldBeRefilled_boardEmpty_shouldBeTrue() {
+        Board board = new Board();
+        Assert.assertTrue(board.shouldBeRefilled());
+    }
+
+    @Test
+    public void shouldBeRefilled_boardNotEmpty_shouldBeFalse() {
+        Board board = new Board();
+        board.refillBoard(2);
+        Assert.assertFalse(board.shouldBeRefilled());
+    }
+
+    @Test
+    public void shouldBeRefilled_boardNotEmptyAfterPick_shouldBeFalse() {
+        Board board = new Board();
+        board.refillBoard(2);
+        board.pick(4, 1, 1);
+        Assert.assertFalse(board.shouldBeRefilled());
+    }
+
+    @Test
+    public void shouldBeRefilled_boardNotEmptyAfterPickAll_shouldBeTrue() {
+        Board board = new Board();
+        board.refillBoard(2);
+        // pick all tiles except the (4,4) and (5,5), not adjacent cells
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 5))
+                    board.pick(i, j, 1);
+            }
+        }
+        Assert.assertTrue(board.shouldBeRefilled());
+    }
+
+    @Test
+    public void shouldBeRefilled_boardNotEmptyAfterPickExceptAdjacent_shouldBeTrue() {
+        Board board = new Board();
+        board.refillBoard(2);
+
+        // pick all tiles except (4,4) and (5,4) two adjacent cells
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 4))
+                    board.pick(i, j, 1);
+            }
+        }
+        Assert.assertFalse(board.shouldBeRefilled());
+    }
+
     // ==================== refillBoard ====================
     @Test
     public void refillBoard_newBoard_shouldBeEmpty() {
