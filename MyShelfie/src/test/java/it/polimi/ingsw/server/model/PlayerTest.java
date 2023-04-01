@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
 import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 import it.polimi.ingsw.server.exceptions.SelectionBufferFullException;

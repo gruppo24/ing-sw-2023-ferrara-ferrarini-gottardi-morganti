@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.common;
 
 /**
  * Enum with the state of each cell on the board, where:

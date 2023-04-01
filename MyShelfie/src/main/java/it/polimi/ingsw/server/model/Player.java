@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
 import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 import it.polimi.ingsw.server.exceptions.SelectionBufferFullException;
