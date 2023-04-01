@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
+
 /**
  * This class defines if the player has achieved or not common-objective 8
  * @author Ferrara Silvia

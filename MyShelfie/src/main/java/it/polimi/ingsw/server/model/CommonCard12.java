@@ -1,4 +1,5 @@
 package it.polimi.ingsw.server.model;
+import it.polimi.ingsw.common.TileType;
 
 /**
  * This class defines if the player has achieved or not common-objective 12
@@ -22,7 +23,7 @@ public class CommonCard12 extends CommonCard {
      */
     @Override
     public boolean checkObjective(TileType[][] library) {
-        ///the player achieve the common-objective if he has a right
+        ///the player achieve the common-objective if he/she has a right
         // "rising diagonal" config. or a "left diagonal" config.
         return (diagonalDX(library) || diagonalSX(library));
     }
@@ -32,18 +33,21 @@ public class CommonCard12 extends CommonCard {
         final int WIDTH = library.length;
         final int HEIGHT = library[0].length;
 
-        int oldNum = 0; //counter that contains the number of tiles contained in the previous column
-        int newNum = 0; //counter that contains the number of tiles contained in the current column
+        int oldNum = 0; //counter that indicates the number of tiles contained in the previous column
+        int newNum = 0; //counter that indicates the number of tiles contained in the current column
 
         //we iterate through the matrix
         for (int column = 0; column < WIDTH; column++) {
             for (int row = 0; row < HEIGHT; row++) {
+                //we count the number of tiles in each column
                 if (library[column][row] != null) {
                     newNum++;
                 }
             }
+            //we check if the column rising height condition (in right direction) is respected
             if(newNum != oldNum +1)
                 return false;
+            //counters are set for the next iteration
             oldNum = newNum;
             newNum = 0;
         }
@@ -55,17 +59,21 @@ public class CommonCard12 extends CommonCard {
         final int WIDTH = library.length;
         final int HEIGHT = library[0].length;
 
-        int oldNum = 0;
-        int newNum = 0;
+        int oldNum = 0; //counter that indicates the number of tiles contained in the previous column
+        int newNum = 0; //counter that indicates the number of tiles contained in the current column
 
+        //we iterate through the matrix
         for (int column = WIDTH-1; column >= 0; column--) {
             for (int row = 0; row < HEIGHT; row++){
+                //we count the number of tiles in each column
                 if (library[column][row] != null){
                     newNum++;
                 }
             }
+            //we check if the column rising height condition (in left direction) is respected
             if(newNum != oldNum +1)
                 return false;
+            //counters are set for the next iteration
             oldNum = newNum;
             newNum = 0;
         }

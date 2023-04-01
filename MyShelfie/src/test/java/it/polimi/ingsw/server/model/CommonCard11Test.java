@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -9,12 +10,10 @@ import static org.junit.Assert.*;
 
 public class CommonCard11Test {
     private CommonCard11 testCard11;
-    private TileType[][] libTest;
-
 
     @Before
     public void SetUp(){
-        testCard11 = new CommonCard11 ("Jpeg.10", "Description CommonCard8");
+        testCard11 = new CommonCard11 ("11.jpg", "Description CommonCard11");
     }
 
     @After
@@ -27,14 +26,14 @@ public class CommonCard11Test {
         final int LIBRARY_WIDTH = 5;
         final int LIBRARY_HEIGHT = 6;
 
-        libTest = new TileType[LIBRARY_WIDTH][LIBRARY_HEIGHT];
+        TileType[][] libTest = new TileType[LIBRARY_WIDTH][LIBRARY_HEIGHT];
         assertFalse(this.testCard11.checkObjective(libTest));
     }
 
     @Test
     public void checkObjective_rightDiagonal_true(){
         TileType[][] libTest =
-                {{TileType.BOOK, TileType.PLANT, TileType.FRAME, TileType.PLANT, TileType.CAT, TileType.FRAME},
+                        {{TileType.BOOK, TileType.PLANT, TileType.FRAME, TileType.PLANT, TileType.CAT, TileType.FRAME},
                         {TileType.TOY, TileType.BOOK, TileType.TOY, TileType.TROPHY, TileType.CAT, TileType.TROPHY},
                         {TileType.PLANT, TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, null},
                         {TileType.TOY, TileType.TROPHY, TileType.TOY, TileType.BOOK, TileType.TROPHY, TileType.BOOK},
@@ -70,7 +69,7 @@ public class CommonCard11Test {
     @Test
     public void checkObjective_wrongConfiguration_false(){
         TileType[][] libTest =
-                        {{TileType.BOOK, TileType.PLANT, TileType.FRAME, TileType.PLANT, null, null},
+                        {{TileType.BOOK, TileType.PLANT, TileType.FRAME, TileType.PLANT, TileType.CAT, null},
                         {TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, TileType.CAT, TileType.TROPHY},
                         {TileType.PLANT, TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, null},
                         {TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, TileType.TROPHY, TileType.BOOK},

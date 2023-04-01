@@ -1,4 +1,5 @@
 package it.polimi.ingsw.server.model;
+import it.polimi.ingsw.common.TileType;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
@@ -6,13 +7,10 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CommonCard8Test {
-
     private CommonCard8 testCard8;
-    private TileType[][] libTest;
-
     @Before
     public void SetUp(){
-        testCard8 = new CommonCard8("Jpeg.8", "Description CommonCard8");
+        testCard8 = new CommonCard8("8.jpg", "Description CommonCard8");
     }
 
     @After
@@ -25,7 +23,7 @@ public class CommonCard8Test {
         final int LIBRARY_WIDTH = 5;
         final int LIBRARY_HEIGHT = 6;
 
-        libTest = new TileType[LIBRARY_WIDTH][LIBRARY_HEIGHT];
+        TileType[][] libTest = new TileType[LIBRARY_WIDTH][LIBRARY_HEIGHT];
         assertFalse(this.testCard8.checkObjective(libTest));
     }
 
