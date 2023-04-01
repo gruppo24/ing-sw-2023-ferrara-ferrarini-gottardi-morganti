@@ -41,7 +41,8 @@ public class CommonCard1Test {
 
     @Test
     public void checkObjective_one2X2SubMatrix_false(){
-        libTest = new TileType[][]{{TileType.CAT, TileType.CAT, TileType.CAT, TileType.BOOK, TileType.BOOK, TileType.BOOK},
+        libTest = new TileType[][]
+                {{TileType.CAT, TileType.CAT, TileType.CAT, TileType.BOOK, TileType.BOOK, TileType.BOOK},
                 {TileType.CAT, TileType.CAT, TileType.TOY, TileType.TROPHY, TileType.TOY, TileType.TROPHY},
                 {TileType.PLANT, TileType.CAT, TileType.PLANT, TileType.CAT, TileType.PLANT, TileType.CAT},
                 {TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK},
