@@ -1,5 +1,7 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
+
 import java.util.HashMap;
 
 /**
@@ -24,7 +26,7 @@ public class CommonCard7 extends CommonCard{
      */
     @Override
     public boolean checkObjective(TileType[][] library) {
-        //Prefetching library dimensions
+        //library dimensions
         final int WIDTH = library.length;
         final int HEIGHT = library[0].length;
 
@@ -53,7 +55,7 @@ public class CommonCard7 extends CommonCard{
                 }
             }
             //we iterate through the values of the map to check if the number of different
-            //tiles in that row is 1, 2 or 3 and we re-initialize the map to all 0
+            //tiles in that row is 1, 2 or 3 and we re-initialize the map to all 0 for the next iteration
             for (TileType key : found.keySet()){
                 if (found.get(key) != 0){
                     different++;
