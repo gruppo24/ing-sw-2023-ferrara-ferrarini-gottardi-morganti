@@ -1,5 +1,6 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.server.model.CommonCardImpl;
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.server.model.CommonCard;
 
 import java.util.HashMap;
 
@@ -7,7 +8,7 @@ import java.util.HashMap;
  * This class defines if the player has achieved or not common-objective 9
  * @author Ferrara Silvia
  */
-public class CommonCard9 extends CommonCard{
+public class CommonCard9 extends CommonCard {
 
     /**
      * class constructor

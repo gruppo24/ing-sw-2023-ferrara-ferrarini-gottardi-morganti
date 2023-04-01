@@ -1,6 +1,7 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.server.model.CommonCardImpl;
 
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.server.model.CommonCard;
 
 /**
  * This class defines if the player has achieved or not common-objective 8
