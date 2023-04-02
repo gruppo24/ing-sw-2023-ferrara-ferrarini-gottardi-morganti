@@ -1,0 +1,40 @@
+package it.polimi.ingsw.common.messages;
+
+import it.polimi.ingsw.server.controller.socket.Contextable;
+import it.polimi.ingsw.server.model.GameState;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+
+import static it.polimi.ingsw.server.Server.GAMES;
+
+
+/**
+ * This class is in charge requesting all currently available games
+ *
+ * @author Ferrarini Andrea
+ */
+public class ListGames extends PacketContent {
+    @Serial
+    private final static long serialVersionUID = 1L;
+
+
+    @Override
+    public boolean performRequestedAction(Contextable context) {
+        // Constructing response object
+        GamesList responsePacket = new GamesList();
+        for (GameState game : GAMES)
+            responsePacket.availableGames.put(game.getGameID(), game.getPlayerStatus());
+        responsePacket.status = ResponseStatus.SUCCESS;
+
+        // Serializing response object and sending it back to the client
+        try (ObjectOutputStream response = new ObjectOutputStream(context.getConnection().getOutputStream())) {
+            response.writeObject(responsePacket);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return false;
+    }
+}

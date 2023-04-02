@@ -1,12 +1,14 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.server.model.CommonCardImpl;
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.server.model.CommonCard;
+
 import java.util.HashMap;
 
 /**
  * This class check if the player has achieved or not common objective 1
  * @author Gottardi Arianna
  */
-public class CommonCard1 extends CommonCard{
+public class CommonCard1 extends CommonCard {
     /**
      * Class constructor
      *

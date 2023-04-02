@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.messages;
 
+import it.polimi.ingsw.server.controller.socket.Contextable;
+
 import java.io.Serial;
 import java.io.Serializable;
 
@@ -12,7 +14,9 @@ import java.io.Serializable;
  *
  * @author Ferrarini Andrea
  */
-public class PacketContent implements Serializable {
+public abstract class PacketContent implements Serializable {
     @Serial
     private final static long serialVersionUID = 1L;
+
+    public abstract boolean performRequestedAction(Contextable context);
 }

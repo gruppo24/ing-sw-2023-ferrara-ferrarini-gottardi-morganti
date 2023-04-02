@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.server.model.CommonCardImpl.CommonCard7;
 import org.junit.Before;
 import org.junit.After;
 import org.junit.Test;
