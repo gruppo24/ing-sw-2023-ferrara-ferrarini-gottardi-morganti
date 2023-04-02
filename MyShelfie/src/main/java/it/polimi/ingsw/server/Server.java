@@ -4,6 +4,10 @@ import it.polimi.ingsw.server.model.PrivateCard;
 public class Server {
     public static final PrivateCard[] privateCards = new PrivateCard[12];
 
+    /**
+     * This class fills a PrivateCard array that contains PrivateCard instances
+     * The information needed to PrivateCard constructor are read from csv files with the CSVReader
+     */
     private static void createPrivateCards(){
         for(int i = 0; i < 12; i++){
             CSVReader reader1 = new CSVReader();
