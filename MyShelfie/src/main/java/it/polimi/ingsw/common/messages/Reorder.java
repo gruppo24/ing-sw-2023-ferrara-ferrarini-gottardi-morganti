@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.messages;
 
+import it.polimi.ingsw.server.controller.socket.Contextable;
+
 import java.io.Serial;
 
 /**
@@ -20,4 +22,7 @@ public class Reorder extends PacketContent {
     public int firstIndex;
     public int secondIndex;
     public int thirdIndex;
+
+    @Override
+    public boolean performRequestedAction(Contextable context) { return false; }
 }

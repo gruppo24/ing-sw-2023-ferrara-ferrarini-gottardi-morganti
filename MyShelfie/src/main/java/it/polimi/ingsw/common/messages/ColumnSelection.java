@@ -1,5 +1,7 @@
 package it.polimi.ingsw.common.messages;
 
+import it.polimi.ingsw.server.controller.socket.Contextable;
+
 import java.io.Serial;
 
 /**
@@ -14,4 +16,7 @@ public class ColumnSelection extends PacketContent {
 
     // Selected column index
     public int column;
+
+    @Override
+    public boolean performRequestedAction(Contextable context) { return false; }
 }
