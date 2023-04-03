@@ -1,7 +1,6 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.model.*;
-import it.polimi.ingsw.server.model.CommonCardImpl.CommonCardFactory;
 
 
 public class Server {

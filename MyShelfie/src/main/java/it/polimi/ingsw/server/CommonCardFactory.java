@@ -1,6 +1,7 @@
-package it.polimi.ingsw.server.model.CommonCardImpl;
+package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.model.CommonCard;
+import it.polimi.ingsw.server.model.CommonCardImpl.*;
 
 public class CommonCardFactory {
     public static CommonCard cardBuilder(int order) throws IllegalArgumentException{
