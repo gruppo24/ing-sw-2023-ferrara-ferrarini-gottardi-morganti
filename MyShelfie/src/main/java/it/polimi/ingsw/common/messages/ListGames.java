@@ -6,6 +6,7 @@ import it.polimi.ingsw.server.model.GameState;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serial;
+import java.util.HashMap;
 
 import static it.polimi.ingsw.server.Server.GAMES;
 
@@ -24,6 +25,7 @@ public class ListGames extends PacketContent {
     public boolean performRequestedAction(Contextable context) {
         // Constructing response object
         GamesList responsePacket = new GamesList();
+        responsePacket.availableGames = new HashMap<>();
         for (GameState game : GAMES)
             responsePacket.availableGames.put(game.getGameID(), game.getPlayerStatus());
         responsePacket.status = ResponseStatus.SUCCESS;
