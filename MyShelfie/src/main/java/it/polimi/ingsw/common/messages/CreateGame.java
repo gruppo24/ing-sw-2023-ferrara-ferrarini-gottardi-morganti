@@ -30,9 +30,6 @@ public class CreateGame extends PacketContent {
 
     @Override
     public boolean performRequestedAction(Contextable context) {
-        // Prefetching connection object for future use
-        Socket connection = context.getConnection();
-
         // Checking if a game with the requested gameID already exists
         Optional<GameState> maybeGame = GAMES.stream().
                 filter((game) -> game.getGameID().equals(this.gameID)).findFirst();
@@ -40,12 +37,12 @@ public class CreateGame extends PacketContent {
         // Checking if the optional returned something or not...
         if (maybeGame.isPresent()) {
             // If it did contain something, we return an error message
-            sendEmptyMessage(connection, ResponseStatus.GAME_ID_TAKEN);
+            sendEmptyMessage(context.getOutput(), ResponseStatus.GAME_ID_TAKEN);
             return false;
         }
 
         // Send a success response message to the client
-        sendEmptyMessage(connection, ResponseStatus.SUCCESS);
+        sendEmptyMessage(context.getOutput(), ResponseStatus.SUCCESS);
 
         // Otherwise, we actually create a new game
         GameState newGame = new GameState(this.gameID, this.numPlayers);
@@ -56,8 +53,12 @@ public class CreateGame extends PacketContent {
         newGame.addNewPlayerToGame(firstPlayer);
 
         // And, finally, create the actual in-game full-duplex TCP channel
-        Thread clientUplinkChannelThread = new Thread(new TCPIngameChannelUplink(connection, newGame, firstPlayer));
-        Thread clientDownlinkChannelThread = new Thread(new TCPIngameChannelDownlink(connection, newGame, firstPlayer));
+        Thread clientUplinkChannelThread = new Thread(
+                new TCPIngameChannelUplink(context.getInput(), newGame, firstPlayer)
+        );
+        Thread clientDownlinkChannelThread = new Thread(
+                new TCPIngameChannelDownlink(context.getOutput(), newGame, firstPlayer)
+        );
         clientUplinkChannelThread.start();
         clientDownlinkChannelThread.start();
 

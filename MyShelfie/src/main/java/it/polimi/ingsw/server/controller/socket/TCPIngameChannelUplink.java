@@ -6,6 +6,7 @@ import it.polimi.ingsw.server.model.Player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 /**
@@ -16,24 +17,31 @@ import java.net.Socket;
  */
 public class TCPIngameChannelUplink implements Contextable, Runnable {
 
-    private final Socket connection;
+    // Reference to the actual output and input channels with the client
+    private final ObjectInputStream input;
 
     private final GameState game;
     private final Player player;
 
     /**
      * Class constructor
-     * @param connection Socket connection with client
+     * @param input ObjectInputStream associated to the current uplink channel
      * @param game the game to which the client is connected
      * @param player the player associated to this client
      */
-    public TCPIngameChannelUplink(Socket connection, GameState game, Player player) {
-        this.connection = connection;
+    public TCPIngameChannelUplink(ObjectInputStream input, GameState game, Player player) {
+        this.input = input;
 
         // Game related attributes
         this.game = game;
         this.player = player;
     }
+
+    @Override
+    public ObjectInputStream getInput() { return this.input; }
+
+    @Override
+    public ObjectOutputStream getOutput() { return null; }
 
     @Override
     public GameState getGame() {
@@ -47,19 +55,15 @@ public class TCPIngameChannelUplink implements Contextable, Runnable {
 
     @Override
     public void run() {
-        try (ObjectInputStream request = new ObjectInputStream(connection.getInputStream())) {
-            while (this.game.isGameOver()) {
-                try {
-                    RequestPacket requestPacket = (RequestPacket) request.readObject();
-                    // Checking whether it actually is the user's turn. If it isn't, we ignore the request
-                    if (this.game.actuallyIsPlayersTurn(this.player))
-                        requestPacket.content.performRequestedAction(this);
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        while (this.game.isGameOver()) {
+            try {
+                RequestPacket requestPacket = (RequestPacket) this.input.readObject();
+                // Checking whether it actually is the user's turn. If it isn't, we ignore the request
+                if (this.game.actuallyIsPlayersTurn(this.player))
+                    requestPacket.content.performRequestedAction(this);
+            } catch (ClassNotFoundException | IOException ex) {
+                ex.printStackTrace();
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
 }

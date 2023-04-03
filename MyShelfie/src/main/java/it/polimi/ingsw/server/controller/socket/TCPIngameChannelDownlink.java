@@ -1,10 +1,12 @@
 package it.polimi.ingsw.server.controller.socket;
 
+import it.polimi.ingsw.common.messages.ResponseStatus;
 import it.polimi.ingsw.common.messages.SharedGameState;
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
@@ -16,24 +18,31 @@ import java.net.Socket;
  */
 public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
-    private final Socket connection;
+    // Reference to the actual output and input channels with the client
+    private final ObjectOutputStream output;
 
     private final GameState game;
     private final Player player;
 
     /**
      * Class constructor
-     * @param connection Socket connection with client
+     * @param output ObjectOutputStream associated ton the current downlink channel
      * @param game the game to which the client is connected
      * @param player the player associated to this client
      */
-    public TCPIngameChannelDownlink(Socket connection, GameState game, Player player) {
-        this.connection = connection;
+    public TCPIngameChannelDownlink(ObjectOutputStream output, GameState game, Player player) {
+        this.output = output;
 
         // Game related attributes
         this.game = game;
         this.player = player;
     }
+
+    @Override
+    public ObjectInputStream getInput() { return null; }
+
+    @Override
+    public ObjectOutputStream getOutput() { return this.output; }
 
     @Override
     public GameState getGame() {
@@ -67,8 +76,8 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
      */
     private void sendSharedGameState() {
         SharedGameState firstState = this.game.getSharedGameState(this.player);
-        try (ObjectOutputStream response = new ObjectOutputStream(connection.getOutputStream())) {
-            response.writeObject(firstState);
+        try {
+            this.output.writeObject(firstState);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

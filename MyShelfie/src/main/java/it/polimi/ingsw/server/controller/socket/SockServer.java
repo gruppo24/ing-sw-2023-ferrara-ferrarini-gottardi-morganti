@@ -1,6 +1,8 @@
 package it.polimi.ingsw.server.controller.socket;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -34,7 +36,10 @@ public class SockServer implements Runnable {
                 Socket incomingConnection = dispatcher.accept();
                 // As soon as a new connection has been received,
                 // we send the client in pregame-state
-                Thread clientChannelThread = new Thread(new TCPPregameChannel(incomingConnection));
+                Thread clientChannelThread = new Thread(new TCPPregameChannel(
+                        new ObjectInputStream(incomingConnection.getInputStream()),
+                        new ObjectOutputStream(incomingConnection.getOutputStream())
+                ));
                 clientChannelThread.start();
             }
         } catch (IOException e) {

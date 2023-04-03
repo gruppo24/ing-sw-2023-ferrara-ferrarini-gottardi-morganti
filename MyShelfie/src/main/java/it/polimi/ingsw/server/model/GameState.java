@@ -85,7 +85,6 @@ public class GameState implements Serializable {
      * @return whether the provided username has already been used
      */
     public boolean usernameAlreadyUsed(String testUsername) {
-        Arrays.stream(this.players).forEach(System.out::println);
         return Arrays.stream(this.players).filter(Objects::nonNull).anyMatch(p -> p.nickname.equals(testUsername));
     }
 

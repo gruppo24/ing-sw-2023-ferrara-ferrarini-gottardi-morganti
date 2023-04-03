@@ -15,20 +15,26 @@ import java.net.Socket;
  */
 public class TCPPregameChannel implements Contextable, Runnable {
 
-    // Reference to the actual connection with the client
-    private final Socket connection;
+    // Reference to the actual output and input channels with the client
+    private final ObjectInputStream input;
+    private final ObjectOutputStream output;
 
     /**
      * Class constructor
-     * @param incomingConnection connection established beforehand established with the client
+     * @param input ObjectOutputStream associated ton the current downlink channel
+     * @param output ObjectInputStream associated to the current uplink channel
      */
-    public TCPPregameChannel(Socket incomingConnection) {
-        this.connection = incomingConnection;
+    public TCPPregameChannel(ObjectInputStream input, ObjectOutputStream output) {
+        this.input = input;
+        this.output = output;
     }
 
     @Override
-    public Socket getConnection() {
-        return this.connection;
+    public ObjectInputStream getInput() { return this.input; }
+
+    @Override
+    public ObjectOutputStream getOutput() {
+        return this.output;
     }
 
     @Override
@@ -36,33 +42,31 @@ public class TCPPregameChannel implements Contextable, Runnable {
         // This boolean flag will allow us to break out of the request-response loop
         boolean transitionToGame = false;
 
-        try (ObjectInputStream request = new ObjectInputStream(connection.getInputStream())) {
-            while (!transitionToGame) {
-                try {
-                    // We always leave the initiative to the client
-                    RequestPacket requestPacket = (RequestPacket) request.readObject();
-                    transitionToGame = requestPacket.content.performRequestedAction(this);
-                } catch (ClassNotFoundException ex) {
-                    ex.printStackTrace();
-                }
+        while (!transitionToGame) {
+            try {
+                // We always leave the initiative to the client
+                RequestPacket requestPacket = (RequestPacket) this.input.readObject();
+                transitionToGame = requestPacket.content.performRequestedAction(this);
+            } catch (ClassNotFoundException | IOException ex) {
+                ex.printStackTrace();
+                break;
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
         // This thread can die now...
     }
 
     /**
      * Method in charge of sending an error response message to the client
-     * @param connection connection object to be used to send the packet
+     * @param output the ObjectOutputStream associated to a socket channel
      * @param status status value indicating cause of error
      */
-    public static void sendEmptyMessage(Socket connection, ResponseStatus status) {
+    public static void sendEmptyMessage(ObjectOutputStream output, ResponseStatus status) {
         // Constructing an error response packet
         ResponsePacket responsePacket = new ResponsePacket();
         responsePacket.status = status;
-        try (ObjectOutputStream response = new ObjectOutputStream(connection.getOutputStream())) {
-            response.writeObject(responsePacket);
+        try {
+            output.writeObject(responsePacket);
+            output.flush();
         } catch (IOException ex) {
             ex.printStackTrace();
         }

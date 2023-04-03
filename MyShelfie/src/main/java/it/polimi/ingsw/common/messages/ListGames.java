@@ -31,8 +31,9 @@ public class ListGames extends PacketContent {
         responsePacket.status = ResponseStatus.SUCCESS;
 
         // Serializing response object and sending it back to the client
-        try (ObjectOutputStream response = new ObjectOutputStream(context.getConnection().getOutputStream())) {
-            response.writeObject(responsePacket);
+        try {
+            context.getOutput().writeObject(responsePacket);
+            context.getOutput().flush();
         } catch (IOException ex) {
             ex.printStackTrace();
         }

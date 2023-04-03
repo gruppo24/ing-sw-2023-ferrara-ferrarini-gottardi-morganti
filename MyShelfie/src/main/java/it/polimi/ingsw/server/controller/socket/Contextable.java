@@ -3,7 +3,8 @@ package it.polimi.ingsw.server.controller.socket;
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 
-import java.net.Socket;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 /**
  * Following interface is in charge of exposing getter methods
@@ -14,11 +15,16 @@ import java.net.Socket;
 public interface Contextable {
 
     /**
-     * Method in charge of returning the connection object
-     * associated with the current request
-     * @return connetcion associated to the current request
+     * Method in charge of returning an object input stream associated to the current socket connection
+     * @return the ObjectInputStream associated to the current channel
      */
-    default Socket getConnection() { return null; }
+    ObjectInputStream getInput();
+
+    /**
+     * Method in charge of returning an object output stream associated to the current socket connection
+     * @return the ObjectOutputStream associated to the current channel
+     */
+    ObjectOutputStream getOutput();
 
     /**
      * Method in charge of returning the game associated to
