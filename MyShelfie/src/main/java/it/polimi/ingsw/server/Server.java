@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.model.*;
+import it.polimi.ingsw.server.model.CommonCardImpl.CommonCardFactory;
 
 
 public class Server {
@@ -10,7 +11,7 @@ public class Server {
 
     private static void createCommonCards(){
         for(int i=0; i<commonCards.length; i++){
-            commonCards[i] = CommonCard.cardBuilder(i);
+            commonCards[i] = CommonCardFactory.cardBuilder(i);
         }
     }
 
