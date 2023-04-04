@@ -2,11 +2,11 @@ package it.polimi.ingsw.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.server.model.PrivateCard;
 
 /**
  * Class to read from PrivateCards.csv
@@ -38,8 +38,9 @@ public class CSVReader {
      * Method that return a map TileTypes - Coordinates for the given card index
      * @param index representing the line in the csv file where there is a specific private card
      * @return the required map
+     * @throws IllegalArgumentException
      */
-    public Map<TileType,Integer[]> getRow(int index) {
+    public PrivateCard getRow(int index) throws IllegalArgumentException {
         //String where we can put the read line
         String lineRead = null;
         //The map where we put the result --> the content of the line
@@ -55,50 +56,17 @@ public class CSVReader {
             lineRead = scanner.nextLine();
             //the line is split by columns and each column is saved in an array's position
             String[] parts = lineRead.split(",");
+            int CSVColumn = 1;
 
-            Integer[] bookCoordinate = new Integer[]{Integer.valueOf(parts[1]), Integer.valueOf(parts[2])};
-            Integer[] catCoordinate = new Integer[]{Integer.valueOf(parts[3]),Integer.valueOf(parts[4])};
-            Integer[] plantCoordinate = new Integer[]{Integer.valueOf(parts[5]),Integer.valueOf(parts[6])};
-            Integer[] frameCoordinate = new Integer[]{Integer.valueOf(parts[7]),Integer.valueOf(parts[8])};
-            Integer[] toyCoordinate = new Integer[]{Integer.valueOf(parts[9]),Integer.valueOf(parts[10])};
-            Integer[] trophyCoordinate = new Integer[]{Integer.valueOf(parts[11]),Integer.valueOf(parts[12])};
-
-            result.put(TileType.BOOK,bookCoordinate);
-            result.put(TileType.CAT, catCoordinate);
-            result.put(TileType.PLANT, plantCoordinate);
-            result.put(TileType.FRAME, frameCoordinate);
-            result.put(TileType.TOY, toyCoordinate);
-            result.put(TileType.TROPHY, trophyCoordinate);
-
-            return result;
+            for (TileType tile : TileType.values()) {
+                result.put(tile, new Integer[]
+                        {Integer.valueOf(parts[CSVColumn]), Integer.valueOf(parts[CSVColumn + 1])});
+                CSVColumn += 2;
+            }
+            return new PrivateCard(parts[0],result);
         }
         else
-            throw new IllegalArgumentException();
-    }
-
-    /**
-     * Method that return the identifier of the given card index
-     * @param index representing the line in the csv file where there is a specific private card
-     * @return the required id
-     */
-    public String getId(int index){
-        String lineRead = null;
-        //Almost the same thing of getRow() but we return only parts[0] that is the first column of the file
-        //--> the first column = identifier
-        for(int i = 1; i <= index && scanner.hasNextLine(); i++){
-            scanner.nextLine();
-        }
-
-        if(scanner.hasNextLine()){
-            lineRead = scanner.nextLine();
-            String id = null;
-            String[] parts = lineRead.split(",");
-            id = parts[0];
-
-            return id;
-        }
-        else
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("ERROR: Index: " + index + "out of CSV file range");
     }
 
     /**
