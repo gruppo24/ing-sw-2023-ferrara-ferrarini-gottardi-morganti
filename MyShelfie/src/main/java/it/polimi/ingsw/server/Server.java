@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.server.model.*;
 import it.polimi.ingsw.server.controller.socket.SockServer;
 import it.polimi.ingsw.server.model.*;
 
@@ -9,15 +10,15 @@ import java.util.List;
 
 
 public class Server implements Serializable {
-    public static final PrivateCard[] privateCards = new PrivateCard[12];
 
     // Global variables, accessible from anywhere
     public static final List<GameState> GAMES = new LinkedList<>();
     public static final int SOCKET_PORT = 5050;
 
+    // Array containing the instantiation of PrivateCards
+    public static final PrivateCard[] privateCards = new PrivateCard[12];
 
-
-    //array containing the instantiation of CommonCards
+    // Array containing the instantiation of CommonCards
     public static final CommonCard[] commonCards = new CommonCard[12];
 
     /**
@@ -47,7 +48,7 @@ public class Server implements Serializable {
 
         // Set up private card instances
         System.out.print("[main] >>> Creating private card instances");
-        // TODO
+        createPrivateCards();
         System.out.println(" ---> Private card instances created");
 
         // Set up common card instances

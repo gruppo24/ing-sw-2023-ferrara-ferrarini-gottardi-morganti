@@ -4,7 +4,6 @@ import it.polimi.ingsw.server.controller.socket.Contextable;
 import it.polimi.ingsw.server.model.GameState;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.server.model.commonCardImpl;
 
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.model.CommonCardImpl.CommonCard12;
