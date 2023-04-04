@@ -56,7 +56,7 @@ public class CommonCardFactory {
             case 11 -> new CommonCard12("12.jpg", "Five columns of increasing or decreasing " +
                                                                 "height. Starting from the first column on " +
                                                                 "the left or on the right, each next column " +
-                                                                "must be made of exactly one more tile. " +
+                                                                "must be made of exactly one more tile." +
                                                                 "Tiles can be of any type.");
             default -> throw new IllegalArgumentException("Invalid number of commonCard");
         };

@@ -5,7 +5,7 @@ import it.polimi.ingsw.server.model.*;
 
 public class Server {
 
-    //array containing the instantiation of CommonCards
+    // array containing the instantiation of CommonCards
     public static final CommonCard[] commonCards = new CommonCard[12];
 
     /**
