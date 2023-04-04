@@ -47,6 +47,14 @@ public class Player implements Serializable {
         this.privateCard = privateCard;
     }
 
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other instanceof Player)
+            return this.nickname.equals(((Player) other).nickname);
+        return false;
+    }
+
     /**
      * Method in charge of updating the privatePoints attribute by checking how many private
      * objectives the player has completed and mapping them to an amount of points

@@ -24,5 +24,8 @@ public class Reorder extends PacketContent {
     public int thirdIndex;
 
     @Override
-    public boolean performRequestedAction(Contextable context) { return false; }
+    public boolean performRequestedAction(Contextable context) {
+        context.getPlayer().reorderSelectionBuffer(this.firstIndex, this.secondIndex, this.thirdIndex);
+        return false;
+    }
 }
