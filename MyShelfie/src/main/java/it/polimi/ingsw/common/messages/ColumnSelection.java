@@ -18,5 +18,8 @@ public class ColumnSelection extends PacketContent {
     public int column;
 
     @Override
-    public boolean performRequestedAction(Contextable context) { return false; }
+    public boolean performRequestedAction(Contextable context) {
+        context.getPlayer().selectColumn(column);
+        return false;
+    }
 }
