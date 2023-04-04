@@ -24,7 +24,7 @@ public class Player implements Serializable {
     // Game interaction attributes
     public final String nickname;
     private final TileType[][] library = new TileType[5][6];
-    private final PrivateCard privateCard;
+    private PrivateCard privateCard;
 
     // Point related attribute: we compute them and store them here for faster retrieval
     private int privatePoints = 0;
@@ -40,10 +40,14 @@ public class Player implements Serializable {
 
     /**
      * Class constructor
+     *
      * @param nickname username to be associated to this user
      */
-    public Player(String nickname, PrivateCard privateCard) {
+    public Player(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void setPrivateCard(PrivateCard privateCard) {
         this.privateCard = privateCard;
     }
 
@@ -125,6 +129,22 @@ public class Player implements Serializable {
      */
     public int getClusterPoints() {
         return this.clusterPoints;
+    }
+
+    /**
+     * Method in charge of checking if the player has filled in their
+     * library entirely or not
+     * @return whether the player has filled the library entirely
+     */
+    public boolean checkIfFilled() {
+        for (TileType[] libraryColumn : this.library)
+            for (TileType tile : libraryColumn)
+                if (tile == null)
+                    return false;  // NOT filled cell found...
+
+        // If we fall through the entire loop, we return true
+        this.firstFilled = true;
+        return true;
     }
 
     /**
