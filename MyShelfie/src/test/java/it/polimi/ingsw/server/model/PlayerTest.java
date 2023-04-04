@@ -36,7 +36,8 @@ public class PlayerTest {
                     Map.entry(TileType.TROPHY, new Integer[]{4, 2})
                 )
         );
-        testPlayer = new Player("randomUsername", privateCard);
+        testPlayer = new Player("randomUsername");
+        testPlayer.setPrivateCard(privateCard);
 
         // We now request a copy of its library, so that we
         // can store its size (for later use...)
@@ -47,6 +48,32 @@ public class PlayerTest {
 
     @After
     public void tearDown() { /* Do nothing */ }
+
+    // ==================== equals ====================
+    @Test
+    public void equals_withNull_shouldReturnFalse() {
+        assertFalse(this.testPlayer.equals(null));
+    }
+
+    @Test
+    public void equals_withRandomObject_shouldReturnFalse() {
+        assertFalse(this.testPlayer.equals(new Board()));
+    }
+
+    @Test
+    public void equals_withDifferentPlayer_shouldReturnFalse() {
+        assertFalse(this.testPlayer.equals(new Player("Random")));
+    }
+
+    @Test
+    public void equals_withIdenticalPlayer_shouldReturnTrue() {
+        assertTrue(this.testPlayer.equals(this.testPlayer));
+    }
+
+    @Test
+    public void equals_withDifferentPlayerWithSameNickname_shouldReturnTrue() {
+        assertTrue(this.testPlayer.equals(new Player(this.testPlayer.nickname)));
+    }
 
     // ==================== updatePrivatePoints ====================
     @Test
@@ -359,6 +386,70 @@ public class PlayerTest {
 
         this.testPlayer.updateClusterPoints();
         assertEquals(this.testPlayer.getClusterPoints(), 18);
+    }
+
+    // ==================== checkIfFilled ====================
+    @Test
+    public void checkIfFilled_emptyLibrary_shouldReturnFalse() {
+        assertFalse(this.testPlayer.checkIfFilled());
+    }
+
+    @Test
+    public void checkIfFilled_notFilledLibrary_shouldReturnFalse() {
+        // We fill the library a bit...
+        this.testPlayer.selectColumn(0);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.CAT);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.BOOK);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.BOOK);
+        this.testPlayer.flushBufferIntoLibrary();
+
+        this.testPlayer.selectColumn(1);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.CAT);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.FRAME);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.BOOK);
+        this.testPlayer.flushBufferIntoLibrary();
+
+        this.testPlayer.selectColumn(2);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.CAT);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.FRAME);
+        this.testPlayer.flushBufferIntoLibrary();
+
+        this.testPlayer.selectColumn(3);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.CAT);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.FRAME);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.FRAME);
+        this.testPlayer.flushBufferIntoLibrary();
+        this.testPlayer.selectColumn(3);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.FRAME);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+        this.testPlayer.flushBufferIntoLibrary();
+
+        this.testPlayer.selectColumn(4);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+        this.testPlayer.flushBufferIntoLibrary();
+        this.testPlayer.selectColumn(4);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+        this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+        this.testPlayer.flushBufferIntoLibrary();
+
+        assertFalse(this.testPlayer.checkIfFilled());
+    }
+
+    @Test
+    public void checkIfFilled_libraryIsFull_shouldReturnTrue() {
+        for (int column=0; column < this.LIBRARY_WIDTH; column++) {
+            for (int counter=0; counter < 2; counter++) {
+                this.testPlayer.selectColumn(column);
+                this.testPlayer.pushTileToSelectionBuffer(TileType.CAT);
+                this.testPlayer.pushTileToSelectionBuffer(TileType.TOY);
+                this.testPlayer.pushTileToSelectionBuffer(TileType.FRAME);
+                this.testPlayer.flushBufferIntoLibrary();
+            }
+        }
+
+        assertTrue(this.testPlayer.checkIfFilled());
     }
 
     // ==================== getLibrary ====================
