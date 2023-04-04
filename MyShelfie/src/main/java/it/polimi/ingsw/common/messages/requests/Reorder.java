@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.server.controller.socket.Contextable;
 

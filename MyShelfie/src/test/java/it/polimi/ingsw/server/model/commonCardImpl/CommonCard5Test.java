@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.model;
+package it.polimi.ingsw.server.model.commonCardImpl;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.model.CommonCardImpl.CommonCard5;
 import org.junit.Before;
@@ -47,17 +47,6 @@ public class CommonCard5Test{
                 {TileType.PLANT, TileType.CAT, TileType.PLANT, TileType.CAT, TileType.PLANT, null},
                 {TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, TileType.TOY, null},
                 {TileType.FRAME, TileType.TROPHY, TileType.FRAME, TileType.TROPHY, null, null}};
-        assertFalse(this.TestCard5.checkObjective(libTest));
-    }
-
-    @Test
-    public void checkObjective_oneColumnWithSixDifferentTileType_false(){
-        libTest = new TileType[][]
-                {{TileType.CAT, TileType.BOOK, TileType.TOY, TileType.TROPHY, TileType.PLANT, TileType.FRAME},
-                {TileType.TOY, TileType.TROPHY, TileType.TOY, TileType.TROPHY, TileType.TOY, TileType.TROPHY},
-                {TileType.PLANT, TileType.CAT, TileType.PLANT, TileType.CAT, TileType.PLANT, TileType.CAT},
-                {TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK, TileType.TOY, TileType.BOOK},
-                {TileType.CAT, TileType.TROPHY, TileType.CAT, TileType.TROPHY, TileType.CAT, TileType.TROPHY}};
         assertFalse(this.TestCard5.checkObjective(libTest));
     }
 

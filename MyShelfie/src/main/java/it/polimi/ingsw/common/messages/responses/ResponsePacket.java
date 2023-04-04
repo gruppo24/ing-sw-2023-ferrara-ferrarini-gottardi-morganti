@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.responses;
 
 import java.io.Serial;
 import java.io.Serializable;

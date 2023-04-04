@@ -1,5 +1,6 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.server.controller.socket.Contextable;
 import it.polimi.ingsw.server.controller.socket.TCPIngameChannelDownlink;
 import it.polimi.ingsw.server.controller.socket.TCPIngameChannelUplink;
@@ -7,7 +8,6 @@ import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 
 import java.io.Serial;
-import java.net.Socket;
 import java.util.Optional;
 
 import static it.polimi.ingsw.server.Server.GAMES;
@@ -27,11 +27,22 @@ public class JoinGame extends PacketContent {
     public String gameID;
     public String username;
 
+    /**
+     * Class constructor
+     * 
+     * @param gameID   the ID of the game to join
+     * @param username the username to use in the game
+     */
+    public JoinGame(String gameID, String username) {
+        this.gameID = gameID;
+        this.username = username;
+    }
+
     @Override
     public boolean performRequestedAction(Contextable context) {
         // Checking the requested game exists:
-        Optional<GameState> maybeGame = GAMES.stream().
-                filter((game) -> game.getGameID().equals(this.gameID)).findFirst();
+        Optional<GameState> maybeGame = GAMES.stream().filter((game) -> game.getGameID().equals(this.gameID))
+                .findFirst();
 
         // Checking if the optional returned something or not...
         if (maybeGame.isEmpty()) {
@@ -62,11 +73,9 @@ public class JoinGame extends PacketContent {
 
         // And, finally, create the actual in-game full-duplex TCP channel
         Thread clientUplinkChannelThread = new Thread(
-                new TCPIngameChannelUplink(context.getInput(), game, newPlayer)
-        );
+                new TCPIngameChannelUplink(context.getInput(), game, newPlayer));
         Thread clientDownlinkChannelThread = new Thread(
-                new TCPIngameChannelDownlink(context.getOutput(), game, newPlayer)
-        );
+                new TCPIngameChannelDownlink(context.getOutput(), game, newPlayer));
         clientUplinkChannelThread.start();
         clientDownlinkChannelThread.start();
 

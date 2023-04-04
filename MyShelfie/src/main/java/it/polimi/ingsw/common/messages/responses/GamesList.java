@@ -1,7 +1,6 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.responses;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -10,7 +9,7 @@ import java.util.Map;
  *
  * @author Ferrarini Andrea
  */
-public class GamesList implements Serializable {
+public class GamesList extends ResponsePacket {
     @Serial
     private final static long serialVersionUID = 1L;
 
@@ -20,9 +19,4 @@ public class GamesList implements Serializable {
     // the number of players who have already joined the game and
     // the total number of players for that game
     public Map<String, int[]> availableGames;
-
-    // This attribute will contain response status value. By analysing
-    // this attribute one is informed if the performed request resulted
-    // in failure (and why) or success
-    public ResponseStatus status;
 }

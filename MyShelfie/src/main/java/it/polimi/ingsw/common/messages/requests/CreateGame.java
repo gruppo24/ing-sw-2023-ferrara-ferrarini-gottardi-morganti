@@ -1,5 +1,6 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.server.controller.socket.Contextable;
 import it.polimi.ingsw.server.controller.socket.TCPIngameChannelDownlink;
 import it.polimi.ingsw.server.controller.socket.TCPIngameChannelUplink;
@@ -7,7 +8,6 @@ import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 
 import java.io.Serial;
-import java.net.Socket;
 import java.util.Optional;
 
 import static it.polimi.ingsw.server.Server.GAMES;
@@ -28,11 +28,22 @@ public class CreateGame extends PacketContent {
     public String username;
     public int numPlayers;
 
+    /**
+     * @param gameID     The ID of the game to be created
+     * @param username   The username of the player creating the game
+     * @param numPlayers The number of players that will be playing the game
+     */
+    public CreateGame(String gameID, String username, int numPlayers) {
+        this.gameID = gameID;
+        this.username = username;
+        this.numPlayers = numPlayers;
+    }
+
     @Override
     public boolean performRequestedAction(Contextable context) {
         // Checking if a game with the requested gameID already exists
-        Optional<GameState> maybeGame = GAMES.stream().
-                filter((game) -> game.getGameID().equals(this.gameID)).findFirst();
+        Optional<GameState> maybeGame = GAMES.stream().filter((game) -> game.getGameID().equals(this.gameID))
+                .findFirst();
 
         // Checking if the optional returned something or not...
         if (maybeGame.isPresent()) {
@@ -54,14 +65,19 @@ public class CreateGame extends PacketContent {
 
         // And, finally, create the actual in-game full-duplex TCP channel
         Thread clientUplinkChannelThread = new Thread(
-                new TCPIngameChannelUplink(context.getInput(), newGame, firstPlayer)
-        );
+                new TCPIngameChannelUplink(context.getInput(), newGame, firstPlayer));
         Thread clientDownlinkChannelThread = new Thread(
-                new TCPIngameChannelDownlink(context.getOutput(), newGame, firstPlayer)
-        );
+                new TCPIngameChannelDownlink(context.getOutput(), newGame, firstPlayer));
         clientUplinkChannelThread.start();
         clientDownlinkChannelThread.start();
 
         return true;
+    }
+
+    /**
+     * A static method to generate game IDs
+     */
+    public static String generateGameID() {
+        return "game-" + System.currentTimeMillis();
     }
 }

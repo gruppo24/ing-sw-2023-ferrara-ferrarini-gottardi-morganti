@@ -1,15 +1,15 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
+import it.polimi.ingsw.common.messages.responses.GamesList;
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.server.controller.socket.Contextable;
 import it.polimi.ingsw.server.model.GameState;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serial;
 import java.util.HashMap;
 
 import static it.polimi.ingsw.server.Server.GAMES;
-
 
 /**
  * This class is in charge requesting all currently available games
@@ -19,7 +19,6 @@ import static it.polimi.ingsw.server.Server.GAMES;
 public class ListGames extends PacketContent {
     @Serial
     private final static long serialVersionUID = 1L;
-
 
     @Override
     public boolean performRequestedAction(Contextable context) {

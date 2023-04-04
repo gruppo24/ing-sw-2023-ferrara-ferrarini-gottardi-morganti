@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.server.controller.socket.Contextable;
 
@@ -19,5 +19,7 @@ public class RejoinGame extends PacketContent {
     public String username;
 
     @Override
-    public boolean performRequestedAction(Contextable context) { return false; }
+    public boolean performRequestedAction(Contextable context) {
+        return false;
+    }
 }
