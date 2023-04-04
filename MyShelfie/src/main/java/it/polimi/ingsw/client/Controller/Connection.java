@@ -2,7 +2,7 @@ package it.polimi.ingsw.client.Controller;
 
 import java.util.List;
 
-import it.polimi.ingsw.common.messages.SharedGameState;
+import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
 /**
  * Connection abstract class, implemented with both RMI and Socket.
