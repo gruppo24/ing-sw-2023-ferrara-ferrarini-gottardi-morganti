@@ -28,7 +28,9 @@ public class TilePick extends PacketContent {
     @Override
     public boolean performRequestedAction(Contextable context) {
         Player player = context.getPlayer();
-        TileType pickedTile = context.getGame().getBoard().pick(this.x, this.y, player.getSelectionBufferSize());
+        // NOTICE: we subtract 1 from player.getSelectionBufferSize() because we are about to
+        // push a new tile in the buffer
+        TileType pickedTile = context.getGame().getBoard().pick(this.x, this.y, player.getSelectionBufferSize()-1);
         player.pushTileToSelectionBuffer(pickedTile);
         return false;
     }
