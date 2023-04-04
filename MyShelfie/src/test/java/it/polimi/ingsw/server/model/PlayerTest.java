@@ -28,12 +28,12 @@ public class PlayerTest {
         // do for Player testing
         PrivateCard privateCard = new PrivateCard("Personal_Goals3",
                 Map.ofEntries(
-                    Map.entry(TileType.BOOK, new Integer[]{0, 0}),
-                    Map.entry(TileType.FRAME, new Integer[]{0, 4}),
-                    Map.entry(TileType.CAT, new Integer[]{1, 2}),
-                    Map.entry(TileType.PLANT, new Integer[]{2, 3}),
-                    Map.entry(TileType.TOY, new Integer[]{3, 4}),
-                    Map.entry(TileType.TROPHY, new Integer[]{4, 2})
+                        Map.entry(TileType.BOOK, new Integer[]{0, 0}),
+                        Map.entry(TileType.FRAME, new Integer[]{0, 4}),
+                        Map.entry(TileType.CAT, new Integer[]{1, 2}),
+                        Map.entry(TileType.PLANT, new Integer[]{2, 3}),
+                        Map.entry(TileType.TOY, new Integer[]{3, 4}),
+                        Map.entry(TileType.TROPHY, new Integer[]{4, 2})
                 )
         );
         testPlayer = new Player("randomUsername");
