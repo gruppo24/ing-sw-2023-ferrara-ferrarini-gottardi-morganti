@@ -31,7 +31,7 @@ public class CommonCardFactory {
                                                                 "from those of another group.");
             case 3 -> new CommonCard4("4.jpg", "Six groups each containing at least " +
                                                                 "2 tiles of the same type (not necessarily " +
-                                                                "in the depicted shape). " +
+                                                                "in the depicted shape)." +
                                                                 "The tiles of one group can be different " +
                                                                 "from those of another group.");
             case 4 -> new CommonCard5("5.jpg", "Three columns each formed by 6 tiles of maximum" +
