@@ -2,12 +2,10 @@ package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.model.*;
 import it.polimi.ingsw.server.controller.socket.SockServer;
-import it.polimi.ingsw.server.model.*;
 
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
-
 
 public class Server implements Serializable {
 
@@ -24,16 +22,18 @@ public class Server implements Serializable {
     /**
      * Method that populates commonCards array
      */
-    private static void createCommonCards(){
-        for(int i=0; i<commonCards.length; i++){
+    private static void createCommonCards() {
+        for (int i = 0; i < commonCards.length; i++) {
             commonCards[i] = CommonCardFactory.cardBuilder(i);
         }
     }
+
     /**
      * This class fills a PrivateCard array that contains PrivateCard instances
-     * The information needed to PrivateCard constructor are read from csv files with the CSVReader
+     * The information needed to PrivateCard constructor are read from csv files
+     * with the CSVReader
      */
-    private static void createPrivateCards(){
+    private static void createPrivateCards() {
         for (int i = 0; i < 12; i++) {
             CSVReader reader = new CSVReader();
             privateCards[i] = reader.getRow(i + 1);

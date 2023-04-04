@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.controller.socket.Contextable;
@@ -19,6 +19,11 @@ public class TilePick extends PacketContent {
     // Coordinates of the picked tile
     public int x;
     public int y;
+
+    public TilePick(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     @Override
     public boolean performRequestedAction(Contextable context) {

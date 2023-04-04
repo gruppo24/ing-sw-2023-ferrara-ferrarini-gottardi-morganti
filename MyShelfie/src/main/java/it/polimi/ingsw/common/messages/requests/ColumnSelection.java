@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.server.controller.socket.Contextable;
 
@@ -16,6 +16,10 @@ public class ColumnSelection extends PacketContent {
 
     // Selected column index
     public int column;
+
+    public ColumnSelection(int column) {
+        this.column = column;
+    }
 
     @Override
     public boolean performRequestedAction(Contextable context) {

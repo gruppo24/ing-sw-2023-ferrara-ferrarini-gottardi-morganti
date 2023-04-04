@@ -1,4 +1,4 @@
-package it.polimi.ingsw.common.messages;
+package it.polimi.ingsw.common.messages.responses;
 
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;

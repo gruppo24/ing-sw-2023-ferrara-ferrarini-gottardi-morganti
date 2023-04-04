@@ -1,11 +1,12 @@
 package it.polimi.ingsw.server.controller.socket;
 
-import it.polimi.ingsw.common.messages.*;
+import it.polimi.ingsw.common.messages.responses.RequestPacket;
+import it.polimi.ingsw.common.messages.responses.ResponsePacket;
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 
 /**
  * This class runs a separate thread for request-response handling
@@ -21,7 +22,8 @@ public class TCPPregameChannel implements Contextable, Runnable {
 
     /**
      * Class constructor
-     * @param input ObjectOutputStream associated ton the current downlink channel
+     * 
+     * @param input  ObjectOutputStream associated ton the current downlink channel
      * @param output ObjectInputStream associated to the current uplink channel
      */
     public TCPPregameChannel(ObjectInputStream input, ObjectOutputStream output) {
@@ -30,7 +32,9 @@ public class TCPPregameChannel implements Contextable, Runnable {
     }
 
     @Override
-    public ObjectInputStream getInput() { return this.input; }
+    public ObjectInputStream getInput() {
+        return this.input;
+    }
 
     @Override
     public ObjectOutputStream getOutput() {
@@ -57,6 +61,7 @@ public class TCPPregameChannel implements Contextable, Runnable {
 
     /**
      * Method in charge of sending an error response message to the client
+     * 
      * @param output the ObjectOutputStream associated to a socket channel
      * @param status status value indicating cause of error
      */

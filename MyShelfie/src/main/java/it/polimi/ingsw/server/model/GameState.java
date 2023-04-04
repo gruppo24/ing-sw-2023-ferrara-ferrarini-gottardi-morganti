@@ -1,6 +1,6 @@
 package it.polimi.ingsw.server.model;
 
-import it.polimi.ingsw.common.messages.SharedGameState;
+import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
 import java.io.Serial;
@@ -30,7 +30,7 @@ public class GameState implements Serializable {
     private Board board;
 
     // attributes related to common objectives
-    private int[] nextCommons = {1,1};
+    private int[] nextCommons = { 1, 1 };
     private CommonCard[] commonCards;
 
     public final Object gameLock = new Object();
@@ -38,10 +38,11 @@ public class GameState implements Serializable {
 
     /**
      * class constructor
-     * @param GameID unique game identifier
+     * 
+     * @param GameID       unique game identifier
      * @param numOfPlayers number of players for the current game
      */
-    public GameState(String GameID, int numOfPlayers){
+    public GameState(String GameID, int numOfPlayers) {
         this.gameUniqueCode = GameID;
         this.players = new Player[numOfPlayers];
         this.board = new Board();
@@ -49,6 +50,7 @@ public class GameState implements Serializable {
 
     /**
      * getter function for gameOver attribute
+     * 
      * @return the gameOver attribute
      */
     public boolean isGameOver() {
@@ -57,6 +59,7 @@ public class GameState implements Serializable {
 
     /**
      * getter method for gameUniqueCode
+     * 
      * @return the unique game ID of the game
      */
     public String getGameID() {
@@ -67,7 +70,9 @@ public class GameState implements Serializable {
      * Method in charge of returning the current player status of the game, that is,
      * the number of players this game takes and the number of players which have
      * actually already joined the game
-     * @return an array of two ints: players who have already joined, total players of the game
+     * 
+     * @return an array of two ints: players who have already joined, total players
+     *         of the game
      */
     public int[] getPlayerStatus() {
         int numOfPlayers = this.players.length;
@@ -75,12 +80,14 @@ public class GameState implements Serializable {
         // Finding how many players have actually already joined the game
         int currPlayers = (int) Arrays.stream(this.players).filter(Objects::nonNull).count();
 
-        return new int[] {currPlayers, numOfPlayers};
+        return new int[] { currPlayers, numOfPlayers };
     }
 
     /**
-     * Method in charge of checking whether a player with a given username already exists
+     * Method in charge of checking whether a player with a given username already
+     * exists
      * within current game
+     * 
      * @param testUsername username to look for
      * @return whether the provided username has already been used
      */
@@ -89,20 +96,25 @@ public class GameState implements Serializable {
     }
 
     /**
-     * Method in charge of adding a new player to the current game. Some preconditions
+     * Method in charge of adding a new player to the current game. Some
+     * preconditions
      * are that the player has a unique username and that the game can still accept
      * players
+     * 
      * @param player the player to be added
-     * @throws GameAlreadyFullException whenever it is attempted to add a new player, but the game is already full
+     * @throws GameAlreadyFullException whenever it is attempted to add a new
+     *                                  player, but the game is already full
      */
     public void addNewPlayerToGame(Player player) throws GameAlreadyFullException {
         int newPlayerIndex = this.getPlayerStatus()[0];
-        if (newPlayerIndex >= this.getPlayerStatus()[1]) throw new GameAlreadyFullException(this.getPlayerStatus()[1]);
+        if (newPlayerIndex >= this.getPlayerStatus()[1])
+            throw new GameAlreadyFullException(this.getPlayerStatus()[1]);
         this.players[newPlayerIndex] = player;
     }
 
     /**
      * Function in charge of telling the caller if it is a certain player's turn
+     * 
      * @param player player of whom we want to know if it is the turn
      * @return whether it is the passed player's turn
      */
@@ -112,6 +124,7 @@ public class GameState implements Serializable {
 
     /**
      * getter method for board attribute
+     * 
      * @return the board associated to this game
      */
     public Board getBoard() {
@@ -120,22 +133,23 @@ public class GameState implements Serializable {
 
     public SharedGameState getSharedGameState(Player player) {
 
-
         return null;
     }
 
     /**
      * method that checks if a Player has achieved or not any Common Objectives
+     * 
      * @param currPlayerIndex index of player to check for common objectives
      */
     public void obtainedCommons(int currPlayerIndex) {
         // We iterate through all common cards of the current player
-        for (int i=0; i < commonCards.length; i++) {
+        for (int i = 0; i < commonCards.length; i++) {
             // If the player hasn't already obtained the common objective...
             if (players[currPlayerIndex].commonsOrder[i] == 0) {
                 // ...We check whether they have completed it now...
                 if (commonCards[i].checkObjective(players[currPlayerIndex].getLibrary())) {
-                    // ...in which case we assign the current commonOrder value and then increment it
+                    // ...in which case we assign the current commonOrder value and then increment
+                    // it
                     players[currPlayerIndex].commonsOrder[i] = nextCommons[i];
                     nextCommons[i]++;
                 }
