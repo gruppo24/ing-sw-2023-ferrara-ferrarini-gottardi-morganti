@@ -10,16 +10,35 @@ import it.polimi.ingsw.client.controller.SocketConnection;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
+/**
+ * CLI class, implements the command line interface for the client
+ * It's an all encomassing class for the view via terminal
+ * 
+ * @author Morganti Tommaso
+ */
 public class CLI {
+    /**
+     * The connection to the server
+     */
     Connection connection;
+    /**
+     * Scanner to read user input from the terminal
+     */
     Scanner in = new Scanner(System.in);
 
     public CLI() throws UnknownHostException, IOException {
+        // TODO: make this configurable
         this.connection = new SocketConnection("localhost", 5050);
     }
 
+    /**
+     * Pre-game menu, allows the user to create a new game or connect to an existing
+     * one
+     * 
+     * @throws IOException
+     */
     public void menu() throws IOException {
-        System.out.println("MyShelfie - Gruppo 24");
+        System.out.println("\n\033[1mMyShelfie - Gruppo 24\033[0m");
         System.out.println("1. Create a new game");
         System.out.println("2. List existing games");
         System.out.println("3. Exit");
@@ -42,7 +61,14 @@ public class CLI {
         }
     }
 
+    /**
+     * Prints out all the current games on the server and allows the user to join
+     * one
+     * 
+     * @throws IOException
+     */
     private void listGames() throws IOException {
+        System.out.println("\n\033[1mExisting games:\033[0m");
         Map<String, int[]> games = this.connection.getAvailableGames();
         String[] gameIDs = games.keySet().toArray(new String[0]);
         if (gameIDs.length == 0) {
@@ -63,6 +89,11 @@ public class CLI {
         }
     }
 
+    /**
+     * Create a new game, asking the num of players and the username
+     * 
+     * @throws IOException
+     */
     public void createNewGame() throws IOException {
         System.out.println("Enter the number of players: ");
         int numPlayers = in.nextInt();
@@ -73,6 +104,11 @@ public class CLI {
         this.game();
     }
 
+    /**
+     * Prints out a game board with a (kind of) readable grid format
+     * 
+     * @param board
+     */
     public void printBoard(TileType[][] board) {
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
@@ -82,6 +118,9 @@ public class CLI {
         }
     }
 
+    /**
+     * Main game loop, waits for the server to send the game state and prints it out
+     */
     public void game() {
         // Non funziona affato, solo un esempio, dobbiamo ancora implementare
         // tutta la cosa del restituire veramente lo shared game state
