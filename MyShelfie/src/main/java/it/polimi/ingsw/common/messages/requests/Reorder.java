@@ -23,6 +23,12 @@ public class Reorder extends PacketContent {
     public int secondIndex;
     public int thirdIndex;
 
+    public Reorder(int firstIndex, int secondIndex, int thirdIndex) {
+        this.firstIndex = firstIndex;
+        this.secondIndex = secondIndex;
+        this.thirdIndex = thirdIndex;
+    }
+
     @Override
     public boolean performRequestedAction(Contextable context) {
         context.getPlayer().reorderSelectionBuffer(this.firstIndex, this.secondIndex, this.thirdIndex);
