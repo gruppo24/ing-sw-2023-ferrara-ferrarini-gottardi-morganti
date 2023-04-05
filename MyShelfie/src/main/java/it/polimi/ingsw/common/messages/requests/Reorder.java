@@ -32,6 +32,10 @@ public class Reorder extends PacketContent {
     @Override
     public boolean performRequestedAction(Contextable context) {
         context.getPlayer().reorderSelectionBuffer(this.firstIndex, this.secondIndex, this.thirdIndex);
+        context.getPlayer().flushBufferIntoLibrary();
+        context.getGame().turnIsOver();
+
+        // No need to notify the gameLock: GameState::turnIsOver will already do o for us
         return false;
     }
 }

@@ -24,6 +24,8 @@ public class ColumnSelection extends PacketContent {
     @Override
     public boolean performRequestedAction(Contextable context) {
         context.getPlayer().selectColumn(column);
+        System.out.println("=== COLUMN CHOSEN ===");
+        synchronized (context.getGame().gameLock) { context.getGame().gameLock.notifyAll(); }
         return false;
     }
 }

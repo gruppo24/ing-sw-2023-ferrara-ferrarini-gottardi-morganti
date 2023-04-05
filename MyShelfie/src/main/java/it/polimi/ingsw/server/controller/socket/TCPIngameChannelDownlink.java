@@ -7,6 +7,7 @@ import it.polimi.ingsw.server.model.Player;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLOutput;
 
 /**
  * Class in charge of handling all in-game transmissions from server
@@ -17,20 +18,29 @@ import java.io.ObjectOutputStream;
 public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
     // Reference to the actual output and input channels with the client
+    private final ObjectInputStream input;
     private final ObjectOutputStream output;
+
+    // Reference to the uplink thread
+    private final Thread uplinkThread;
 
     private final GameState game;
     private final Player player;
 
     /**
      * Class constructor
-     * 
+     * @param input ObjectInputStream associated to the current uplink channel
      * @param output ObjectOutputStream associated ton the current downlink channel
-     * @param game   the game to which the client is connected
+     * @param uplinkThread a reference to the TCPIngameChannelUplink thread
+     * @param game the game to which the client is connected
      * @param player the player associated to this client
      */
-    public TCPIngameChannelDownlink(ObjectOutputStream output, GameState game, Player player) {
+    public TCPIngameChannelDownlink(ObjectInputStream input, ObjectOutputStream output, Thread uplinkThread,
+                                    GameState game, Player player) {
+        this.input = input;
         this.output = output;
+
+        this.uplinkThread = uplinkThread;
 
         // Game related attributes
         this.game = game;
@@ -59,32 +69,47 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
     @Override
     public void run() {
-        // As soon as the down-link is created, we send the current game-state to the
-        // client,
-        // afterwards we enter an infinite loop awaiting for game-state updates
-        this.sendSharedGameState();
-        try {
-            while (!game.isGameOver()) {
+        // We loop infinitely awaiting for game-state updates to forward to the client
+        boolean connected = true;
+        while (!game.isGameOver() || connected) {
+            try {
                 synchronized (this.game.gameLock) {
+                    connected = this.sendSharedGameState();
                     this.game.gameLock.wait();
-                    this.sendSharedGameState();
                 }
+            } catch (InterruptedException ex) {
+                System.out.println("[SockServer] INTERRUPTED-EXCEPTION IN DOWNLINK");
+                break;
             }
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
         }
+
+        // If we broke out of the loop because of game-ending we reopen a pregame
+        // channel for the client
+        if (game.isGameOver()) {
+            Thread pregameChannel = new Thread(new TCPPregameChannel(this.input, this.output));
+            pregameChannel.start();
+        }
+
+        // Otherwise, the TCP channel simply closes...
+        this.uplinkThread.interrupt();
     }
 
     /**
      * Helper method in charge of sending a SharedGameState packet to the client
+     * @return a boolean representing whether the channel is still open with the client
      */
-    private void sendSharedGameState() {
-        SharedGameState firstState = this.game.getSharedGameState(this.player);
+    private boolean sendSharedGameState() {
+        SharedGameState gameState = this.game.getSharedGameState(this.player);
         try {
-            this.output.writeObject(firstState);
+            System.out.print("=== SENDING SGS-'" + this.player.nickname + "' ---> ");
+            this.output.writeObject(gameState);
+            this.output.flush();
+            System.out.println("SGS SENT! ===");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            System.out.println("[SocketServer] DISCONNECTION IN DOWNLINK");
+            return false;
         }
+        return true;
     }
 
 }

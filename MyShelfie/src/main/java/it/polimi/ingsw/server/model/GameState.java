@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server.model;
 
+import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import it.polimi.ingsw.server.RandomGenerator;
 import it.polimi.ingsw.server.Server;
@@ -9,6 +10,9 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
+
+import static it.polimi.ingsw.server.Server.privateCards;
 
 /**
  * Class that describes the state of a specif game
@@ -21,22 +25,24 @@ public class GameState implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String gameUniqueCode;
+    private final String gameUniqueCode;
 
     // attributes related to turn management
     private int armchair;
     private int currPlayerIndex;
     private boolean finalRound = false;
-    private Player[] players;
+    private final Player[] players;
 
-    private Board board;
+    private final Board board;
 
     // attributes related to common objectives
-    private int[] nextCommons = { 1, 1 };
-    private CommonCard[] commonCards;
+    private final int[] nextCommons = { 1, 1 };
+    private final CommonCard[] commonCards;
 
+    // Game dynamics attributes
     public final Object gameLock = new Object();
     private boolean gameOver = false;
+    private boolean gameOngoing = false;
 
     /**
      * class constructor
@@ -55,6 +61,60 @@ public class GameState implements Serializable {
         for(int i = 0; i < numOfCard.length; i++){
             this.commonCards[i] = Server.commonCards[numOfCard[i]];
         }
+    }
+
+    /**
+     * Method to be called after the turn of a player has ended. The
+     * method is in charge of performing all the required end-of-turn
+     * operations
+     */
+    public void turnIsOver() {
+        // We update the points of the current player
+        this.players[this.currPlayerIndex].updatePrivatePoints();
+        this.players[this.currPlayerIndex].updateClusterPoints();
+        this.obtainedCommons();
+
+        // Checking if this has to be the final round
+        this.finalRound = this.players[this.currPlayerIndex].checkIfFilled();
+
+        // We update the player-turn index and check if the game has ended
+        this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
+        this.gameOver = this.currPlayerIndex == this.armchair && this.finalRound;
+
+        // Only if the game hasn't ended, update the current board-state
+        if (!this.gameOver) {
+            if (this.board.shouldBeRefilled()) this.board.refillBoard(this.players.length);
+            this.board.definePickable();
+        }
+
+        // We also store the current game state on disk (for crash recovery) TODO
+        /*
+        File backupFile = new File(this.gameUniqueCode + ".bu");
+        boolean success = true;
+        if (!backupFile.exists()) {
+            try {
+                success = backupFile.createNewFile();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        if (success) {
+            try {
+                FileOutputStream backupFileStream = new FileOutputStream(backupFile);
+                ObjectOutputStream gameStateStream = new ObjectOutputStream(backupFileStream);
+                gameStateStream.writeObject(this);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            System.out.println("ERROR: COULDN'T WRITE GAME '" + this.gameUniqueCode + "' TO DISK!");
+        }
+*/
+
+        // Finally, we awake all waiting threads. This will trigger a
+        // broadcast of SharedGameState objects to all clients
+        synchronized (this.gameLock) { this.gameLock.notifyAll(); }
     }
 
     /**
@@ -106,19 +166,42 @@ public class GameState implements Serializable {
 
     /**
      * Method in charge of adding a new player to the current game. Some
-     * preconditions
-     * are that the player has a unique username and that the game can still accept
-     * players
+     * preconditions are that the player has a unique username and that the
+     * game can still accept players
      * 
-     * @param player the player to be added
+     * @param newPlayer the player to be added
      * @throws GameAlreadyFullException whenever it is attempted to add a new
      *                                  player, but the game is already full
      */
-    public void addNewPlayerToGame(Player player) throws GameAlreadyFullException {
+    public void addNewPlayerToGame(Player newPlayer) throws GameAlreadyFullException {
         int newPlayerIndex = this.getPlayerStatus()[0];
-        if (newPlayerIndex >= this.getPlayerStatus()[1])
-            throw new GameAlreadyFullException(this.getPlayerStatus()[1]);
-        this.players[newPlayerIndex] = player;
+
+        // If the game is already full, throw an exception
+        if (newPlayerIndex >= this.players.length) throw new GameAlreadyFullException(this.getPlayerStatus()[1]);
+
+        // Otherwise, add another player
+        this.players[newPlayerIndex] = newPlayer;
+
+        // Checking if the game is now full and it can start
+        if (newPlayerIndex == this.players.length - 1) {
+            this.gameOngoing = true;
+            // TODO: EACH PLAYER IS ASSIGNED A PRIVATE CARD
+            // FIXME: FOR NOW, WE ASSIGN THE FIRST PRIVATE CARD TO EVERYONE
+            for (Player player : this.players) {
+                player.setPrivateCard(privateCards[0]);
+            }
+
+            // Choose randomly a player who will be the first
+            this.armchair = (new Random()).nextInt(this.players.length);
+            this.currPlayerIndex = this.armchair;
+
+            // At this point, we set up a game board
+            this.board.refillBoard(this.players.length);
+            this.board.definePickable();
+
+            // Finally, we awake the downlink for client notification
+            synchronized (this.gameLock) { this.gameLock.notifyAll(); }
+        }
     }
 
     /**
@@ -140,9 +223,75 @@ public class GameState implements Serializable {
         return this.board;
     }
 
+    /**
+     * Method in charge of generating a shared version of the current GameState
+     * @param player player for whom we want to generate a shared game state
+     * @return shared version of the current game state for the requested player
+     */
     public SharedGameState getSharedGameState(Player player) {
+        SharedGameState sgs = new SharedGameState();
 
-        return null;
+        // Current player information
+        sgs.players = new String[this.players.length];
+        for (int index=0; index < this.players.length; index++)
+            if (this.players[index] != null)
+                sgs.players[index] = this.players[index].nickname;
+
+        // Current board information
+        sgs.boardContent = this.board.getBoardContent();
+        sgs.boardState = this.board.getBoardState();
+
+        // Turn management information
+        sgs.currPlayerIndex = this.currPlayerIndex;
+        sgs.armchairIndex = this.armchair;
+        sgs.isFinalRound = this.finalRound;
+
+        // Common cards information
+        sgs.commonsId = new String[this.commonCards.length];
+        sgs.commonsDesc = new String[this.commonCards.length];
+        for (int index=0; index < this.commonCards.length; index++) {
+            sgs.commonsId[index] = this.commonCards[index].identifier;
+            sgs.commonsDesc[index] = this.commonCards[index].description;
+        }
+
+        // Private card information (ONLY AVAILABLE IF THE GAME HAS STARTED)
+        if (this.gameOngoing) {
+            sgs.privateId = player.getPrivateCard().identifier;
+            sgs.privateDesc = player.getPrivateCard().description;
+        }
+
+        // Library information
+        sgs.libraries = new TileType[this.players.length][][];
+        for (int index=0; index < this.players.length; index++)
+            if (this.players[index] != null)
+                sgs.libraries[index] = this.players[index].getLibrary();
+
+        // Current player's points information
+        sgs.commonPts = 0;
+        for (int commonOrder: player.commonsOrder)
+            if (commonOrder > 0)
+                sgs.commonPts += CommonCard.mapCommonPoints(this.players.length, commonOrder);
+
+        sgs.privatePts = player.getPrivatePoints();
+        sgs.clusterPts = player.getClusterPoints();
+        sgs.firstFilled = player.checkIfFilled();
+
+        // [ONLY VALID DATA IF IT'S THE PLAYER'S TURN] Turn information
+        sgs.selectedColumn = player.getSelectedColumn();
+        sgs.selectionBuffer = player.getSelectionBufferCopy();
+
+        // Information regarding who achieved common points so far
+        sgs.commonsAchievers = new String[this.commonCards.length][this.players.length];
+        for (int index=0; index < this.commonCards.length; index++)
+            for (Player p : this.players)
+                if (p != null && p.commonsOrder[index] != 0)
+                    sgs.commonsAchievers[index][p.commonsOrder[index]] = p.nickname;
+
+        // Lastly, we set the game dynamics attributes
+        sgs.gameOngoing = this.gameOngoing;
+        sgs.gameOver = this.gameOver;
+
+        return sgs;
     }
 
     /**
@@ -164,6 +313,14 @@ public class GameState implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Shorthand version of the obtainedCommons(int) method which calls
+     * the obtainedCommons(int) passing this.currPlayerIndex as argument
+     */
+    public void obtainedCommons() {
+        this.obtainedCommons(this.currPlayerIndex);
     }
 
 }

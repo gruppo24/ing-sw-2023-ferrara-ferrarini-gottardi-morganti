@@ -7,6 +7,7 @@ import java.util.Scanner;
 
 import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.controller.SocketConnection;
+import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
@@ -17,6 +18,10 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
  * @author Morganti Tommaso
  */
 public class CLI {
+
+    private String myUsername;
+
+
     /**
      * The connection to the server
      */
@@ -83,6 +88,7 @@ public class CLI {
             int choice = in.nextInt();
             System.out.println("Enter your username: ");
             String username = in.next();
+            this.myUsername = username;
             System.out.println("Connecting to game " + gameIDs[choice - 1] + "...");
             this.connection.connectToGame(gameIDs[choice - 1], username);
             this.game();
@@ -99,6 +105,7 @@ public class CLI {
         int numPlayers = in.nextInt();
         System.out.println("Enter your username: ");
         String username = in.next();
+        this.myUsername = username;
         System.out.println("Creating game with " + numPlayers + " players...");
         this.connection.createGame(username, numPlayers);
         this.game();
@@ -110,12 +117,20 @@ public class CLI {
      * @param board
      */
     public void printBoard(TileType[][] board) {
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[i].length; j++) {
-                System.out.print(board[i][j] + " ");
+        for (int i = 0; i < board[0].length; i++) {
+            System.out.print(i + " | ");
+            for (int j = 0; j < board.length; j++) {
+                if (board[j][i] != null)
+                    System.out.print(board[j][i] + " ");
+                else
+                    System.out.print("  ");
             }
             System.out.println();
         }
+        System.out.print("    ");
+        for (int i = 0; i < board[0].length; i++)
+            System.out.print(i + " ");
+        System.out.println();
     }
 
     /**
@@ -125,10 +140,39 @@ public class CLI {
         // Non funziona affato, solo un esempio, dobbiamo ancora implementare
         // tutta la cosa del restituire veramente lo shared game state
         SharedGameState gameState = null;
-        while (gameState == null) {
-            System.out.println("Waiting for other players...");
-            gameState = this.connection.waitTurn();
+        gameState = this.connection.waitTurn();
+
+        while (!gameState.gameOver) {
+            // Loop a long as it isn't the player's turn OR the game hasn't started
+            while (!gameState.players[gameState.currPlayerIndex].equals(this.myUsername) || !gameState.gameOngoing) {
+                System.out.println("=== NOT MY TURN ===");
+                gameState = this.connection.waitTurn();
+            }
+
+            System.out.println("=== MY TURN ===");
+            this.printBoard(gameState.boardContent);
+
+            System.out.println("Choose column:");
+            int column = this.in.nextInt();
+            this.connection.selectColumn(column);
+
+            // FIXME: LIMITING PICK TO ONE TILE AT THE TIME...
+            System.out.println("Choose tile (x first, then y):");
+            int x = this.in.nextInt();
+            int y = this.in.nextInt();
+            while (gameState.boardState[x][y] != TileState.PICKABLE) {
+                System.out.println("INVALID CHOICE!!");
+                x = this.in.nextInt();
+                y = this.in.nextInt();
+            }
+            this.connection.pickTile(x, y);
+
+            // FIXME: REORDER IS STATIC
+            gameState = this.connection.reorder(0, 1, 2);
+            this.printBoard(gameState.boardContent);
         }
-        this.printBoard(gameState.boardContent);
+
+        System.out.println("GAME IS OVER");
+        // FIXME: GO BACK TO PREGAME MENU
     }
 }

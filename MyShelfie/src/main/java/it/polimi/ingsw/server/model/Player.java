@@ -47,8 +47,22 @@ public class Player implements Serializable {
         this.nickname = nickname;
     }
 
+    /**
+     * getter method of the privateCard attribute
+     * @return private card of this player
+     */
+    public PrivateCard getPrivateCard() {
+        return this.privateCard;
+    }
+
+    /**
+     * setter method of the privateCard attribute. This method will not assign
+     * any private card if the privateCard attribute has already been assigned
+     * @param privateCard private card to set
+     */
     public void setPrivateCard(PrivateCard privateCard) {
-        this.privateCard = privateCard;
+        if (this.privateCard == null)
+            this.privateCard = privateCard;
     }
 
     @Override

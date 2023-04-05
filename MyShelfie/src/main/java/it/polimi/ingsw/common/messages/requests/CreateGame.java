@@ -64,11 +64,14 @@ public class CreateGame extends PacketContent {
         newGame.addNewPlayerToGame(firstPlayer);
 
         // And, finally, create the actual in-game full-duplex TCP channel
-        Thread clientUplinkChannelThread = new Thread(
-                new TCPIngameChannelUplink(context.getInput(), newGame, firstPlayer));
-        Thread clientDownlinkChannelThread = new Thread(
-                new TCPIngameChannelDownlink(context.getOutput(), newGame, firstPlayer));
+        TCPIngameChannelUplink uplink = new TCPIngameChannelUplink(context.getInput(), newGame, firstPlayer);
+        Thread clientUplinkChannelThread = new Thread(uplink);
         clientUplinkChannelThread.start();
+
+        TCPIngameChannelDownlink downlink = new TCPIngameChannelDownlink(
+                context.getInput(), context.getOutput(), clientUplinkChannelThread, newGame, firstPlayer
+        );
+        Thread clientDownlinkChannelThread = new Thread(downlink);
         clientDownlinkChannelThread.start();
 
         return true;

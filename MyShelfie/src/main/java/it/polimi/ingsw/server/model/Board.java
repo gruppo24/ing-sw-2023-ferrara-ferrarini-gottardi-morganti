@@ -7,7 +7,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * Representation of the game board, one for each game.
@@ -55,11 +55,21 @@ public class Board implements Serializable {
     private TileState[][] boardState = new TileState[9][9];
 
     public TileType[][] getBoardContent() {
-        return boardContent;
+        // Computing deep-copy of the board content matrix
+        TileType[][] deepCopy = new TileType[boardContent.length][boardContent[0].length];
+        for (int i=0; i < deepCopy.length; i++)
+            for (int j=0; j < deepCopy[0].length; j++)
+                deepCopy[i][j] = this.boardContent[i][j];
+        return deepCopy;
     }
 
     public TileState[][] getBoardState() {
-        return boardState;
+        // Computing deep-copy of the board state matrix
+        TileState[][] deepCopy = new TileState[boardState.length][boardState[0].length];
+        for (int i=0; i < deepCopy.length; i++)
+            for (int j=0; j < deepCopy[0].length; j++)
+                deepCopy[i][j] = this.boardState[i][j];
+        return deepCopy;
     }
 
     /**
@@ -99,7 +109,7 @@ public class Board implements Serializable {
             return null;
 
         // pick a random tile
-        int randomTileNum = ThreadLocalRandom.current().nextInt(0, totalTiles);
+        int randomTileNum = (new Random()).nextInt(0, totalTiles);
 
         // for each type, if the random number is smaller than the number of tiles
         // of that type, return that type (as if the tile was picked in that position

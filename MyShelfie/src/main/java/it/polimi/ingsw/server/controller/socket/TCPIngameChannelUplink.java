@@ -16,7 +16,7 @@ import java.io.ObjectOutputStream;
  */
 public class TCPIngameChannelUplink implements Contextable, Runnable {
 
-    // Reference to the actual output and input channels with the client
+    // Reference to the actual input channel with the client
     private final ObjectInputStream input;
 
     private final GameState game;
@@ -59,15 +59,20 @@ public class TCPIngameChannelUplink implements Contextable, Runnable {
 
     @Override
     public void run() {
-        while (this.game.isGameOver()) {
+        while (!this.game.isGameOver()) {
             try {
+                System.out.println("UPLINK-'" + this.player.nickname + "' WAITING FOR PACKETS...");
                 RequestPacket requestPacket = (RequestPacket) this.input.readObject();
+                System.out.println("UPLINK-'" + this.player.nickname + "' PACKET RECEIVED!");
                 // Checking whether it actually is the user's turn. If it isn't, we ignore the
                 // request
                 if (this.game.actuallyIsPlayersTurn(this.player))
                     requestPacket.content.performRequestedAction(this);
+                else
+                    System.out.println("PACKED FOR WRONG TURN!!!!!");
             } catch (ClassNotFoundException | IOException ex) {
-                ex.printStackTrace();
+                System.out.println("[SocketServer] DISCONNECTION IN UPLINK");
+                break;
             }
         }
     }

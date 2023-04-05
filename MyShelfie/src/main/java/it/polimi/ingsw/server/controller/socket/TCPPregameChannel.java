@@ -52,7 +52,7 @@ public class TCPPregameChannel implements Contextable, Runnable {
                 RequestPacket requestPacket = (RequestPacket) this.input.readObject();
                 transitionToGame = requestPacket.content.performRequestedAction(this);
             } catch (ClassNotFoundException | IOException ex) {
-                ex.printStackTrace();
+                System.out.println("[SocketServer] DISCONNECTION IN PREGAME");
                 break;
             }
         }

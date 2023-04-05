@@ -17,6 +17,9 @@ public class SharedGameState implements Serializable {
     @Serial
     private final static long serialVersionUID = 1L;
 
+    // List of all players connected to the current game
+    public String[] players;
+
     // Board related attributes
     public TileType[][] boardContent;
     public TileState[][] boardState;
@@ -24,7 +27,7 @@ public class SharedGameState implements Serializable {
     // Turn related attributes
     public int currPlayerIndex;
     public int armchairIndex;
-    public int isFinalRound;
+    public boolean isFinalRound;
 
     // Common objectives related attributes
     public String[] commonsId;
@@ -38,7 +41,7 @@ public class SharedGameState implements Serializable {
     public TileType[][][] libraries;
 
     // Achieved points attributes
-    public int[] commonPts;
+    public int commonPts;  // Actual points, not achievement 'order'
     public int privatePts;
     public int clusterPts;
     public boolean firstFilled;
@@ -51,4 +54,8 @@ public class SharedGameState implements Serializable {
     // Structure is: player with username == commonsAchievers[i][j] ==> common
     // objective i completed by said player with j as order of completion
     public String[][] commonsAchievers;
+
+    // Game dynamics attributes
+    public boolean gameOngoing;  // Tells the client whether the game has started or not
+    public boolean gameOver;     // Tells the client whether the game has ended or not
 }

@@ -32,6 +32,7 @@ public class TilePick extends PacketContent {
         // push a new tile in the buffer
         TileType pickedTile = context.getGame().getBoard().pick(this.x, this.y, player.getSelectionBufferSize()-1);
         player.pushTileToSelectionBuffer(pickedTile);
+        synchronized (context.getGame().gameLock) { context.getGame().gameLock.notifyAll(); }
         return false;
     }
 }
