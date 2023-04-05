@@ -60,7 +60,7 @@ public class CreateGame extends PacketContent {
         GAMES.add(newGame);
 
         // We create a new user for the client
-        Player firstPlayer = new Player(this.username, null);
+        Player firstPlayer = new Player(this.username);
         newGame.addNewPlayerToGame(firstPlayer);
 
         // And, finally, create the actual in-game full-duplex TCP channel

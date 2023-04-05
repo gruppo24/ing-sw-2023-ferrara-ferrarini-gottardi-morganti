@@ -65,7 +65,7 @@ public class JoinGame extends PacketContent {
         }
 
         // If we reach this point, we create a new player for the selected game
-        Player newPlayer = new Player(this.username, null);
+        Player newPlayer = new Player(this.username);
         game.addNewPlayerToGame(newPlayer);
 
         // Send a success response message to the client

@@ -189,15 +189,18 @@ public class Board implements Serializable {
                     // If the player can actually make some picks (constraint > 1), we check only
                     // those cells which were already pick-able before (=they already had a free
                     // edge)
-                    if (((column == x && (row == y - 1 || row == y + 1))
-                            || (row == y && (column == x - 1 || column == x + 1)))
+                    if (((column == x && (row == y - 2 || row == y + 2))
+                            || (row == y && (column == x - 2 || column == x + 2)))
                             && constraint > 1) {
                         // If constraint is even greater than 1, and the analysed cell is inline with
                         // the
                         // picked one, we set the cell-state to PICKABLE_NEXT (= can be picked on
                         // subsequent pick)
                         boardState[column][row] = TileState.PICKABLE_NEXT;
-                    } else {
+                    } else if (!(
+                            (column == x && (row == y - 1 || row == y + 1)) ||
+                            (row == y && (column == x - 1 || column == x + 1))
+                                )) {
                         // Any other cell (not inline with the current one, or which are "too far",
                         // are not pick-able even in future picks
                         boardState[column][row] = TileState.NOT_PICKABLE;

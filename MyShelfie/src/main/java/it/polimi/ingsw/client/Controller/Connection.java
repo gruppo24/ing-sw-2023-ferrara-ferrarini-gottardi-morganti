@@ -1,7 +1,8 @@
-package it.polimi.ingsw.client.Controller;
+package it.polimi.ingsw.client.controller;
 
-import java.util.List;
+import java.util.Map;
 
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
 /**
@@ -12,27 +13,40 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
  * @author Morganti Tommaso
  */
 public abstract class Connection {
+    // ==== PREGAME PHASE ====
+
     /**
-     * Get all available games
+     * Get a list of all available games
      * 
-     * @return
+     * @return a Map, the key is the game id and the value is an array of two
+     *         integers, the first is the num of players connected, the second is
+     *         the num of players required
      */
-    public abstract List<String> getAvailableGames();
+    public abstract Map<String, int[]> getAvailableGames();
 
     /**
      * Creates a new game and connects to it
      * 
-     * @param username the username for the player with wich the client will connect
+     * @param username   the username for the player with wich the client will
+     *                   connect
+     * @param numPlayers the number of players for the game
+     * @return the status of the request, can be SUCCESS, GAME_ID_TAKEN if the
+     *         gameID is already taken
      */
-    public abstract void createGame(String username);
+    public abstract ResponseStatus createGame(String username, int numPlayers);
 
     /**
-     * Connects to an existing game
+     * Connects to an existing game with the given gameID and username
      * 
      * @param gameID   the ID of the game to connect to
      * @param username the username for the player with wich the client will connect
+     * @return the status of the request, can be SUCCESS, NO_SUCH_GAME_ID if the
+     *         gameID doesn't exist, SELECTED_GAME_FULL if the game is already full
+     *         or USERNAME_TAKEN if the username is already taken
      */
-    public abstract void connectToGame(String gameID, String username);
+    public abstract ResponseStatus connectToGame(String gameID, String username);
+
+    // ==== GAME PHASE ====
 
     /**
      * This method awaits for the game state to be updated by the server.
