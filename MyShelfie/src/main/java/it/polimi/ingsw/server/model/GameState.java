@@ -50,9 +50,9 @@ public class GameState implements Serializable {
         this.board = new Board();
         this.commonCards = new CommonCard[2];
 
-        //we populate the CommonCard array with random CommonCards
+        //we populate the CommonCards array with random CommonCards
         int[] numOfCard = RandomGenerator.random(2);
-        for(int i = 0; i < 2; i++){
+        for(int i = 0; i < numOfCard.length; i++){
             this.commonCards[i] = Server.commonCards[numOfCard[i]];
         }
     }
