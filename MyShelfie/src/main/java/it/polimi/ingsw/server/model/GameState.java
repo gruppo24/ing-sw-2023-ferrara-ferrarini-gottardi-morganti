@@ -1,6 +1,8 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
+import it.polimi.ingsw.server.RandomGenerator;
+import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
 import java.io.Serial;
@@ -46,6 +48,13 @@ public class GameState implements Serializable {
         this.gameUniqueCode = GameID;
         this.players = new Player[numOfPlayers];
         this.board = new Board();
+        this.commonCards = new CommonCard[2];
+
+        //we populate the CommonCard array with random CommonCards
+        int[] numOfCard = RandomGenerator.random(2);
+        for(int i = 0; i < 2; i++){
+            this.commonCards[i] = Server.commonCards[numOfCard[i]];
+        }
     }
 
     /**
