@@ -59,8 +59,9 @@ public class JoinGame extends PacketContent {
         }
 
         // Finally, checking the username requested is unique
-        if (game.usernameAlreadyUsed(this.username)) {
-            sendEmptyMessage(context.getOutput(), ResponseStatus.USERNAME_TAKEN);
+        Optional<Player> maybePlayer = game.getUserByUsername(this.username);
+        if (maybePlayer.isPresent()) {
+            sendEmptyMessage(context.getOutput(), ResponseStatus.INVALID_REQUEST);
             return false;
         }
 

@@ -39,12 +39,17 @@ public abstract class Connection {
      * Connects to an existing game with the given gameID and username
      * 
      * @param gameID   the ID of the game to connect to
-     * @param username the username for the player with wich the client will connect
+     * @param username the username for the player with which the client will connect
+     * @param rejoining whether we are attempting to rejoin an existing game session or
+     *                  we are joining for the first time
      * @return the status of the request, can be SUCCESS, NO_SUCH_GAME_ID if the
      *         gameID doesn't exist, SELECTED_GAME_FULL if the game is already full
-     *         or USERNAME_TAKEN if the username is already taken
+     *         or USERNAME_TAKEN if the username is already taken. When rejoining a
+     *         game, also USERNAME_NOT_IN_GAME is a possible response status message,
+     *         informing us that we are trying to rejoin with a username which doesn't
+     *         exist.
      */
-    public abstract ResponseStatus connectToGame(String gameID, String username);
+    public abstract ResponseStatus connectToGame(String gameID, String username, boolean rejoining);
 
     // ==== GAME PHASE ====
 

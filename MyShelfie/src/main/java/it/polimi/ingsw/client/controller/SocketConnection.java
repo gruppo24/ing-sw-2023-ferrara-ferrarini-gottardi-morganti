@@ -7,14 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Map;
 
-import it.polimi.ingsw.common.messages.requests.ColumnSelection;
-import it.polimi.ingsw.common.messages.requests.ContentType;
-import it.polimi.ingsw.common.messages.requests.CreateGame;
-import it.polimi.ingsw.common.messages.requests.JoinGame;
-import it.polimi.ingsw.common.messages.requests.ListGames;
-import it.polimi.ingsw.common.messages.requests.PacketContent;
-import it.polimi.ingsw.common.messages.requests.Reorder;
-import it.polimi.ingsw.common.messages.requests.TilePick;
+import it.polimi.ingsw.common.messages.requests.*;
 import it.polimi.ingsw.common.messages.responses.GamesList;
 import it.polimi.ingsw.common.messages.responses.RequestPacket;
 import it.polimi.ingsw.common.messages.responses.ResponsePacket;
@@ -65,9 +58,12 @@ public class SocketConnection extends Connection {
     }
 
     @Override
-    public ResponseStatus connectToGame(String gameID, String username) {
-        final ResponsePacket response = (ResponsePacket) this.sendPacket(ContentType.JOIN_GAME,
-                new JoinGame(gameID, username));
+    public ResponseStatus connectToGame(String gameID, String username, boolean rejoining) {
+        final ResponsePacket response;
+        if (rejoining)
+            response = (ResponsePacket) this.sendPacket(ContentType.REJOIN_GAME, new RejoinGame(gameID, username));
+        else
+            response = (ResponsePacket) this.sendPacket(ContentType.JOIN_GAME, new JoinGame(gameID, username));
         return response.status;
     }
 

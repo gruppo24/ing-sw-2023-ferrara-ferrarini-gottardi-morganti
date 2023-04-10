@@ -16,6 +16,7 @@ public enum ResponseStatus {
     SELECTED_GAME_FULL, // Tried to join a game which wasn't awaiting for any more players
 
     USERNAME_TAKEN, // Tried to join a game with a username which was already taken by someone else
+    USERNAME_NOT_IN_GAME, // Tried to rejoin a game, but the provided username doesn't exist
 
     INVALID_REQUEST, // Catchall error message
     SERVER_ERROR; // Returned when something went wrong at the server's side

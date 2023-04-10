@@ -10,6 +10,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
 
 import static it.polimi.ingsw.server.Server.privateCards;
@@ -153,15 +154,13 @@ public class GameState implements Serializable {
     }
 
     /**
-     * Method in charge of checking whether a player with a given username already
-     * exists
-     * within current game
-     * 
-     * @param testUsername username to look for
-     * @return whether the provided username has already been used
+     * Method in charge of looking for, and returning, a Player of the current game
+     * given a username
+     * @param username username to look for
+     * @return an optional of Player
      */
-    public boolean usernameAlreadyUsed(String testUsername) {
-        return Arrays.stream(this.players).filter(Objects::nonNull).anyMatch(p -> p.nickname.equals(testUsername));
+    public Optional<Player> getUserByUsername(String username) {
+        return Arrays.stream(players).filter(Objects::nonNull).filter((player) -> player.nickname.equals(username)).findFirst();
     }
 
     /**

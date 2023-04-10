@@ -9,6 +9,7 @@ import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.controller.SocketConnection;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
 /**
@@ -43,26 +44,32 @@ public class CLI {
      * @throws IOException
      */
     public void menu() throws IOException {
-        System.out.println("\n\033[1mMyShelfie - Gruppo 24\033[0m");
-        System.out.println("1. Create a new game");
-        System.out.println("2. List existing games");
-        System.out.println("3. Exit");
+        while (true) {
+            System.out.println("\n\033[1mMyShelfie - Gruppo 24\033[0m");
+            System.out.println("1. Create a new game");
+            System.out.println("2. List existing games");
+            System.out.println("3. Rejoin a game");
+            System.out.println("4. Exit");
 
-        char choice = (char) in.next().charAt(0);
-        switch (choice) {
-            case '1':
-                createNewGame();
-                break;
-            case '2':
-                listGames();
-                break;
-            case '3':
-                System.out.println("Exiting...");
-                System.exit(0);
-                break;
-            default:
-                System.out.println("Invalid choice");
-                menu();
+            char choice = (char) in.next().charAt(0);
+            switch (choice) {
+                case '1':
+                    createNewGame();
+                    break;
+                case '2':
+                    listGames();
+                    break;
+                case '3':
+                    rejoinGame();
+                    break;
+                case '4':
+                    System.out.println("Exiting...");
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice");
+                    menu();
+            }
         }
     }
 
@@ -88,10 +95,16 @@ public class CLI {
             int choice = in.nextInt();
             System.out.println("Enter your username: ");
             String username = in.next();
-            this.myUsername = username;
+
             System.out.println("Connecting to game " + gameIDs[choice - 1] + "...");
-            this.connection.connectToGame(gameIDs[choice - 1], username);
-            this.game();
+
+            ResponseStatus res = this.connection.connectToGame(gameIDs[choice - 1], username, false);
+            if (res == ResponseStatus.SUCCESS) {
+                this.myUsername = username;
+                this.game();
+            } else {
+                System.out.println(res);
+            }
         }
     }
 
@@ -105,10 +118,31 @@ public class CLI {
         int numPlayers = in.nextInt();
         System.out.println("Enter your username: ");
         String username = in.next();
-        this.myUsername = username;
+
         System.out.println("Creating game with " + numPlayers + " players...");
-        this.connection.createGame(username, numPlayers);
-        this.game();
+
+        ResponseStatus res = this.connection.createGame(username, numPlayers);
+        if (res == ResponseStatus.SUCCESS) {
+            this.myUsername = username;
+            this.game();
+        } else {
+            System.out.println(res);
+        }
+    }
+
+    public void rejoinGame() throws IOException {
+        System.out.println("Enter game ID: ");
+        String gameID = in.next();
+        System.out.println("Enter your username: ");
+        String username = in.next();
+
+        ResponseStatus res = this.connection.connectToGame(gameID, username, true);
+        if (res == ResponseStatus.SUCCESS) {
+            this.myUsername = username;
+            this.game();
+        } else {
+            System.out.println(res);
+        }
     }
 
     /**
@@ -173,6 +207,5 @@ public class CLI {
         }
 
         System.out.println("GAME IS OVER");
-        // FIXME: GO BACK TO PREGAME MENU
     }
 }
