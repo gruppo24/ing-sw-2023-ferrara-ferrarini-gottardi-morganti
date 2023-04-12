@@ -153,9 +153,9 @@ public class CLI {
         for (int i = 0; i < board[0].length; i++) {
             System.out.print(i + " | ");
             for (int j = 0; j < board.length; j++) {
-                if (board[j][i] != null)
-                    System.out.print(board[j][i] + " ");
-                else
+                if (board[j][i] != null) {
+                    CLIUtils.printTileType(board[j][i]);
+                } else
                     System.out.print("  ");
             }
             System.out.println();
