@@ -1,6 +1,8 @@
 package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.server.controller.socket.Contextable;
+import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
+import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 
 import java.io.Serial;
 
@@ -31,9 +33,14 @@ public class Reorder extends PacketContent {
 
     @Override
     public boolean performRequestedAction(Contextable context) {
-        context.getPlayer().reorderSelectionBuffer(this.firstIndex, this.secondIndex, this.thirdIndex);
-        context.getPlayer().flushBufferIntoLibrary();
-        context.getGame().turnIsOver();
+        try {
+            context.getPlayer().reorderSelectionBuffer(this.firstIndex, this.secondIndex, this.thirdIndex);
+            context.getPlayer().flushBufferIntoLibrary();
+            context.getGame().turnIsOver();
+        } catch (AlreadyUsedIndex | InvalidReorderingIndices ex) {
+            System.out.println("---> Error during reordering for " + context.getPlayer().nickname + ": " + ex);
+        }
+
 
         // No need to notify the gameLock: GameState::turnIsOver will already do o for us
         return false;

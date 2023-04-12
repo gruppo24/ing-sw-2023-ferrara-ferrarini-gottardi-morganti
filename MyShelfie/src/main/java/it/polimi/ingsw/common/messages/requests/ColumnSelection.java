@@ -23,7 +23,11 @@ public class ColumnSelection extends PacketContent {
 
     @Override
     public boolean performRequestedAction(Contextable context) {
-        context.getPlayer().selectColumn(column);
+        try {
+            context.getPlayer().selectColumn(column);
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println("---> USER " + context.getPlayer().nickname + " selected an invalid column!");
+        }
         System.out.println("=== COLUMN CHOSEN ===");
         synchronized (context.getGame().gameLock) { context.getGame().gameLock.notifyAll(); }
         return false;

@@ -188,6 +188,11 @@ public class Board implements Serializable {
      * @return the type of the picked tile to be put in the player's pick buffer
      */
     public TileType pick(int x, int y, int constraint) {
+        // If indices provided are out of range, we return null immediately
+        if (x >= this.boardContent.length || y >= this.boardContent[0].length) return null;
+        // If the selected tile isn't pick-able, we return null immediately
+        if (this.boardState[x][y] != TileState.PICKABLE) return null;
+
         // We simply iterate over the board...
         for (int column = 0; column < boardState.length; column++) {
             for (int row = 0; row < boardState[0].length; row++) {
