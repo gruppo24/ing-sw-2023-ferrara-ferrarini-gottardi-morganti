@@ -22,5 +22,14 @@ public enum TileState implements Serializable {
     /**
      * Cell could be picked on subsequent picks
      */
-    PICKABLE_NEXT
+    PICKABLE_NEXT;
+
+    @Override
+    public String toString() {
+        return switch (this) {
+            case NOT_PICKABLE -> "0";
+            case PICKABLE_NEXT -> "1";
+            case PICKABLE -> "2";
+        };
+    }
 }

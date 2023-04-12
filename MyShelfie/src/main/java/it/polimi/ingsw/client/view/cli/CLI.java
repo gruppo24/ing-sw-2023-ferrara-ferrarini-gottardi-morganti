@@ -12,6 +12,8 @@ import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
+import javax.swing.*;
+
 /**
  * CLI class, implements the command line interface for the client
  * It's an all encomassing class for the view via terminal
@@ -32,8 +34,15 @@ public class CLI {
     Scanner in = new Scanner(System.in);
 
     public CLI() throws UnknownHostException, IOException {
-        // TODO: make this configurable
-        this.connection = new SocketConnection("localhost", 5050);
+        System.out.println("Select server (1 - Socket, 2 - jRMI):");
+        char choice = in.next().charAt(0);
+        if (choice == '1') {
+            this.connection = new SocketConnection("localhost", 5050);
+        } else if (choice == '2') {
+            this.connection = new SocketConnection("localhost", 5050);
+            //this.connection = new JRMIConnection("localhost", 1059);
+        }
+
     }
 
     /**
@@ -50,24 +59,19 @@ public class CLI {
             System.out.println("3. Rejoin a game");
             System.out.println("4. Exit");
 
-            char choice = (char) in.next().charAt(0);
+            char choice = in.next().charAt(0);
             switch (choice) {
-                case '1':
-                    createNewGame();
-                    break;
-                case '2':
-                    listGames();
-                    break;
-                case '3':
-                    rejoinGame();
-                    break;
-                case '4':
+                case '1' -> createNewGame();
+                case '2' -> listGames();
+                case '3' -> rejoinGame();
+                case '4' -> {
                     System.out.println("Exiting...");
                     System.exit(0);
-                    break;
-                default:
+                }
+                default -> {
                     System.out.println("Invalid choice");
                     menu();
+                }
             }
         }
     }
@@ -145,37 +149,20 @@ public class CLI {
     }
 
     /**
-     * Prints out a game board with a (kind of) readable grid format
-     * 
-     * @param board
-     */
-    public void printBoard(TileType[][] board) {
-        for (int i = 0; i < board[0].length; i++) {
-            System.out.print(i + " | ");
-            for (int j = 0; j < board.length; j++) {
-                if (board[j][i] != null) {
-                    CLIUtils.printTileType(board[j][i]);
-                } else
-                    System.out.print("  ");
-            }
-            System.out.println();
-        }
-        System.out.print("    ");
-        for (int i = 0; i < board[0].length; i++)
-            System.out.print(i + " ");
-        System.out.println();
-    }
-
-    /**
      * Main game loop, waits for the server to send the game state and prints it out
      */
     public void game() {
-        // Non funziona affato, solo un esempio, dobbiamo ancora implementare
-        // tutta la cosa del restituire veramente lo shared game state
-        SharedGameState gameState = null;
-        gameState = this.connection.waitTurn();
+        // As soon as we enter the game loop, we check whether it is our turn
+        SharedGameState gameState = this.connection.waitTurn();
 
         while (!gameState.gameOver) {
+            // We print the game state ONLY if the game has started
+            CLIUtils.clearScreen();  // We clear the terminal before printing anything
+            if (gameState.gameOngoing) this.printSharedGameState(gameState);
+            else System.out.println("Game not started... waiting for players");
+            gameState = this.connection.waitTurn();
+
+            /*
             // Loop a long as it isn't the player's turn OR the game hasn't started
             while (!gameState.players[gameState.currPlayerIndex].equals(this.myUsername) || !gameState.gameOngoing) {
                 System.out.println("=== NOT MY TURN ===");
@@ -203,8 +190,145 @@ public class CLI {
             // FIXME: REORDER IS STATIC
             gameState = this.connection.reorder(0, 1, 2);
             this.printBoard(gameState.boardContent);
+             */
+            }
+
+            System.out.println("GAME IS OVER");
         }
 
-        System.out.println("GAME IS OVER");
+    /**
+     * Method in charge of rendering a SharedGameState for the CLI interface
+     * @param game SharedGameState instance to render
+     */
+    public void printSharedGameState(SharedGameState game) {
+        int myIndex = 0;
+        for (String player : game.players)
+            if (player.equals(this.myUsername))
+                break;
+            else
+                myIndex++;
+
+        // At first, we print our own library along with
+        // our selectionBuffer and selectedColumn, if they are
+        // present
+        System.out.println();   // New line
+        if (game.selectionBuffer != null) {
+            System.out.println(" ".repeat(4) + " ".repeat(2 * game.selectedColumn) + "*");
+        } else {
+            System.out.println();  // Empty line
+        }
+        for (int row = game.libraries[myIndex][0].length - 1; row >= 0; row--) {
+            System.out.print(row + " | ");
+            for (int column = 0; column < game.libraries[myIndex].length; column++) {
+                TileType tile = game.libraries[myIndex][column][row];
+                if (tile == null)
+                    System.out.print("  ");
+                else
+                    System.out.print(CLIUtils.tilePickable(tile));
+            }
+            // If we have reached the third row, we also print our selection buffer
+            if (row == 3 && game.selectionBuffer != null) {
+                System.out.print(" ".repeat(8) + "[");
+                for (TileType tile : game.selectionBuffer)
+                    if (tile == null)
+                        System.out.print("  ");
+                    else
+                        System.out.print(tile + " ");
+                System.out.print("]");
+            }
+            System.out.println();   // New line
+        }
+        System.out.print(" ".repeat(4));
+        for (int column = 0; column < game.libraries[myIndex].length; column++) System.out.print("--");
+        System.out.print("\n    ");
+        for (int column = 0; column < game.libraries[myIndex].length; column++) System.out.print(column + " ");
+        System.out.println("\n");
+
+        // Now printing all libraries of the other players
+        for (int row = game.libraries[myIndex][0].length - 1; row >= 0; row--) {
+            System.out.print(row + " | ");
+            for (int libraryIndex = 0; libraryIndex < game.libraries.length; libraryIndex++) {
+                if (libraryIndex != myIndex) {
+                    for (int column = 0; column < game.libraries[libraryIndex].length; column++) {
+                        TileType tile = game.libraries[libraryIndex][column][row];
+                        if (tile == null)
+                            System.out.print("  ");
+                        else
+                            System.out.print(CLIUtils.tilePickable(tile));
+                    }
+                    System.out.print(" ".repeat(8));
+                }
+            }
+            System.out.println();
+        }
+
+        // Building bottom edge
+        System.out.print(" ".repeat(4));
+        for (int playerIndex = 0; playerIndex < game.players.length - 1; playerIndex++) {
+            for (int column = 0; column < game.libraries[playerIndex].length; column++) {
+                System.out.print("--");
+            }
+            System.out.print(" ".repeat(8));
+        }
+        System.out.print("\n    ");
+        for (int playerIndex = 0; playerIndex < game.players.length - 1; playerIndex++) {
+            for (int column = 0; column < game.libraries[playerIndex].length; column++) {
+                System.out.print(column + " ");
+            }
+            System.out.print(" ".repeat(8));
+        }
+        System.out.println();
+
+        // Printing other players' usernames
+        System.out.print(" ".repeat(4));
+        for (int playerIndex=0; playerIndex < game.players.length; playerIndex++) {
+            if (playerIndex != myIndex) {
+                String player = game.players[playerIndex];
+
+                if (player.length() > 2 * game.libraries[myIndex].length)   // Trimming player username if necessary
+                    player = player.substring(0, 2 * game.libraries[myIndex].length) + "...";
+                int padding = 2*game.libraries[myIndex].length - player.length();
+
+                if (playerIndex == game.currPlayerIndex)    // If it's the players turn, we make their username bold
+                    player = CLIUtils.makeBold(player);
+
+                System.out.print(player);
+                System.out.print(" ".repeat(padding + 8));
+            }
+        }
+        System.out.println("\n");   // New line
+
+        // Finally, printing the board
+        printBoard(game.boardContent, game.boardState);
+    }
+
+    /**
+     * Prints out a game board with a readable grid format
+     *
+     * @param boardContent board content
+     * @param boardState current board state (which tiles are PICKABLE,
+     *                   PICKABLE_NEXT, NOT_PICKABLE)
+     */
+    private void printBoard(TileType[][] boardContent, TileState[][] boardState) {
+        for (int i = 0; i < boardContent[0].length; i++) {
+            System.out.print(i + " | ");
+            for (int j = 0; j < boardContent.length; j++) {
+                if (boardContent[j][i] != null) {
+                    if (boardState[j][i] == TileState.PICKABLE)
+                        System.out.print(CLIUtils.tilePickable(boardContent[j][i]));
+                    else if (boardState[j][i] == TileState.PICKABLE_NEXT)
+                        System.out.print(CLIUtils.tilePickableNext(boardContent[j][i]));
+                    else
+                        System.out.print(CLIUtils.tileNotPickable(boardContent[j][i]));
+                } else
+                    System.out.print("  ");
+            }
+            System.out.println();
+        }
+        System.out.print(" ".repeat(4));
+        for (int i = 0; i < boardContent[0].length; i++) System.out.print("--");
+        System.out.print("\n    ");
+        for (int i = 0; i < boardContent[0].length; i++) System.out.print(i + " ");
+        System.out.println();
     }
 }
