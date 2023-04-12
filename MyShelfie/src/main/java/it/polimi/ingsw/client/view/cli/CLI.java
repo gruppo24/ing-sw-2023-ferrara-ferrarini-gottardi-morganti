@@ -1,7 +1,6 @@
 package it.polimi.ingsw.client.view.cli;
 
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -14,13 +13,13 @@ import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
-import javax.swing.*;
 
 /**
  * CLI class, implements the command line interface for the client
  * It's an all encomassing class for the view via terminal
  * 
  * @author Morganti Tommaso
+ * @author Ferrarini Andrea
  */
 public class CLI {
 
