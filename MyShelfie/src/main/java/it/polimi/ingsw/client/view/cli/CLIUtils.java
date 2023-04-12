@@ -29,7 +29,7 @@ public class CLIUtils {
     }
 
     public static String tilePickableNext(TileType tileType) {
-        return makeBold(tilePickableNext(tileType));
+        return makeBold(tileNotPickable(tileType));
     }
 
     public static String tileNotPickable(TileType tileType) {
