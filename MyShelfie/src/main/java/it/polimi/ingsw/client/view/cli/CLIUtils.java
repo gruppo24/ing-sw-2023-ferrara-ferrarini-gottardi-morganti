@@ -29,6 +29,10 @@ public class CLIUtils {
     }
 
     public static String tilePickableNext(TileType tileType) {
+        return makeBold(tilePickableNext(tileType));
+    }
+
+    public static String tileNotPickable(TileType tileType) {
         return switch (tileType) {
             case BOOK -> color(tileType.toString(), CLIColor.ANSI_WHITE);
             case CAT -> color(tileType.toString(), CLIColor.ANSI_GREEN);
@@ -40,18 +44,16 @@ public class CLIUtils {
         };
     }
 
-    public static String tileNotPickable(TileType tileType) {
-        return makeFaint(tilePickableNext(tileType));
-    }
-
     public static String tilePickable(TileType tileType) {
+        String t = makeBold(tileType.toString());
+
         return switch (tileType) {
-            case BOOK -> color(tileType.toString(), CLIColor.ANSI_BACKGROUND_WHITE);
-            case CAT -> color(tileType.toString(), CLIColor.ANSI_BACKGROUND_GREEN);
-            case FRAME -> color(tileType.toString(), CLIColor.ANSI_BACKGROUND_BLUE);
-            case PLANT -> color(tileType.toString(), CLIColor.ANSI_BACKGROUND_PURPLE);
-            case TOY -> color(tileType.toString(), CLIColor.ANSI_BACKGROUND_YELLOW);
-            case TROPHY -> color(tileType.toString(), CLIColor.ANSI_BACKGROUND_CYAN);
+            case BOOK -> color(t, CLIColor.ANSI_BACKGROUND_WHITE);
+            case CAT -> color(t, CLIColor.ANSI_BACKGROUND_GREEN);
+            case FRAME -> color(t, CLIColor.ANSI_BACKGROUND_BLUE);
+            case PLANT -> color(t, CLIColor.ANSI_BACKGROUND_PURPLE);
+            case TOY -> color(t, CLIColor.ANSI_BACKGROUND_YELLOW);
+            case TROPHY -> color(t, CLIColor.ANSI_BACKGROUND_CYAN);
             default -> "";
         };
     }
