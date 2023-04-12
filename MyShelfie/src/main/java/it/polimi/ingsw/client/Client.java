@@ -3,7 +3,7 @@ package it.polimi.ingsw.client;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import it.polimi.ingsw.client.view.CLI;
+import it.polimi.ingsw.client.view.cli.CLI;
 
 public class Client {
     public static void main(String[] args) throws UnknownHostException, IOException {

@@ -1,4 +1,4 @@
-package it.polimi.ingsw.client.view;
+package it.polimi.ingsw.client.view.cli;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -21,7 +21,6 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 public class CLI {
 
     private String myUsername;
-
 
     /**
      * The connection to the server
