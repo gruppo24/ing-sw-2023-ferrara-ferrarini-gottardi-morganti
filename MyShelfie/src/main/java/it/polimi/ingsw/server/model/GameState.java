@@ -290,7 +290,7 @@ public class GameState implements Serializable {
         for (int index=0; index < this.commonCards.length; index++)
             for (Player p : this.players)
                 if (p != null && p.commonsOrder[index] != 0)
-                    sgs.commonsAchievers[index][p.commonsOrder[index]] = p.nickname;
+                    sgs.commonsAchievers[index][p.commonsOrder[index]-1] = p.nickname;
 
         // Lastly, we set the game dynamics attributes
         sgs.gameOngoing = this.gameOngoing;

@@ -41,12 +41,19 @@ public class CLI {
 
     public CLI() throws IOException {
         System.out.println("Select server (1 - Socket, 2 - jRMI):");
-        char choice = in.next().charAt(0);
-        if (choice == '1') {
-            this.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
-        } else if (choice == '2') {
-            this.connection = new SocketConnection(SERVER_ADDR, JRMI_PORT);
-            //this.connection = new JRMIConnection("localhost", 1059);
+        boolean valid = false;
+        while (!valid) {
+            valid = true;
+            char choice = in.next().charAt(0);
+            if (choice == '1') {
+                this.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
+            } else if (choice == '2') {
+                this.connection = new SocketConnection(SERVER_ADDR, JRMI_PORT);
+                //this.connection = new JRMIConnection("localhost", 1059);
+            } else {
+                System.out.println("Invalid choice...");
+                valid = false;
+            }
         }
 
         // After having selected the type of connection, we actually open a
@@ -226,17 +233,18 @@ public class CLI {
             else
                 myIndex++;
 
+        // Printing who is the first player of the game
+        if (myIndex == game.armchairIndex) System.out.println(CLIUtils.makeItalic("You have the armchair!"));
+        else System.out.println(CLIUtils.makeItalic(game.players[game.armchairIndex] + " has the armchair"));
+
         // Printing whether this is the final round of the game
         if (game.isFinalRound)
             System.out.println(CLIUtils.makeBold(CLIUtils.color(
                     CLIUtils.color("FINAL ROUND OF THE GAME", CLIColor.ANSI_BACKGROUND_RED)
-                    , CLIColor.ANSI_WHITE))
+                    , CLIColor.ANSI_BLACK))
             );
         else
             System.out.println();
-
-        // Printing whether the player is the first player of the turn
-        System.out.println();
 
         // At first, we print our own library along with
         // our selectionBuffer and selectedColumn, if they are
@@ -256,15 +264,22 @@ public class CLI {
                 else
                     System.out.print(CLIUtils.tilePickable(tile));
             }
-            // If we have reached the third row, we also print our selection buffer
+            // Depending on the row, we print further information for the user
             if (row == 3 && game.selectionBuffer != null) {
-                System.out.print(" ".repeat(8) + "[");
+                // If we have reached the third row, we also print our selection buffer
+                System.out.print(" ".repeat(8) + "Tiles picked: [");
                 for (TileType tile : game.selectionBuffer)
                     if (tile == null)
                         System.out.print("  ");
                     else
                         System.out.print(tile + " ");
                 System.out.print("]");
+            } else if (row == 2) {
+                // If we have reached the fourth row, we also print our cluster points
+                System.out.print(" ".repeat(8) + CLIUtils.makeBold(game.clusterPts + " cluster points obtained"));
+            } else if (row == 1) {
+                // If we have reached the fifth row, we also print our common points
+                System.out.print(" ".repeat(8) + CLIUtils.makeBold(game.commonPts + " common points obtained"));
             }
             System.out.println();   // New line
         }
@@ -317,8 +332,6 @@ public class CLI {
 
                 if (player.length() > 2 * game.libraries[myIndex].length)   // Trimming player username if necessary
                     player = player.substring(0, 2 * game.libraries[myIndex].length) + "...";
-                if (playerIndex == game.armchairIndex)  // Checking if the player is the first player
-                    player = player + "(0)";
                 int padding = 2*game.libraries[myIndex].length - player.length();
 
                 if (playerIndex == game.currPlayerIndex)    // If it's the players turn, we make their username bold
@@ -335,9 +348,16 @@ public class CLI {
 
         // Before returning, we print the current common and private objectives
         System.out.println();
-        for (String commonDesc : game.commonsDesc)
-            System.out.println(CLIUtils.makeBold("Common objective: ") + commonDesc);
-        System.out.println(CLIUtils.makeBold("Your private objective: ") + game.privateDesc);
+        for (int commonIndex=0; commonIndex < game.commonsDesc.length; commonIndex++) {
+            System.out.println(CLIUtils.makeBold("Common objective: ") + game.commonsDesc[commonIndex]);
+            System.out.print(" ".repeat(8) + "Obtained by: ");
+            for (String commonAchiever : game.commonsAchievers[commonIndex])
+                if (commonAchiever != null)
+                    System.out.print(commonAchiever + " ");
+            System.out.println();
+        }
+        System.out.print(CLIUtils.makeBold("Your private objective: ") + game.privateDesc);
+        System.out.println(CLIUtils.makeBold(CLIUtils.makeItalic(" (" + game.privatePts + "pts obtained so far)")));
     }
 
     /**

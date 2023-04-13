@@ -37,12 +37,13 @@ public class Reorder extends PacketContent {
             context.getPlayer().reorderSelectionBuffer(this.firstIndex, this.secondIndex, this.thirdIndex);
             context.getPlayer().flushBufferIntoLibrary();
             context.getGame().turnIsOver();
-        } catch (AlreadyUsedIndex | InvalidReorderingIndices ex) {
+            // No need to notify the gameLock: GameState::turnIsOver will already do o for us
+        } catch (AlreadyUsedIndex | InvalidReorderingIndices | IndexOutOfBoundsException ex) {
             System.out.println("---> Error during reordering for " + context.getPlayer().nickname + ": " + ex);
+            // We wake up the threads here, since turnIsOver hasn't done so for us in case of an exception
+            synchronized (context.getGame().gameLock) { context.getGame().gameLock.notifyAll(); }
         }
 
-
-        // No need to notify the gameLock: GameState::turnIsOver will already do o for us
         return false;
     }
 }
