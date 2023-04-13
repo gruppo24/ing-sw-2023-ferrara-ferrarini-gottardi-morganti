@@ -1,15 +1,18 @@
 package it.polimi.ingsw.client.view.cli;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
+import it.polimi.ingsw.client.ReconnectionHandler;
 import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.controller.SocketConnection;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.common.messages.requests.CreateGame;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
@@ -101,11 +104,18 @@ public class CLI {
         System.out.println("Enter your username: ");
         String username = in.next();
 
+        String gameID = CreateGame.generateGameID();
         System.out.println("Creating game with " + numPlayers + " players...");
 
-        ResponseStatus res = this.connection.createGame(username, numPlayers);
+        ResponseStatus res = this.connection.createGame(gameID, username, numPlayers);
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
+
+            // After successful game creation, we store our current game session information
+            // for possible future game reconnections
+            ReconnectionHandler rh = new ReconnectionHandler();
+            rh.setParameters(gameID, username);
+
             this.game();
         } else {
             System.out.println(res);
@@ -115,19 +125,48 @@ public class CLI {
     /**
      * Joins a game or rejoins an existing game session after a disconnection
      */
-    private void joinGame(boolean joining) {
-        System.out.println("Enter game ID: ");
-        String gameID = in.next();
-        System.out.println("Enter your username: ");
-        String username = in.next();
+    private void joinGame(boolean rejoining) {
+        String gameID, username;
+        ReconnectionHandler rh = new ReconnectionHandler();
 
-        ResponseStatus res = this.connection.connectToGame(gameID, username, joining);
+        // Checking if we are joining a game for the first time or rejoining a session
+        if (rejoining) {
+            // Trying to recover session information here:
+            try {
+                String[] sessionInformation = rh.getParameters();
+                gameID = sessionInformation[0];
+                username = sessionInformation[1];
+            } catch (FileNotFoundException ex) {
+                System.out.println("ERROR: couldn't find recovery file (moved or deleted)");
+                return;
+            } catch (IOException ex) {
+                System.out.println("ERROR: couldn't read recovery file for reconnection...");
+                return;
+            } catch (ClassNotFoundException ex) {
+                System.out.println("ERROR: couldn't decode data stored in recovery file...");
+                return;
+            }
+        } else {
+            System.out.println("Enter game ID: ");
+            gameID = in.next();
+            System.out.println("Enter your username: ");
+            username = in.next();
+        }
+
+        // If previous operations were successful, (re)join a game
+        ResponseStatus res = this.connection.connectToGame(gameID, username, rejoining);
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
+
+            // After successful game (re)joining, we store our current game session information
+            // for possible future game reconnections
+            rh.setParameters(gameID, username);
+
             this.game();
         } else {
             System.out.println(res);
         }
+
     }
 
     /**
@@ -276,6 +315,7 @@ public class CLI {
         printBoard(game.boardContent, game.boardState);
 
         // Before returning, we print the current common and private objectives
+        System.out.println();
         for (String commonDesc : game.commonsDesc)
             System.out.println(CLIUtils.makeBold("Common objective: ") + commonDesc);
         System.out.println(CLIUtils.makeBold("Your private objective: ") + game.privateDesc);

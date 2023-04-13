@@ -51,9 +51,9 @@ public class SocketConnection extends Connection {
     }
 
     @Override
-    public ResponseStatus createGame(String username, int numPlayers) {
+    public ResponseStatus createGame(String gameID, String username, int numPlayers) {
         final ResponsePacket response = (ResponsePacket) this.sendPacket(ContentType.CREATE_GAME,
-                new CreateGame(CreateGame.generateGameID(), username, numPlayers));
+                new CreateGame(gameID, username, numPlayers));
         return response.status;
     }
 
