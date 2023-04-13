@@ -7,7 +7,6 @@ import it.polimi.ingsw.server.model.Player;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.sql.SQLOutput;
 
 /**
  * Class in charge of handling all in-game transmissions from server
@@ -29,14 +28,17 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
     /**
      * Class constructor
-     * @param input ObjectInputStream associated to the current uplink channel
-     * @param output ObjectOutputStream associated ton the current downlink channel
+     * 
+     * @param input        ObjectInputStream associated to the current uplink
+     *                     channel
+     * @param output       ObjectOutputStream associated ton the current downlink
+     *                     channel
      * @param uplinkThread a reference to the TCPIngameChannelUplink thread
-     * @param game the game to which the client is connected
-     * @param player the player associated to this client
+     * @param game         the game to which the client is connected
+     * @param player       the player associated to this client
      */
     public TCPIngameChannelDownlink(ObjectInputStream input, ObjectOutputStream output, Thread uplinkThread,
-                                    GameState game, Player player) {
+            GameState game, Player player) {
         this.input = input;
         this.output = output;
 
@@ -96,7 +98,9 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
     /**
      * Helper method in charge of sending a SharedGameState packet to the client
-     * @return a boolean representing whether the channel is still open with the client
+     * 
+     * @return a boolean representing whether the channel is still open with the
+     *         client
      */
     private boolean sendSharedGameState() {
         SharedGameState gameState = this.game.getSharedGameState(this.player);
