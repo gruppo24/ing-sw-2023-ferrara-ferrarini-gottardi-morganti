@@ -5,6 +5,7 @@ import it.polimi.ingsw.common.TileType;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * This class holds a representation of the current state of the game
@@ -58,4 +59,7 @@ public class SharedGameState implements Serializable {
     // Game dynamics attributes
     public boolean gameOngoing;  // Tells the client whether the game has started or not
     public boolean gameOver;     // Tells the client whether the game has ended or not
+
+    // Game ending information (ONLY AVAILABLE AFTER GAME HAS ENDED)
+    public HashMap<String, Integer> leaderboard;
 }

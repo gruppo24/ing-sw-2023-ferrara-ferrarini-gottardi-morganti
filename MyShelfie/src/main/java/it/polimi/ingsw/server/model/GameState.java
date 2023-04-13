@@ -6,13 +6,12 @@ import it.polimi.ingsw.server.RandomGenerator;
 import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
+import java.io.Console;
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
+import static it.polimi.ingsw.server.Server.GAMES;
 import static it.polimi.ingsw.server.Server.privateCards;
 
 /**
@@ -32,6 +31,7 @@ public class GameState implements Serializable {
     private int armchair;
     private int currPlayerIndex;
     private boolean finalRound = false;
+    private Player firstFilledPlayer;
     private final Player[] players;
 
     private final Board board;
@@ -75,8 +75,11 @@ public class GameState implements Serializable {
         this.players[this.currPlayerIndex].updateClusterPoints();
         this.obtainedCommons();
 
-        // Checking if this has to be the final round
-        this.finalRound = this.players[this.currPlayerIndex].checkIfFilled();
+        // If it already isn't the final round, checking if the current player has filled their library entirely
+        if (!this.finalRound) {
+            this.finalRound = this.players[this.currPlayerIndex].checkIfFilled();
+            firstFilledPlayer = this.players[this.currPlayerIndex];
+        }
 
         // We update the player-turn index and check if the game has ended
         this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
@@ -86,6 +89,9 @@ public class GameState implements Serializable {
         if (!this.gameOver) {
             if (this.board.shouldBeRefilled()) this.board.refillBoard(this.players.length);
             this.board.definePickable();
+        } else {
+            // Otherwise, we remove this game from the games data structure
+            GAMES.remove(this);
         }
 
         // We also store the current game state on disk (for crash recovery) TODO
@@ -289,6 +295,24 @@ public class GameState implements Serializable {
         // Lastly, we set the game dynamics attributes
         sgs.gameOngoing = this.gameOngoing;
         sgs.gameOver = this.gameOver;
+
+        // If the game is over, we also
+        if (sgs.gameOver) {
+            sgs.leaderboard = new HashMap<>();
+            for (Player value : this.players) {
+                // Player's private, cluster and first-filled-points
+                int playerPoints = value.getPrivatePoints() +
+                        value.getClusterPoints() +
+                        (value.equals(this.firstFilledPlayer) ? 1 : 0);
+
+                // Common objective points
+                for (int commonOrder : value.commonsOrder)
+                    if (commonOrder > 0)
+                        playerPoints += CommonCard.mapCommonPoints(this.players.length, commonOrder);
+
+                sgs.leaderboard.put(value.nickname, playerPoints);
+            }
+        }
 
         return sgs;
     }

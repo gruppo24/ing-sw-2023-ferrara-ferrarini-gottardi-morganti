@@ -21,9 +21,6 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
     private final ObjectInputStream input;
     private final ObjectOutputStream output;
 
-    // Reference to the uplink thread
-    private final Thread uplinkThread;
-
     private final GameState game;
     private final Player player;
 
@@ -31,16 +28,12 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
      * Class constructor
      * @param input ObjectInputStream associated to the current uplink channel
      * @param output ObjectOutputStream associated ton the current downlink channel
-     * @param uplinkThread a reference to the TCPIngameChannelUplink thread
      * @param game the game to which the client is connected
      * @param player the player associated to this client
      */
-    public TCPIngameChannelDownlink(ObjectInputStream input, ObjectOutputStream output, Thread uplinkThread,
-                                    GameState game, Player player) {
+    public TCPIngameChannelDownlink(ObjectInputStream input, ObjectOutputStream output, GameState game, Player player) {
         this.input = input;
         this.output = output;
-
-        this.uplinkThread = uplinkThread;
 
         // Game related attributes
         this.game = game;
@@ -69,13 +62,15 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
     @Override
     public void run() {
-        // We loop infinitely awaiting for game-state updates to forward to the client
+        // We loop infinitely awaiting game-state updates to forward to the client
         boolean connected = true;
-        while (!game.isGameOver() || connected) {
+        while (connected) {
             try {
                 synchronized (this.game.gameLock) {
                     connected = this.sendSharedGameState();
-                    this.game.gameLock.wait();
+                    // Whether the game is over or not, we decide to continue looping or break out
+                    if (this.game.isGameOver()) break;
+                    else this.game.gameLock.wait();
                 }
             } catch (InterruptedException ex) {
                 System.out.println("[SockServer] INTERRUPTED-EXCEPTION IN DOWNLINK");
@@ -83,15 +78,9 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
             }
         }
 
-        // If we broke out of the loop because of game-ending we reopen a pregame
-        // channel for the client
-        if (game.isGameOver()) {
-            Thread pregameChannel = new Thread(new TCPPregameChannel(this.input, this.output));
-            pregameChannel.start();
-        }
-
-        // Otherwise, the TCP channel simply closes...
-        this.uplinkThread.interrupt();
+        // As soon as we break out, we immediately close both the uplink and down-link channel
+        try { input.close(); } catch (IOException ex) { System.out.println("Error closing ObjectOutputStream"); }
+        try { output.close(); } catch (IOException ex) { System.out.println("Error closing ObjectInputStream"); }
     }
 
     /**

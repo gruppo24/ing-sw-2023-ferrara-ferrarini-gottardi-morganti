@@ -16,6 +16,8 @@ import it.polimi.ingsw.common.messages.requests.CreateGame;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
+import static it.polimi.ingsw.client.Client.*;
+
 
 /**
  * CLI class, implements the command line interface for the client
@@ -41,11 +43,15 @@ public class CLI {
         System.out.println("Select server (1 - Socket, 2 - jRMI):");
         char choice = in.next().charAt(0);
         if (choice == '1') {
-            this.connection = new SocketConnection("localhost", 5050);
+            this.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
         } else if (choice == '2') {
-            this.connection = new SocketConnection("localhost", 5050);
+            this.connection = new SocketConnection(SERVER_ADDR, JRMI_PORT);
             //this.connection = new JRMIConnection("localhost", 1059);
         }
+
+        // After having selected the type of connection, we actually open a
+        // communication channel with the server
+        this.connection.establishConnection();
 
     }
 
@@ -192,7 +198,20 @@ public class CLI {
                     handleTurn(gameState);
         }
 
-        System.out.println("GAME IS OVER");
+        System.out.println("=== GAME IS OVER ===\nFinal leaderboard: ");
+        for (String player : gameState.leaderboard.keySet())
+            System.out.println(" ".repeat(4) + "- " + player + ": " + gameState.leaderboard.get(player) + "pts");
+        System.out.println("\nPress any key to go back to menu...");
+        in.next();
+        CLIUtils.clearScreen();
+
+        // TCP/jRMI communication channel will be closed when the game is terminated.
+        // For this reason, we reopen a new connection
+        try {
+            this.connection.establishConnection();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**

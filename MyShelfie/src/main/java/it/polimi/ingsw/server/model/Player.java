@@ -30,7 +30,6 @@ public class Player implements Serializable {
     private int privatePoints = 0;
     private int clusterPoints = 0;
     protected int[] commonsOrder = {0, 0};  // OK to read-write within same package
-    private boolean firstFilled = false;
 
     // Game action attributes
     private int selectedColumn;
@@ -157,7 +156,6 @@ public class Player implements Serializable {
                     return false;  // NOT filled cell found...
 
         // If we fall through the entire loop, we return true
-        this.firstFilled = true;
         return true;
     }
 

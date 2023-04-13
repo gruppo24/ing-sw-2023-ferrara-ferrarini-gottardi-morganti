@@ -74,13 +74,12 @@ public class JoinGame extends PacketContent {
 
         // And, finally, create the actual in-game full-duplex TCP channel
         TCPIngameChannelUplink uplink = new TCPIngameChannelUplink(context.getInput(), game, newPlayer);
-        Thread clientUplinkChannelThread = new Thread(uplink);
-        clientUplinkChannelThread.start();
+        TCPIngameChannelDownlink downlink = new TCPIngameChannelDownlink(context.getInput(), context.getOutput(), game, newPlayer);
 
-        TCPIngameChannelDownlink downlink = new TCPIngameChannelDownlink(
-                context.getInput(), context.getOutput(), clientUplinkChannelThread, game, newPlayer
-        );
+        Thread clientUplinkChannelThread = new Thread(uplink);
         Thread clientDownlinkChannelThread = new Thread(downlink);
+
+        clientUplinkChannelThread.start();
         clientDownlinkChannelThread.start();
 
         return true;

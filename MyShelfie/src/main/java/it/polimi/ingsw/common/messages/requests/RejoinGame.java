@@ -65,13 +65,12 @@ public class RejoinGame extends PacketContent {
 
         // Finally, we re-open the TCPIngameChannels for the client
         TCPIngameChannelUplink uplink = new TCPIngameChannelUplink(context.getInput(), game, player);
-        Thread clientUplinkChannelThread = new Thread(uplink);
-        clientUplinkChannelThread.start();
+        TCPIngameChannelDownlink downlink = new TCPIngameChannelDownlink(context.getInput(), context.getOutput(), game, player);
 
-        TCPIngameChannelDownlink downlink = new TCPIngameChannelDownlink(
-                context.getInput(), context.getOutput(), clientUplinkChannelThread, game, player
-        );
+        Thread clientUplinkChannelThread = new Thread(uplink);
         Thread clientDownlinkChannelThread = new Thread(downlink);
+
+        clientUplinkChannelThread.start();
         clientDownlinkChannelThread.start();
 
         return true;
