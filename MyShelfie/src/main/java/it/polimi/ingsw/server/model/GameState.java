@@ -6,6 +6,8 @@ import it.polimi.ingsw.server.RandomGenerator;
 import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -41,7 +43,7 @@ public class GameState implements Serializable {
     private final CommonCard[] commonCards;
 
     // Game dynamics attributes
-    public final Object gameLock = new Object();
+    transient public Object gameLock = new Object();
     private boolean gameOver = false;
     private boolean gameOngoing = false;
 
@@ -59,7 +61,7 @@ public class GameState implements Serializable {
 
         // we populate the CommonCards array with random CommonCards
         int[] numOfCard = RandomGenerator.random(2);
-        for(int i = 0; i < numOfCard.length; i++){
+        for (int i = 0; i < numOfCard.length; i++) {
             this.commonCards[i] = Server.commonCards[numOfCard[i]];
         }
     }
@@ -84,38 +86,16 @@ public class GameState implements Serializable {
 
         // Only if the game hasn't ended, update the current board-state
         if (!this.gameOver) {
-            if (this.board.shouldBeRefilled()) this.board.refillBoard(this.players.length);
+            if (this.board.shouldBeRefilled())
+                this.board.refillBoard(this.players.length);
             this.board.definePickable();
         }
 
-        // We also store the current game state on disk (for crash recovery) TODO
-        /*
-        File backupFile = new File(this.gameUniqueCode + ".bu");
-        boolean success = true;
-        if (!backupFile.exists()) {
-            try {
-                success = backupFile.createNewFile();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        if (success) {
-            try {
-                FileOutputStream backupFileStream = new FileOutputStream(backupFile);
-                ObjectOutputStream gameStateStream = new ObjectOutputStream(backupFileStream);
-                gameStateStream.writeObject(this);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            System.out.println("ERROR: COULDN'T WRITE GAME '" + this.gameUniqueCode + "' TO DISK!");
-        }
-*/
-
         // Finally, we awake all waiting threads. This will trigger a
         // broadcast of SharedGameState objects to all clients
-        synchronized (this.gameLock) { this.gameLock.notifyAll(); }
+        synchronized (this.gameLock) {
+            this.gameLock.notifyAll();
+        }
     }
 
     /**
@@ -156,11 +136,13 @@ public class GameState implements Serializable {
     /**
      * Method in charge of looking for, and returning, a Player of the current game
      * given a username
+     * 
      * @param username username to look for
      * @return an optional of Player
      */
     public Optional<Player> getUserByUsername(String username) {
-        return Arrays.stream(players).filter(Objects::nonNull).filter((player) -> player.nickname.equals(username)).findFirst();
+        return Arrays.stream(players).filter(Objects::nonNull).filter((player) -> player.nickname.equals(username))
+                .findFirst();
     }
 
     /**
@@ -176,7 +158,8 @@ public class GameState implements Serializable {
         int newPlayerIndex = this.getPlayerStatus()[0];
 
         // If the game is already full, throw an exception
-        if (newPlayerIndex >= this.players.length) throw new GameAlreadyFullException(this.getPlayerStatus()[1]);
+        if (newPlayerIndex >= this.players.length)
+            throw new GameAlreadyFullException(this.getPlayerStatus()[1]);
 
         // Otherwise, add another player
         this.players[newPlayerIndex] = newPlayer;
@@ -199,7 +182,9 @@ public class GameState implements Serializable {
             this.board.definePickable();
 
             // Finally, we awake the downlink for client notification
-            synchronized (this.gameLock) { this.gameLock.notifyAll(); }
+            synchronized (this.gameLock) {
+                this.gameLock.notifyAll();
+            }
         }
     }
 
@@ -224,6 +209,7 @@ public class GameState implements Serializable {
 
     /**
      * Method in charge of generating a shared version of the current GameState
+     * 
      * @param player player for whom we want to generate a shared game state
      * @return shared version of the current game state for the requested player
      */
@@ -232,7 +218,7 @@ public class GameState implements Serializable {
 
         // Current player information
         sgs.players = new String[this.players.length];
-        for (int index=0; index < this.players.length; index++)
+        for (int index = 0; index < this.players.length; index++)
             if (this.players[index] != null)
                 sgs.players[index] = this.players[index].nickname;
 
@@ -248,7 +234,7 @@ public class GameState implements Serializable {
         // Common cards information
         sgs.commonsId = new String[this.commonCards.length];
         sgs.commonsDesc = new String[this.commonCards.length];
-        for (int index=0; index < this.commonCards.length; index++) {
+        for (int index = 0; index < this.commonCards.length; index++) {
             sgs.commonsId[index] = this.commonCards[index].identifier;
             sgs.commonsDesc[index] = this.commonCards[index].description;
         }
@@ -261,13 +247,13 @@ public class GameState implements Serializable {
 
         // Library information
         sgs.libraries = new TileType[this.players.length][][];
-        for (int index=0; index < this.players.length; index++)
+        for (int index = 0; index < this.players.length; index++)
             if (this.players[index] != null)
                 sgs.libraries[index] = this.players[index].getLibrary();
 
         // Current player's points information
         sgs.commonPts = 0;
-        for (int commonOrder: player.commonsOrder)
+        for (int commonOrder : player.commonsOrder)
             if (commonOrder > 0)
                 sgs.commonPts += CommonCard.mapCommonPoints(this.players.length, commonOrder);
 
@@ -281,7 +267,7 @@ public class GameState implements Serializable {
 
         // Information regarding who achieved common points so far
         sgs.commonsAchievers = new String[this.commonCards.length][this.players.length];
-        for (int index=0; index < this.commonCards.length; index++)
+        for (int index = 0; index < this.commonCards.length; index++)
             for (Player p : this.players)
                 if (p != null && p.commonsOrder[index] != 0)
                     sgs.commonsAchievers[index][p.commonsOrder[index]] = p.nickname;
@@ -312,6 +298,16 @@ public class GameState implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * Implementation of readObject method to restore the transient gameLock
+     * attribute
+     */
+    private void readObject(ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.gameLock = new Object();
     }
 
     /**

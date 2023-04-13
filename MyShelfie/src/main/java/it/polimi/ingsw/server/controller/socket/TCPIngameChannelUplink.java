@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.controller.socket;
 
 import it.polimi.ingsw.common.messages.responses.RequestPacket;
+import it.polimi.ingsw.server.controller.Backupper;
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 
@@ -66,9 +67,16 @@ public class TCPIngameChannelUplink implements Contextable, Runnable {
                 System.out.println("UPLINK-'" + this.player.nickname + "' PACKET RECEIVED!");
                 // Checking whether it actually is the user's turn. If it isn't, we ignore the
                 // request
-                if (this.game.actuallyIsPlayersTurn(this.player))
+                if (this.game.actuallyIsPlayersTurn(this.player)) {
                     requestPacket.content.performRequestedAction(this);
-                else
+
+                    // when an action is dispatched, whichever it is, we create a backup of the
+                    // game state on disk for the sake of persistence
+                    // (in a new thread to avoid blocking incoming requests)
+                    Thread backupThread = new Thread(new Backupper(this.game));
+                    backupThread.start();
+                    // TODO: would be nice to automatically delete old backups when the game is over
+                } else
                     System.out.println("PACKED FOR WRONG TURN!!!!!");
             } catch (ClassNotFoundException | IOException ex) {
                 System.out.println("[SocketServer] DISCONNECTION IN UPLINK");

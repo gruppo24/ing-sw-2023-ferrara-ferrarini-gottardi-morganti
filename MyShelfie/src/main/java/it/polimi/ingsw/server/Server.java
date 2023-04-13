@@ -3,6 +3,9 @@ package it.polimi.ingsw.server;
 import it.polimi.ingsw.server.model.*;
 import it.polimi.ingsw.server.controller.socket.SockServer;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,6 +58,37 @@ public class Server implements Serializable {
         System.out.print("[main] >>> Creating common card instances");
         createCommonCards();
         System.out.println(" ---> Common card instances created");
+
+        System.out.println("[main] >>> Reading backuped games from disk");
+        // Get all files in the backup folder
+        File folder = new File("backups");
+        File[] listOfFiles = folder.listFiles();
+        // For each file, try to deserialize it and add it to the list of games
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                if (file.isFile()) {
+                    try {
+                        FileInputStream fileIn = new FileInputStream(file);
+                        ObjectInputStream in = new ObjectInputStream(fileIn);
+                        GameState game = (GameState) in.readObject();
+                        in.close();
+                        // GameState game = GameState.deserialize(file.getName());
+                        if (game != null) {
+                            GAMES.add(game);
+                            System.out.println("[main] >>> Game " + game.getGameID() + " restored from disk");
+                        }
+                    } catch (Exception e) {
+                        // for any exception, just consider it not restorable and
+                        // delete the file
+                        e.printStackTrace();
+                        file.delete();
+                    }
+                }
+            }
+        } else {
+            System.out.println("[main] >>> Folder 'backups' not found");
+        }
+        System.out.println("[main] >>> Backuped games restored");
 
         // Start socket server
         System.out.println("[main] >>> Starting socket server - will listen on port " + SOCKET_PORT);
