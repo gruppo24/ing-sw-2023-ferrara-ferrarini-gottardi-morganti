@@ -85,6 +85,7 @@ public class CLI {
                     System.out.println("Exiting...");
                     System.exit(0);
                 }
+                case '0' -> manualRejoin();
                 default -> {
                     System.out.println("Invalid choice");
                     menu();
@@ -173,6 +174,27 @@ public class CLI {
 
             // After successful game (re)joining, we store our current game session information
             // for possible future game reconnections
+            rh.setParameters(gameID, username);
+
+            this.game();
+        } else {
+            System.out.println(res);
+        }
+
+    }
+
+    private void manualRejoin() {
+        System.out.println("=== MANUAL REJOIN (debugging only) ===\nEnter game ID and username: ");
+        String gameID = in.next();
+        String username = in.next();
+        ResponseStatus res = this.connection.connectToGame(gameID, username, true);
+
+        if (res == ResponseStatus.SUCCESS) {
+            this.myUsername = username;
+
+            // After successful game (re)joining, we store our current game session information
+            // for possible future game reconnections
+            ReconnectionHandler rh = new ReconnectionHandler();
             rh.setParameters(gameID, username);
 
             this.game();
@@ -353,7 +375,7 @@ public class CLI {
             System.out.print(" ".repeat(8) + "Obtained by: ");
             for (String commonAchiever : game.commonsAchievers[commonIndex])
                 if (commonAchiever != null)
-                    System.out.print(commonAchiever + " ");
+                    System.out.print(CLIUtils.makeBold(commonAchiever) + " ");
             System.out.println();
         }
         System.out.print(CLIUtils.makeBold("Your private objective: ") + game.privateDesc);
@@ -405,9 +427,9 @@ public class CLI {
 
         // Checking if it is possible to pick tiles
         if (this.areThereTilesPickable(game.boardState) && game.selectionBuffer[game.selectionBuffer.length-1] == null) {
-            System.out.print("Pick a tile - tile x coordinate (-1 if done):");
+            System.out.print("Pick a tile - tile x coordinate (-1 if done): ");
             int x = in.nextInt();
-            System.out.print("Pick a tile - tile y coordinate (also -1 if done):");
+            System.out.print("Pick a tile - tile y coordinate (also -1 if done): ");
             int y = in.nextInt();
 
             // Checking if the player has actually picked a tile
