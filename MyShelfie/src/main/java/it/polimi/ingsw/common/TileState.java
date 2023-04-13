@@ -1,7 +1,5 @@
 package it.polimi.ingsw.common;
 
-import java.io.Serializable;
-
 /**
  * Enum with the state of each cell on the board, where:
  * - NOT_PICKABLE: cell cannot be picked
@@ -10,7 +8,7 @@ import java.io.Serializable;
  * 
  * @author Morganti Tommaso
  */
-public enum TileState implements Serializable {
+public enum TileState {
     /**
      * Cell cannot be picked
      */
