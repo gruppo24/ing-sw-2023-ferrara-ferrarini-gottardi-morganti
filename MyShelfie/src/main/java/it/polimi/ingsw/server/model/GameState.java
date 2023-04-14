@@ -171,11 +171,11 @@ public class GameState implements Serializable {
         // Checking if the game is now full and it can start
         if (newPlayerIndex == this.players.length - 1) {
             this.gameOngoing = true;
-            // TODO: EACH PLAYER IS ASSIGNED A PRIVATE CARD
-            // FIXME: FOR NOW, WE ASSIGN THE FIRST PRIVATE CARD TO EVERYONE
-            for (Player player : this.players) {
-                player.setPrivateCard(privateCards[0]);
-            }
+
+            //Assign each player a private card calling random of RandomGenerator
+            // (in order to have a different card for each player)
+            for(int i = 0 ; i < players.length; i++)
+                players[i].setPrivateCard(privateCards[RandomGenerator.random(players.length)[i]]);
 
             // Choose randomly a player who will be the first
             this.armchair = (new Random()).nextInt(this.players.length);
