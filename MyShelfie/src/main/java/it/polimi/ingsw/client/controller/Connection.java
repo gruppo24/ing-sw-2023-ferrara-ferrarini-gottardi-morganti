@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.controller;
 
+import java.io.IOException;
 import java.util.Map;
 
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
@@ -25,15 +26,21 @@ public abstract class Connection {
     public abstract Map<String, int[]> getAvailableGames();
 
     /**
+     * Method in charge of actually performing the connection to a server
+     */
+    public abstract void establishConnection() throws IOException;
+
+    /**
      * Creates a new game and connects to it
-     * 
-     * @param username   the username for the player with wich the client will
+     *
+     * @param gameID unique gameID to be associated to the game which we create
+     * @param username   the username for the player with which the client will
      *                   connect
      * @param numPlayers the number of players for the game
      * @return the status of the request, can be SUCCESS, GAME_ID_TAKEN if the
      *         gameID is already taken
      */
-    public abstract ResponseStatus createGame(String username, int numPlayers);
+    public abstract ResponseStatus createGame(String gameID, String username, int numPlayers);
 
     /**
      * Connects to an existing game with the given gameID and username

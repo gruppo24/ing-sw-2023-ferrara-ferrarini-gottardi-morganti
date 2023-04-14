@@ -20,12 +20,28 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
  * @author Morganti Tommaso
  */
 public class SocketConnection extends Connection {
-    private final Socket socket;
-    private final ObjectInputStream in;
-    private final ObjectOutputStream out;
+    private final String host;
+    private final int port;
 
-    public SocketConnection(String host, int port) throws UnknownHostException, IOException {
+    private Socket socket;
+    private ObjectInputStream in;
+    private ObjectOutputStream out;
+
+    public SocketConnection(String host, int port) {
         super();
+        this.host = host;
+        this.port = port;
+    }
+
+    @Override
+    public void establishConnection() throws IOException {
+        // If a socket already exists, we close it first
+        if (this.socket != null) {
+            try { out.close(); } catch (IOException ex) { System.out.println("Error closing ObjectOutputStream"); }
+            try { in.close(); } catch (IOException ex) { System.out.println("Error closing ObjectInputStream"); }
+            this.socket.close();
+        }
+
         this.socket = new Socket(host, port);
         this.out = new ObjectOutputStream(this.socket.getOutputStream());
         this.in = new ObjectInputStream(this.socket.getInputStream());
@@ -51,9 +67,9 @@ public class SocketConnection extends Connection {
     }
 
     @Override
-    public ResponseStatus createGame(String username, int numPlayers) {
+    public ResponseStatus createGame(String gameID, String username, int numPlayers) {
         final ResponsePacket response = (ResponsePacket) this.sendPacket(ContentType.CREATE_GAME,
-                new CreateGame(CreateGame.generateGameID(), username, numPlayers));
+                new CreateGame(gameID, username, numPlayers));
         return response.status;
     }
 

@@ -39,12 +39,11 @@ public final class PrivateCard implements Serializable {
     public PrivateCard(String identifier, Map<TileType, Integer[]> objectives) {
         this.identifier = identifier;
         this.objectives = objectives;
-        String desc = "Private Objective:\n";
+        StringBuilder desc = new StringBuilder();
         for (TileType type : objectives.keySet()) {
-            desc += " " + type.toString() + ": (" + objectives.get(type)[0] + ","
-                    + objectives.get(type)[1] + ")\n";
+            desc.append(type.toString()).append(": (").append(objectives.get(type)[0]).append(",").append(objectives.get(type)[1]).append("), ");
         }
-        this.description = desc;
+        this.description = desc.toString();
     }
 
     /**
