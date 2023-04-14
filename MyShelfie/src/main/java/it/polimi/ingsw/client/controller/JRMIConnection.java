@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class JRMIConnection extends Connection{
+
     public JRMIConnection(){
         super();
     }

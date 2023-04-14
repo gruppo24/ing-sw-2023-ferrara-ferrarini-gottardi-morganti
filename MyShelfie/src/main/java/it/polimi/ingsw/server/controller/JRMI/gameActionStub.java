@@ -13,5 +13,4 @@ public interface gameActionStub extends Remote {
     SharedGameState pickTile(int x, int y) throws RemoteException;
 
     SharedGameState reorder(int first, int second, int third) throws RemoteException;
-
 }

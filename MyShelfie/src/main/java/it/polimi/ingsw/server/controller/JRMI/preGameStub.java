@@ -14,5 +14,4 @@ public interface preGameStub extends Remote {
 
     public ResponseStatus connectToGame(String gameId, String username, boolean rejoining) throws RemoteException;
 
-
 }
