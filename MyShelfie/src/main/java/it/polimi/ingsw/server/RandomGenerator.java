@@ -5,7 +5,8 @@ import java.util.Collections;
 /**
  * Class containing method that generates numbers randomly
  *
- * @author Ferrara Silvia and Gottardi Arianna
+ * @author Ferrara Silvia
+ * @author Gottardi Arianna
  */
 
 public class RandomGenerator {
