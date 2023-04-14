@@ -8,12 +8,16 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 target/
+backups/
 
 # Ignore .DS_Store files on Mac OS
 .DS_Store
 
 # Ignore game assets
 assets/*
+
+# Ignore recovery files director
+tmp/*
 
 # User-specific stuff
 .idea/**/workspace.xml

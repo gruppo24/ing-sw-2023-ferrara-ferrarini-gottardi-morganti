@@ -1,10 +1,12 @@
 package it.polimi.ingsw.server;
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Class containing method that generates numbers randomly
  *
- * @author Ferrara Silvia and Gottardi Arianna
+ * @author Ferrara Silvia
+ * @author Gottardi Arianna
  */
 
 public class RandomGenerator {
@@ -16,26 +18,17 @@ public class RandomGenerator {
      * @return array that will contain random numbers from 0 to 11
      */
     public static int[] random(int dim) {
-        boolean isIn = false; //indicates if a number has already been generated
-        int[] randomPositions = new int[dim]; //array that will contain all the random numbers from 0 to 11
-        int count = 0; //indicates the indices of the last number saved in the array randomPositions
+        int[] myArray = new int[dim];
+        ArrayList<Integer> numOfCards = new ArrayList<>();
 
-        //we iterate in order to populate with different
-        //random numbers from 0 to 12 the array randomPositions
-        do {
-            int x = new Random().nextInt(12);
-            for (int i = 0; i < dim; i++) {
-                if (x == randomPositions[i]) {
-                    isIn = true;
-                    break;
-                }
-            }
-            if(!isIn){
-                randomPositions[count] = x;
-                count++;
-            }
-            isIn = false;
-        } while (count < dim);
-        return randomPositions;
+        for(int i=0; i<12; i++) {
+            numOfCards.add(i);
+        }
+
+        Collections.shuffle(numOfCards);
+        for(int i=0; i<dim; i++)
+            myArray[i] = numOfCards.get(i);
+
+        return myArray;
     }
 }

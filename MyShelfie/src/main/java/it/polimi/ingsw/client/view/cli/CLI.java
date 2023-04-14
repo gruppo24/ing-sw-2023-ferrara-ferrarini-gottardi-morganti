@@ -1,26 +1,30 @@
 package it.polimi.ingsw.client.view.cli;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
+import it.polimi.ingsw.client.ReconnectionHandler;
 import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.controller.SocketConnection;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.common.messages.requests.CreateGame;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
-import javax.swing.*;
+import static it.polimi.ingsw.client.Client.*;
+
 
 /**
  * CLI class, implements the command line interface for the client
  * It's an all encomassing class for the view via terminal
  * 
  * @author Morganti Tommaso
+ * @author Ferrarini Andrea
  */
 public class CLI {
 
@@ -37,13 +41,24 @@ public class CLI {
 
     public CLI() throws IOException {
         System.out.println("Select server (1 - Socket, 2 - jRMI):");
-        char choice = in.next().charAt(0);
-        if (choice == '1') {
-            this.connection = new SocketConnection("localhost", 5050);
-        } else if (choice == '2') {
-            this.connection = new SocketConnection("localhost", 5050);
-            //this.connection = new JRMIConnection("localhost", 1059);
+        boolean valid = false;
+        while (!valid) {
+            valid = true;
+            char choice = in.next().charAt(0);
+            if (choice == '1') {
+                this.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
+            } else if (choice == '2') {
+                this.connection = new SocketConnection(SERVER_ADDR, JRMI_PORT);
+                //this.connection = new JRMIConnection("localhost", 1059);
+            } else {
+                System.out.println("Invalid choice...");
+                valid = false;
+            }
         }
+
+        // After having selected the type of connection, we actually open a
+        // communication channel with the server
+        this.connection.establishConnection();
 
     }
 
@@ -70,6 +85,7 @@ public class CLI {
                     System.out.println("Exiting...");
                     System.exit(0);
                 }
+                case '0' -> manualRejoin();
                 default -> {
                     System.out.println("Invalid choice");
                     menu();
@@ -102,11 +118,18 @@ public class CLI {
         System.out.println("Enter your username: ");
         String username = in.next();
 
+        String gameID = CreateGame.generateGameID();
         System.out.println("Creating game with " + numPlayers + " players...");
 
-        ResponseStatus res = this.connection.createGame(username, numPlayers);
+        ResponseStatus res = this.connection.createGame(gameID, username, numPlayers);
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
+
+            // After successful game creation, we store our current game session information
+            // for possible future game reconnections
+            ReconnectionHandler rh = new ReconnectionHandler();
+            rh.setParameters(gameID, username);
+
             this.game();
         } else {
             System.out.println(res);
@@ -116,19 +139,69 @@ public class CLI {
     /**
      * Joins a game or rejoins an existing game session after a disconnection
      */
-    private void joinGame(boolean joining) {
-        System.out.println("Enter game ID: ");
-        String gameID = in.next();
-        System.out.println("Enter your username: ");
-        String username = in.next();
+    private void joinGame(boolean rejoining) {
+        String gameID, username;
+        ReconnectionHandler rh = new ReconnectionHandler();
 
-        ResponseStatus res = this.connection.connectToGame(gameID, username, joining);
+        // Checking if we are joining a game for the first time or rejoining a session
+        if (rejoining) {
+            // Trying to recover session information here:
+            try {
+                String[] sessionInformation = rh.getParameters();
+                gameID = sessionInformation[0];
+                username = sessionInformation[1];
+            } catch (FileNotFoundException ex) {
+                System.out.println("ERROR: couldn't find recovery file (moved or deleted)");
+                return;
+            } catch (IOException ex) {
+                System.out.println("ERROR: couldn't read recovery file for reconnection...");
+                return;
+            } catch (ClassNotFoundException ex) {
+                System.out.println("ERROR: couldn't decode data stored in recovery file...");
+                return;
+            }
+        } else {
+            System.out.println("Enter game ID: ");
+            gameID = in.next();
+            System.out.println("Enter your username: ");
+            username = in.next();
+        }
+
+        // If previous operations were successful, (re)join a game
+        ResponseStatus res = this.connection.connectToGame(gameID, username, rejoining);
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
+
+            // After successful game (re)joining, we store our current game session information
+            // for possible future game reconnections
+            rh.setParameters(gameID, username);
+
             this.game();
         } else {
             System.out.println(res);
         }
+
+    }
+
+    private void manualRejoin() {
+        System.out.println("=== MANUAL REJOIN (debugging only) ===\nEnter game ID and username: ");
+        String gameID = in.next();
+        String username = in.next();
+        ResponseStatus res = this.connection.connectToGame(gameID, username, true);
+
+        if (res == ResponseStatus.SUCCESS) {
+            this.myUsername = username;
+
+            // After successful game (re)joining, we store our current game session information
+            // for possible future game reconnections
+            ReconnectionHandler rh = new ReconnectionHandler();
+            rh.setParameters(gameID, username);
+
+            this.game();
+        } else {
+            System.out.println(res);
+        }
+
     }
 
     /**
@@ -154,7 +227,20 @@ public class CLI {
                     handleTurn(gameState);
         }
 
-        System.out.println("GAME IS OVER");
+        System.out.println("=== GAME IS OVER ===\nFinal leaderboard: ");
+        for (String player : gameState.leaderboard.keySet())
+            System.out.println(" ".repeat(4) + "- " + player + ": " + gameState.leaderboard.get(player) + "pts");
+        System.out.println("\nPress any key to go back to menu...");
+        in.next();
+        CLIUtils.clearScreen();
+
+        // TCP/jRMI communication channel will be closed when the game is terminated.
+        // For this reason, we reopen a new connection
+        try {
+            this.connection.establishConnection();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
 
     /**
@@ -169,17 +255,18 @@ public class CLI {
             else
                 myIndex++;
 
+        // Printing who is the first player of the game
+        if (myIndex == game.armchairIndex) System.out.println(CLIUtils.makeItalic("You have the armchair!"));
+        else System.out.println(CLIUtils.makeItalic(game.players[game.armchairIndex] + " has the armchair"));
+
         // Printing whether this is the final round of the game
         if (game.isFinalRound)
             System.out.println(CLIUtils.makeBold(CLIUtils.color(
                     CLIUtils.color("FINAL ROUND OF THE GAME", CLIColor.ANSI_BACKGROUND_RED)
-                    , CLIColor.ANSI_WHITE))
+                    , CLIColor.ANSI_BLACK))
             );
         else
             System.out.println();
-
-        // Printing whether the player is the first player of the turn
-        System.out.println();
 
         // At first, we print our own library along with
         // our selectionBuffer and selectedColumn, if they are
@@ -199,15 +286,22 @@ public class CLI {
                 else
                     System.out.print(CLIUtils.tilePickable(tile));
             }
-            // If we have reached the third row, we also print our selection buffer
+            // Depending on the row, we print further information for the user
             if (row == 3 && game.selectionBuffer != null) {
-                System.out.print(" ".repeat(8) + "[");
+                // If we have reached the third row, we also print our selection buffer
+                System.out.print(" ".repeat(8) + "Tiles picked: [");
                 for (TileType tile : game.selectionBuffer)
                     if (tile == null)
                         System.out.print("  ");
                     else
                         System.out.print(tile + " ");
                 System.out.print("]");
+            } else if (row == 2) {
+                // If we have reached the fourth row, we also print our cluster points
+                System.out.print(" ".repeat(8) + CLIUtils.makeBold(game.clusterPts + " cluster points obtained"));
+            } else if (row == 1) {
+                // If we have reached the fifth row, we also print our common points
+                System.out.print(" ".repeat(8) + CLIUtils.makeBold(game.commonPts + " common points obtained"));
             }
             System.out.println();   // New line
         }
@@ -260,8 +354,6 @@ public class CLI {
 
                 if (player.length() > 2 * game.libraries[myIndex].length)   // Trimming player username if necessary
                     player = player.substring(0, 2 * game.libraries[myIndex].length) + "...";
-                if (playerIndex == game.armchairIndex)  // Checking if the player is the first player
-                    player = player + "(0)";
                 int padding = 2*game.libraries[myIndex].length - player.length();
 
                 if (playerIndex == game.currPlayerIndex)    // If it's the players turn, we make their username bold
@@ -277,9 +369,17 @@ public class CLI {
         printBoard(game.boardContent, game.boardState);
 
         // Before returning, we print the current common and private objectives
-        for (String commonDesc : game.commonsDesc)
-            System.out.println(CLIUtils.makeBold("Common objective: ") + commonDesc);
-        System.out.println(CLIUtils.makeBold("Your private objective: ") + game.privateDesc);
+        System.out.println();
+        for (int commonIndex=0; commonIndex < game.commonsDesc.length; commonIndex++) {
+            System.out.println(CLIUtils.makeBold("Common objective: ") + game.commonsDesc[commonIndex]);
+            System.out.print(" ".repeat(8) + "Obtained by: ");
+            for (String commonAchiever : game.commonsAchievers[commonIndex])
+                if (commonAchiever != null)
+                    System.out.print(CLIUtils.makeBold(commonAchiever) + " ");
+            System.out.println();
+        }
+        System.out.print(CLIUtils.makeBold("Your private objective: ") + game.privateDesc);
+        System.out.println(CLIUtils.makeBold(CLIUtils.makeItalic(" (" + game.privatePts + "pts obtained so far)")));
     }
 
     /**
@@ -327,9 +427,9 @@ public class CLI {
 
         // Checking if it is possible to pick tiles
         if (this.areThereTilesPickable(game.boardState) && game.selectionBuffer[game.selectionBuffer.length-1] == null) {
-            System.out.print("Pick a tile - tile x coordinate (-1 if done):");
+            System.out.print("Pick a tile - tile x coordinate (-1 if done): ");
             int x = in.nextInt();
-            System.out.print("Pick a tile - tile y coordinate (also -1 if done):");
+            System.out.print("Pick a tile - tile y coordinate (also -1 if done): ");
             int y = in.nextInt();
 
             // Checking if the player has actually picked a tile

@@ -25,8 +25,11 @@ public class ListGames extends PacketContent {
         // Constructing response object
         GamesList responsePacket = new GamesList();
         responsePacket.availableGames = new HashMap<>();
-        for (GameState game : GAMES)
-            responsePacket.availableGames.put(game.getGameID(), game.getPlayerStatus());
+        for (GameState game : GAMES) {
+            int[] status = game.getPlayerStatus();
+            // Only returning games which still have space for new players
+            if (status[0] < status[1]) responsePacket.availableGames.put(game.getGameID(), status);
+        }
         responsePacket.status = ResponseStatus.SUCCESS;
 
         // Serializing response object and sending it back to the client

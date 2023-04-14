@@ -30,7 +30,6 @@ public class Player implements Serializable {
     private int privatePoints = 0;
     private int clusterPoints = 0;
     protected int[] commonsOrder = {0, 0};  // OK to read-write within same package
-    private boolean firstFilled = false;
 
     // Game action attributes
     private int selectedColumn;
@@ -157,7 +156,6 @@ public class Player implements Serializable {
                     return false;  // NOT filled cell found...
 
         // If we fall through the entire loop, we return true
-        this.firstFilled = true;
         return true;
     }
 
@@ -260,9 +258,11 @@ public class Player implements Serializable {
      * @throws AlreadyUsedIndex when the same index is provided more than once
      * @throws InvalidReorderingIndices when the index of an unused cell (no tile pushed into
      *                                  it) is provided for reordering
+     * @throws IndexOutOfBoundsException when an invalid index is provided
      */
     public void reorderSelectionBuffer(int firstIndex, int secondIndex, int thirdIndex)
-            throws AlreadyUsedIndex, InvalidReorderingIndices {
+            throws AlreadyUsedIndex, InvalidReorderingIndices, IndexOutOfBoundsException {
+        System.out.println(firstIndex + ", " + secondIndex + ", " + thirdIndex);
         // Checking if the indices are all different
         if (firstIndex == secondIndex) throw new AlreadyUsedIndex(1);
         if (secondIndex == thirdIndex) throw new AlreadyUsedIndex(2);
@@ -270,20 +270,17 @@ public class Player implements Serializable {
 
         // Checking that all unused cells are untouched during reordering
         if (this.selectionBuffer[0] == null && firstIndex != 0) throw new InvalidReorderingIndices(0);
-        if (this.selectionBuffer[1] == null && secondIndex != 1) throw new InvalidReorderingIndices(1);
-        if (this.selectionBuffer[2] == null && thirdIndex != 2) throw new InvalidReorderingIndices(2);
+        if (this.selectionBuffer.length > 1 && this.selectionBuffer[1] == null && secondIndex != 1) throw new InvalidReorderingIndices(1);
+        if (this.selectionBuffer.length > 2 && this.selectionBuffer[2] == null && thirdIndex != 2) throw new InvalidReorderingIndices(2);
 
-        // Making a temp copy of the current buffer
-        TileType[] tmp = {
-                this.selectionBuffer[0],
-                this.selectionBuffer[1],
-                this.selectionBuffer[2]
-        };
+        // Making a temp deep-copy of the current buffer
+        TileType[] tmp = new TileType[this.selectionBuffer.length];
+        System.arraycopy(this.selectionBuffer, 0, tmp, 0, this.selectionBuffer.length);
 
         // Reordering the selection buffer
         this.selectionBuffer[0] = tmp[firstIndex];
-        this.selectionBuffer[1] = tmp[secondIndex];
-        this.selectionBuffer[2] = tmp[thirdIndex];
+        if (this.selectionBuffer.length > 1) this.selectionBuffer[1] = tmp[secondIndex];
+        if (this.selectionBuffer.length > 2) this.selectionBuffer[2] = tmp[thirdIndex];
     }
 
     /**
