@@ -4,14 +4,14 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface gameActionStub extends Remote {
+public interface GameActionStub extends Remote {
 
-    public SharedGameState waitTurn() throws RemoteException;
+    SharedGameState waitTurn() throws RemoteException;
 
-    public SharedGameState selectColumn(int column) throws RemoteException;
+    SharedGameState selectColumn(int column) throws RemoteException;
 
-    public SharedGameState pickTile(int x, int y) throws RemoteException;
+    SharedGameState pickTile(int x, int y) throws RemoteException;
 
-    public SharedGameState reorder(int first, int second, int third) throws RemoteException;
+    SharedGameState reorder(int first, int second, int third) throws RemoteException;
 
 }
