@@ -1,10 +1,10 @@
-package it.polimi.ingsw.server;
+package it.polimi.ingsw.server.controller.JRMI;
 
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface GameActionStub extends Remote {
+public interface gameActionStub extends Remote {
 
     SharedGameState waitTurn() throws RemoteException;
 

@@ -3,6 +3,7 @@ package it.polimi.ingsw.client.controller;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
+import java.io.IOException;
 import java.util.Map;
 
 public class JRMIConnection extends Connection{
@@ -16,7 +17,10 @@ public class JRMIConnection extends Connection{
     }
 
     @Override
-    public ResponseStatus createGame(String username, int numPlayers) {
+    public void establishConnection() throws IOException{};
+
+    @Override
+    public ResponseStatus createGame(String gameID, String username, int numPlayers) {
         return null;
     }
 

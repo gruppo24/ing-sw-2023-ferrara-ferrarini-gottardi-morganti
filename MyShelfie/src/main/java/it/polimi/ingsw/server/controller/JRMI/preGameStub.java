@@ -7,8 +7,12 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 public interface preGameStub extends Remote {
+
     public Map<String, int[]> getAvailableGames() throws RemoteException;
+
     public ResponseStatus createGame(String username, int numPlayers) throws RemoteException;
+
     public ResponseStatus connectToGame(String gameId, String username, boolean rejoining) throws RemoteException;
+
 
 }
