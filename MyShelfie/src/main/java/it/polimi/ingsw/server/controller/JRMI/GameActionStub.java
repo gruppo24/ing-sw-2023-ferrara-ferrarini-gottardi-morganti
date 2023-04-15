@@ -4,7 +4,7 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface GameActionStub extends Remote {
+public interface gameActionStub extends Remote {
 
     SharedGameState waitTurn() throws RemoteException;
 
