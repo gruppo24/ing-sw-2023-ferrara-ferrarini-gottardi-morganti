@@ -5,9 +5,7 @@ import it.polimi.ingsw.common.TileType;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Representation of the game board, one for each game.
@@ -53,6 +51,11 @@ public class Board implements Serializable {
      * documented at {@link TileState}
      */
     private TileState[][] boardState = new TileState[9][9];
+
+    /**
+     * This attribute keeps track of the coordinates of the tiles picked by a player during their turn
+     */
+    private List<int[]> picked = new LinkedList<>();;
 
     public TileType[][] getBoardContent() {
         // Computing deep-copy of the board content matrix
@@ -129,6 +132,18 @@ public class Board implements Serializable {
     }
 
     /**
+     * Helper method which checks whether a pair of coordinates if contained in the picked attribute
+     * @param test coordinates to test (as an array of int of length 2)
+     * @return whether the provided coordinates are already present in the picked linked-list
+     */
+    private boolean pickedContains(int[] test) {
+        for (int [] coords : this.picked)
+            if (coords[0] == test[0] && coords[1] == test[1])
+                return true;
+        return false;
+    }
+
+    /**
      * method that checks at the end of the current player turn if there are "legal"
      * available moves for the next player
      * 
@@ -185,56 +200,91 @@ public class Board implements Serializable {
      * @param y          y coordinate of the tile
      * @param constraint maximum number of tiles that can be picked (based on free
      *                   cells in a player's library)
-     * @return the type of the picked tile to be put in the player's pick buffer
+     * @return the type of the picked tile to be put in the player's pick buffer, null if the tile isn't pick-able
      */
-    public TileType pick(int x, int y, int constraint) {
+    public TileType pick(int x, int y, int constraint) {        // FIXME - DEBUG
         // If indices provided are out of range, we return null immediately
-        if (x >= this.boardContent.length || y >= this.boardContent[0].length) return null;
-        // If the selected tile isn't pick-able, we return null immediately
-        if (this.boardState[x][y] != TileState.PICKABLE) return null;
+        if (x >= this.boardContent.length || y >= this.boardContent[0].length || x < 0 || y < 0)
+            return null;
 
-        // We simply iterate over the board...
-        for (int column = 0; column < boardState.length; column++) {
-            for (int row = 0; row < boardState[0].length; row++) {
-                if (constraint == 0) {
-                    // If, at current time, the player is limited to zero more picks, we simply
-                    // zero-out the entire boardState matrix
-                    boardState[column][row] = TileState.NOT_PICKABLE;
-                } else if (boardState[column][row] == TileState.PICKABLE) {
-                    // If the player can actually make some picks (constraint > 1), we check only
-                    // those cells which were already pick-able before (=they already had a free
-                    // edge)
-                    if (((column == x && (row == y - 2 || row == y + 2))
-                            || (row == y && (column == x - 2 || column == x + 2)))
-                            && constraint > 1) {
-                        // If constraint is even greater than 1, and the analysed cell is inline with
-                        // the
-                        // picked one, we set the cell-state to PICKABLE_NEXT (= can be picked on
-                        // subsequent pick)
-                        boardState[column][row] = TileState.PICKABLE_NEXT;
-                    } else if (!(
-                            (column == x && (row == y - 1 || row == y + 1)) ||
-                            (row == y && (column == x - 1 || column == x + 1))
-                                )) {
-                        // Any other cell (not inline with the current one, or which are "too far",
-                        // are not pick-able even in future picks
-                        boardState[column][row] = TileState.NOT_PICKABLE;
-                    }
-                } else if (boardState[column][row] == TileState.PICKABLE_NEXT) {
-                    // If a cell had state equal to 2 (and constraint != 0), then now,
-                    // if it is adjacent to the last picked cell, it will change state to 1
-                    if (column == x - 1 || column == x + 1 || row == y - 1 || row == y + 1)
-                        boardState[column][row] = TileState.PICKABLE;
-                    else
-                        boardState[column][row] = TileState.NOT_PICKABLE;
-                }
-            }
+        // If the selected tile isn't pick-able, we return null immediately
+        if (this.boardState[x][y] != TileState.PICKABLE)
+            return null;
+
+        // We add these coordinates to the picked cache
+        this.picked.add(new int[]{x, y});
+
+        // Otherwise,
+        TileState[][] nextBoardState = new TileState[this.boardState.length][this.boardState[0].length];
+
+        // By default, after a pick we consider all tiles not pick-able
+        for (int row=0; row < nextBoardState.length; row++)
+            for (int column=0; column < nextBoardState[row].length; column++)
+                nextBoardState[row][column] = TileState.NOT_PICKABLE;
+
+        // Now, we move in a line upward, rightward, downward and leftward from the picked tile,
+        // and check, depending on the constraint argument, values of (x, y) and whether tiles
+        // are present or not, which ones are still pick-able, which are pick-able next
+        int increment = 0;
+        for (int up=1; up <= constraint + increment; up++) {
+            if (y + up >= nextBoardState[0].length ||
+                    ((this.boardContent[x][y+up] == null || this.boardState[x][y+up] == TileState.NOT_PICKABLE) &&
+                            !this.pickedContains(new int[]{x, y+up})))
+                            break;
+
+            // Tiles which have been picked are not to be counted while moving inline
+            if (!this.pickedContains(new int[]{x, y+up}))
+                nextBoardState[x][y+up] = up - increment == 1 ? TileState.PICKABLE : TileState.PICKABLE_NEXT;
+            else
+                increment++;
+        }
+
+        increment = 0;
+        for (int right=1; right <= constraint + increment; right++) {
+            if (x + right >= nextBoardState[0].length ||
+                    ((this.boardContent[x+right][y] == null || this.boardState[x+right][y] == TileState.NOT_PICKABLE) &&
+                            !this.pickedContains(new int[]{x+right, y})))
+                break;
+
+            // Tiles which have been picked are not to be counted while moving inline
+            if (!this.pickedContains(new int[]{x+right, y}))
+                nextBoardState[x+right][y] = right - increment == 1 ? TileState.PICKABLE : TileState.PICKABLE_NEXT;
+            else
+                increment++;
+        }
+
+        increment = 0;
+        for (int down=1; down <= constraint + increment; down++) {
+            if (y - down < 0 ||
+                    ((this.boardContent[x][y-down] == null || this.boardState[x][y-down] == TileState.NOT_PICKABLE) &&
+                            !this.pickedContains(new int[]{x, y-down})))
+                break;
+
+            // Tiles which have been picked are not to be counted while moving inline
+            if (!this.pickedContains(new int[]{x, y-down}))
+                nextBoardState[x][y-down] = down - increment == 1 ? TileState.PICKABLE : TileState.PICKABLE_NEXT;
+            else
+                increment++;
+        }
+
+        increment = 0;
+        for (int left=1; left <= constraint + increment; left++) {
+            if (y - left < 0 ||
+                    ((this.boardContent[x-left][y] == null || this.boardState[x-left][y] == TileState.NOT_PICKABLE) &&
+                            !this.pickedContains(new int[]{x-left, y})))
+                break;
+
+            // Tiles which have been picked are not to be counted while moving inline
+            if (!this.pickedContains(new int[]{x-left, y}))
+                nextBoardState[x-left][y] = left - increment == 1 ? TileState.PICKABLE : TileState.PICKABLE_NEXT;
+            else
+                increment++;
         }
 
         // Removing picked tile and returning it to caller
         TileType picked_tile = this.boardContent[x][y];
         this.boardContent[x][y] = null;
-        this.boardState[x][y] = TileState.NOT_PICKABLE;
+        this.boardState = nextBoardState;  //this.boardState[x][y] = TileState.NOT_PICKABLE;
         return picked_tile;
     }
 
@@ -248,6 +298,9 @@ public class Board implements Serializable {
      * set by the pick method, after a player picks his first tile.
      */
     public void definePickable() {
+        // When this method is called, the picked tiles cache should be reset
+        this.picked = new LinkedList<>();
+
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (boardContent[i][j] == null) {

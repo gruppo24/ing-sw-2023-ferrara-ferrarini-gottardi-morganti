@@ -20,7 +20,7 @@ public class preGameStubImpl extends UnicastRemoteObject implements preGameStub{
 
     @Override
     public Map<String, int[]> getAvailableGames() throws RemoteException {
-       return  null;
+        return null;
     }
     @Override
     public ResponseStatus createGame(String username, int numPlayers) throws RemoteException{

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.model;
 
 import it.polimi.ingsw.common.TileType;
+import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
 import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 import it.polimi.ingsw.server.exceptions.SelectionBufferFullException;
@@ -48,6 +49,29 @@ public class PlayerTest {
 
     @After
     public void tearDown() { /* Do nothing */ }
+
+    // ==================== privateCard getter/setter ====================
+    @Test
+    public void setPrivateCard_privateCardNotSet_shouldReturnNull() {
+        Player secondPlayer = new Player("someUsername");
+        assertNull(secondPlayer.getPrivateCard());
+    }
+
+    @Test
+    public void setPrivateCard_setsAPrivateCard_shouldSetPrivateCard() {
+        Player secondPlayer = new Player("someUsername");
+        secondPlayer.setPrivateCard(Server.privateCards[0]);
+        assertEquals(secondPlayer.getPrivateCard(), Server.privateCards[0]);
+    }
+
+    @Test
+    public void setPrivateCard_setsAPrivateCardTwice_shouldNotResetPrivateCard() {
+        Player secondPlayer = new Player("someUsername");
+        secondPlayer.setPrivateCard(Server.privateCards[0]);
+        secondPlayer.setPrivateCard(Server.privateCards[1]);
+        assertEquals(secondPlayer.getPrivateCard(), Server.privateCards[0]);
+    }
+
 
     // ==================== equals ====================
     @Test
