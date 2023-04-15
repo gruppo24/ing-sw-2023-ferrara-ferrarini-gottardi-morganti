@@ -51,8 +51,10 @@ public class BoardTest {
         // pick all tiles except the (4,4) and (5,5), not adjacent cells
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 5))
+                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 5)) {
                     board.pick(i, j, 1);
+                    board.definePickable();
+                }
             }
         }
         Assert.assertTrue(board.shouldBeRefilled());
@@ -135,6 +137,17 @@ public class BoardTest {
 
         board.pick(4, 1, 1);
         Assert.assertNull(board.getBoardContent()[4][1]);
+    }
+
+    @Test
+    public void pick_outOfRange_shouldReturnNUll() {
+        board.refillBoard(2);
+        board.definePickable();
+
+        Assert.assertNull(this.board.pick(-1, 1, 2));
+        Assert.assertNull(this.board.pick(4, -1, 2));
+        Assert.assertNull(this.board.pick(99, 1, 2));
+        Assert.assertNull(this.board.pick(4, 99, 2));
     }
 
     @Test
@@ -316,8 +329,27 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && column == 6 && row == 3
+                                newState[column][row] == TileState.PICKABLE && (column == 6 || column == 3)
+                                        && row == 3
                 );
+    }
+
+    @Test
+    public void pick_test1_() {
+        board.refillBoard(2);
+        board.definePickable();
+
+        board.pick(3, 7, 2);
+        board.pick(3, 6, 2);
+        board.definePickable();
+
+        board.pick(3, 5, 2);
+        board.definePickable();
+
+        board.pick(4, 6, 2);
+        board.pick(4, 7, 2);
+
+        assertEquals(board.getBoardState()[4][5], TileState.PICKABLE);
     }
 
     // ==================== definePickable ====================
