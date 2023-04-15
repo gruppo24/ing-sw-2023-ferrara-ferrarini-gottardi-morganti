@@ -173,7 +173,7 @@ public class GameState implements Serializable {
             this.gameOngoing = true;
 
             //Assign each player a private card calling random of RandomGenerator
-            // (in order to have a different card for each player)
+            //(in order to have a different card for each player)
             int[] random = RandomGenerator.random(players.length);
             for(int i = 0 ; i < players.length; i++)
                 players[i].setPrivateCard(privateCards[random[i]]);
