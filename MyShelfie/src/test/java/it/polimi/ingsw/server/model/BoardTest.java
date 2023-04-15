@@ -335,7 +335,7 @@ public class BoardTest {
     }
 
     @Test
-    public void pick_test1_() {
+    public void pick_verticalInlineScenario_distanceTwoTileShouldBePickable() {
         board.refillBoard(2);
         board.definePickable();
 
