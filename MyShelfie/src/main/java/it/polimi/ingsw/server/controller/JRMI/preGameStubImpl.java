@@ -13,14 +13,14 @@ import java.util.Map;
 import static it.polimi.ingsw.server.Server.GAMES;
 import static it.polimi.ingsw.server.controller.socket.TCPPregameChannel.sendEmptyMessage;
 
-public class preGameStubImpl extends UnicastRemoteObject implements preGameStub{
-    public preGameStubImpl() throws RemoteException {
+public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub {
+    public PreGameStubImpl() throws RemoteException {
         super();
     }
 
     @Override
     public Map<String, int[]> getAvailableGames() throws RemoteException {
-        return null;
+       return  null;
     }
     @Override
     public ResponseStatus createGame(String username, int numPlayers) throws RemoteException{
