@@ -1,6 +1,6 @@
 package it.polimi.ingsw.common.messages.requests;
 
-import it.polimi.ingsw.server.controller.socket.Contextable;
+import it.polimi.ingsw.server.controller.Contextable;
 
 import java.io.Serial;
 

@@ -202,7 +202,7 @@ public class Board implements Serializable {
      *                   cells in a player's library)
      * @return the type of the picked tile to be put in the player's pick buffer, null if the tile isn't pick-able
      */
-    public TileType pick(int x, int y, int constraint) {        // FIXME - DEBUG
+    public TileType pick(int x, int y, int constraint) {
         // If indices provided are out of range, we return null immediately
         if (x >= this.boardContent.length || y >= this.boardContent[0].length || x < 0 || y < 0)
             return null;

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server.controller.socket;
 
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
+import it.polimi.ingsw.server.controller.Contextable;
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 
