@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.stubs;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.util.HashMap;
 
 /**
@@ -10,10 +11,10 @@ import java.util.HashMap;
  * @author Ferrara Silvia
  */
 public interface PreGameStub extends Remote {
-    HashMap<String, int[]> getAvailableGames();
+    HashMap<String, int[]> getAvailableGames() throws RemoteException;
 
-    ResponseStatus createGame(String gameId, int numPlayers, String username);
+    ResponseStatus createGame(String gameID, int numPlayers, String username) throws RemoteException;
 
-    ResponseStatus joinGame(String gameId, String username);
+    ResponseStatus joinGame(String gameID, String username) throws RemoteException;
 
 }

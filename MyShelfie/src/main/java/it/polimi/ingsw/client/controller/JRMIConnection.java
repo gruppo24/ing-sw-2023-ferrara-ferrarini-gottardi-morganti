@@ -45,12 +45,24 @@ public class JRMIConnection extends Connection{
 
     @Override
     public Map<String, int[]> getAvailableGames() {
-        return preGame.getAvailableGames();
+        try {
+            return preGame.getAvailableGames();
+        } catch (RemoteException e){
+            System.out.println("Remote Exception" + e);
+        }
+        return null;
     }
 
     @Override
     public ResponseStatus createGame(String gameID, String username, int numPlayers) {
-        ResponseStatus status = preGame.createGame(gameID, numPlayers, username);
+        ResponseStatus status = ResponseStatus.SUCCESS;
+        try {
+            status = preGame.createGame(gameID, numPlayers, username);
+        }catch (RemoteException e){
+            System.out.println("Remote exception "+ e);
+            status = ResponseStatus.INVALID_REQUEST;
+        }
+
         if (status == ResponseStatus.SUCCESS) {
             try {
                 this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
@@ -65,7 +77,12 @@ public class JRMIConnection extends Connection{
     public ResponseStatus connectToGame(String gameID, String username, boolean rejoining){
         ResponseStatus status = ResponseStatus.SUCCESS;
         if(!rejoining) {
-            status = preGame.joinGame(gameID, username);
+            try {
+                status = preGame.joinGame(gameID, username);
+            }catch (RemoteException e){
+                System.out.println("Remote exception "+ e);
+                status = ResponseStatus.INVALID_REQUEST;
+            }
             if (status == ResponseStatus.SUCCESS) {
                 try {
                     this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
@@ -87,22 +104,39 @@ public class JRMIConnection extends Connection{
 
     @Override
     public SharedGameState waitTurn(){
-        return gameAction.waitTurn();
+        try {
+            return gameAction.waitTurn();
+        }catch (RemoteException e){
+            System.out.println("Remote Exception: "+ e);
+        }
+        return null;
     }
 
     @Override
     public SharedGameState selectColumn(int column){
-        return gameAction.selectColumn(column);
+        try {
+            return gameAction.selectColumn(column);
+        }catch (RemoteException e){
+            System.out.println("Remote Exception: " + e);
+        }
+        return null;
     }
-
     @Override
     public SharedGameState pickTile(int x, int y){
-        return gameAction.pickTile(x, y);
+        try {
+            return gameAction.pickTile(x, y);
+        }catch (RemoteException e){
+            System.out.println("Remote Exception: " + e);
+        }
+        return null;
     }
-
     @Override
     public SharedGameState reorder(int first, int second, int third){
-        return gameAction.reorder(first, second, third);
-
+        try {
+            return gameAction.reorder(first, second, third);
+        }catch (RemoteException e){
+            System.out.println("Remote Exception: "+ e);
+        }
+        return null;
     }
 }

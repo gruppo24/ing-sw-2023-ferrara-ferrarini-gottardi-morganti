@@ -1,5 +1,6 @@
 package it.polimi.ingsw.server;
 
+import it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl;
 import it.polimi.ingsw.server.model.*;
 import it.polimi.ingsw.server.controller.socket.SockServer;
 
@@ -7,6 +8,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,12 +19,15 @@ public class Server implements Serializable {
     // Global variables, accessible from anywhere
     public static final List<GameState> GAMES = new LinkedList<>();
     public static final int SOCKET_PORT = 5050;
+    public static final int JRMI_PORT = 1059;
 
     // Array containing the instantiation of PrivateCards
     public static final PrivateCard[] privateCards = new PrivateCard[12];
 
     // Array containing the instantiation of CommonCards
     public static final CommonCard[] commonCards = new CommonCard[12];
+
+    private static Registry registry;
 
     /**
      * Method that populates commonCards array
@@ -96,6 +103,14 @@ public class Server implements Serializable {
         socketThread.start();
 
         // Start jRMI server
-        System.out.println("[main] >>> Starting jRMI server - will listen on default port 1059");
+        System.out.print("[main] >>> Starting jRMI server ---> ");
+        try {
+            registry = LocateRegistry.createRegistry(JRMI_PORT);
+            System.out.println("JRMI server listening on port " + JRMI_PORT);
+            PreGameStubImpl preGame = new PreGameStubImpl(registry);
+            registry.rebind("remotePreGame", preGame);
+        } catch (RemoteException e) {
+            System.out.println("COULD NOT START JRMI SERVER");
+        }
     }
 }
