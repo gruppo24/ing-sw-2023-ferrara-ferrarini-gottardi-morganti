@@ -4,15 +4,19 @@ import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import it.polimi.ingsw.server.RandomGenerator;
 import it.polimi.ingsw.server.Server;
+import it.polimi.ingsw.server.controller.jrmi.GameActionStubImpl;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serial;
 import java.io.Serializable;
+import java.rmi.RemoteException;
 import java.util.*;
 
 import static it.polimi.ingsw.server.Server.*;
+import static it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl.addRemoteGame;
+import static it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl.addRemotePlayer;
 
 /**
  * Class that describes the state of a specif game
@@ -46,7 +50,7 @@ public class GameState implements Serializable {
     private boolean gameOngoing = false;
 
     /**
-     * class constructor
+     * Class constructor
      * 
      * @param GameID       unique game identifier
      * @param numOfPlayers number of players for the current game
@@ -61,6 +65,27 @@ public class GameState implements Serializable {
         int[] numOfCard = RandomGenerator.random(2);
         for (int i = 0; i < numOfCard.length; i++) {
             this.commonCards[i] = Server.commonCards[numOfCard[i]];
+        }
+
+        // Finally, we add the game to the map of remote jRMI games
+        addRemoteGame(this.gameUniqueCode);
+    }
+
+    /**
+     * Method in charge of restoring all remote objects for each player
+     */
+    public void restoreRemotePlayers() {
+        // Re-adding remote game
+        addRemoteGame(this.gameUniqueCode);
+
+        // Restoring a remote object for each player
+        for (Player player : this.players) {
+            try {
+                GameActionStubImpl remotePlayer = new GameActionStubImpl(this, player);
+                addRemotePlayer(this.gameUniqueCode, player.nickname, remotePlayer);
+            } catch (RemoteException ex) {
+                System.out.println("Error in restoring remote player: " + ex);
+            }
         }
     }
 
@@ -93,6 +118,8 @@ public class GameState implements Serializable {
         } else {
             // Otherwise, we remove this game from the games data structure
             GAMES.remove(this);
+            // TODO: REMOVE REMOTE OBJECTS AS WELL!!!
+            // TODO: REMOVE BACKUP FILE!!!
         }
 
         // Finally, we awake all waiting threads. This will trigger a
@@ -167,6 +194,13 @@ public class GameState implements Serializable {
 
         // Otherwise, add another player
         this.players[newPlayerIndex] = newPlayer;
+
+        // Add a new remote object for this player
+        try {
+            addRemotePlayer(this.gameUniqueCode, newPlayer.nickname, new GameActionStubImpl(this, newPlayer));
+        } catch(RemoteException ex) {
+            System.out.println("Error: couldn't add a remote player: " + ex);
+        }
 
         // Checking if the game is now full and it can start
         if (newPlayerIndex == this.players.length - 1) {

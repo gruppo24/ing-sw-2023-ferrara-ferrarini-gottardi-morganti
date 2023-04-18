@@ -18,12 +18,21 @@ import static it.polimi.ingsw.server.controller.socket.TCPPregameChannel.sendEmp
 
 public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub {
 
-    private final Registry reg;
+    // We only want ONE registry, so this attribute is static...
+    private static Registry reg;
 
-    private LinkedList<GameActionStubImpl> currGameActions = new LinkedList<>();
+    // Following map will store a list, for each active game, with all the player's remote objects
+    private static HashMap<String, LinkedList<GameActionStubImpl>> remotePlayers = new HashMap<>();
+
+
+    /**
+     * Class constructor
+     * @param reg jRMI registry to be used
+     * @throws RemoteException
+     */
     public PreGameStubImpl (Registry reg) throws RemoteException{
         super();
-        this.reg = reg;
+        PreGameStubImpl.reg = reg;
     }
 
     @Override
@@ -59,8 +68,7 @@ public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub 
 
         //creating new instance of GameActionStubImpl
         GameActionStubImpl remoteGame = new GameActionStubImpl(newGame, firstPlayer);
-        currGameActions.add(remoteGame);
-        reg.rebind(gameID + "/" + username, remoteGame);
+        addRemotePlayer(gameID, username, remoteGame);
 
         // Send a success response message to the client
         return ResponseStatus.SUCCESS;
@@ -96,11 +104,30 @@ public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub 
 
         //creating new instance of GameActionStubImpl
         GameActionStubImpl remoteGame = new GameActionStubImpl(game, newPlayer);
-        currGameActions.add(remoteGame);
-        reg.rebind(gameID + "/" + username, remoteGame);
+        addRemotePlayer(gameID, username, remoteGame);
 
         // Send a success response message to the client
         return ResponseStatus.SUCCESS;
+    }
 
+    /**
+     * This method add a new game to the map of remote games
+     * @param gameID unique game ID associated to the game we want to add to the map
+     */
+    public static void addRemoteGame(String gameID) {
+        remotePlayers.put(gameID, new LinkedList<>());
+    }
+
+    /**
+     * This method binds a new remote object for a player and adds this remote instance
+     * to the list of remote players of a game
+     * @param gameID id of the game to which we are adding a new remote player
+     * @param username username of the player we are adding
+     * @param remotePlayer remote player which we are adding
+     * @throws RemoteException
+     */
+    public static void addRemotePlayer(String gameID, String username, GameActionStubImpl remotePlayer) throws RemoteException {
+        reg.rebind(gameID + "/" + username, remotePlayer);
+        remotePlayers.get(gameID).add(remotePlayer);
     }
 }

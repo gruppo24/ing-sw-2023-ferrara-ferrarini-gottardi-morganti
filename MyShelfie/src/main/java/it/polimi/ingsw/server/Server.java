@@ -66,6 +66,22 @@ public class Server implements Serializable {
         createCommonCards();
         System.out.println(" ---> Common card instances created");
 
+        // Start socket server
+        System.out.println("[main] >>> Starting socket server - will listen on port " + SOCKET_PORT);
+        Thread socketThread = new Thread(new SockServer(SOCKET_PORT));
+        socketThread.start();
+
+        // Start jRMI server
+        System.out.print("[main] >>> Starting jRMI server ---> ");
+        try {
+            registry = LocateRegistry.createRegistry(JRMI_PORT);
+            System.out.println("JRMI server listening on port " + JRMI_PORT);
+            PreGameStubImpl preGame = new PreGameStubImpl(registry);
+            registry.rebind("remotePreGame", preGame);
+        } catch (RemoteException e) {
+            System.out.println("COULD NOT START JRMI SERVER");
+        }
+
         System.out.println("[main] >>> Reading backuped games from disk");
         // Get all files in the backup folder
         File folder = new File("backups");
@@ -82,6 +98,8 @@ public class Server implements Serializable {
                         // GameState game = GameState.deserialize(file.getName());
                         if (game != null) {
                             GAMES.add(game);
+                            // Restoring remote players
+                            game.restoreRemotePlayers();
                             System.out.println("[main] >>> Game " + game.getGameID() + " restored from disk");
                         }
                     } catch (Exception e) {
@@ -96,21 +114,5 @@ public class Server implements Serializable {
             System.out.println("[main] >>> Folder 'backups' not found");
         }
         System.out.println("[main] >>> Backuped games restored");
-
-        // Start socket server
-        System.out.println("[main] >>> Starting socket server - will listen on port " + SOCKET_PORT);
-        Thread socketThread = new Thread(new SockServer(SOCKET_PORT));
-        socketThread.start();
-
-        // Start jRMI server
-        System.out.print("[main] >>> Starting jRMI server ---> ");
-        try {
-            registry = LocateRegistry.createRegistry(JRMI_PORT);
-            System.out.println("JRMI server listening on port " + JRMI_PORT);
-            PreGameStubImpl preGame = new PreGameStubImpl(registry);
-            registry.rebind("remotePreGame", preGame);
-        } catch (RemoteException e) {
-            System.out.println("COULD NOT START JRMI SERVER");
-        }
     }
 }
