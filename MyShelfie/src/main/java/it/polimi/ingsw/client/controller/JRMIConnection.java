@@ -12,6 +12,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Map;
 
+/**
+ * Class that represents the connection via JRMI, see {@link Connection}
+ * @author Gottardi Arianna
+ */
+
 public class JRMIConnection extends Connection{
 
     private final String host;
@@ -27,6 +32,7 @@ public class JRMIConnection extends Connection{
         this.port = port;
         this.registry = LocateRegistry.getRegistry(host, port);
     }
+
     @Override
     public void establishConnection() throws IOException{
         try {
