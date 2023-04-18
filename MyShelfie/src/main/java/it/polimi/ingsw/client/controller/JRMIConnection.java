@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * Class that represents the connection via JRMI, see {@link Connection}
+ *
  * @author Gottardi Arianna
  */
 
@@ -40,8 +41,7 @@ public class JRMIConnection extends Connection{
         }catch (NotBoundException | RemoteException e) {
             e.printStackTrace();
         }
-
-    };
+    }
 
     @Override
     public Map<String, int[]> getAvailableGames() {
