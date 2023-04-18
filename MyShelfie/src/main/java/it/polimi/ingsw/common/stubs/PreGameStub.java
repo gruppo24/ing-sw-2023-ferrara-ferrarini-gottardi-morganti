@@ -4,11 +4,16 @@ import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import java.rmi.Remote;
 import java.util.HashMap;
 
+/**
+ * PreGameStub for JRMI
+ *
+ * @author Ferrara Silvia
+ */
 public interface PreGameStub extends Remote {
-    public HashMap<String, int[]> getAvailableGames();
+    HashMap<String, int[]> getAvailableGames();
 
-    public ResponseStatus createGame(String gameId, int numPlayers, String username);
+    ResponseStatus createGame(String gameId, int numPlayers, String username);
 
-    public ResponseStatus joinGame(String gameId, String username);
+    ResponseStatus joinGame(String gameId, String username);
 
 }

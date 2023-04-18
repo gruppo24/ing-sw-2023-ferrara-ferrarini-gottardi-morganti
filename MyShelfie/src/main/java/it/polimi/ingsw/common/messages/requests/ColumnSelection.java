@@ -1,6 +1,7 @@
 package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.server.controller.Contextable;
+import it.polimi.ingsw.server.controller.Middleware;
 
 import java.io.Serial;
 
@@ -23,13 +24,7 @@ public class ColumnSelection extends PacketContent {
 
     @Override
     public boolean performRequestedAction(Contextable context) {
-        try {
-            context.getPlayer().selectColumn(column);
-        } catch (IndexOutOfBoundsException e) {
-            System.out.println("---> USER " + context.getPlayer().nickname + " selected an invalid column!");
-        }
-        System.out.println("=== COLUMN CHOSEN ===");
-        synchronized (context.getGame().gameLock) { context.getGame().gameLock.notifyAll(); }
+        Middleware.doSelectColumn(context.getGame(), context.getPlayer(), this.column);
         return false;
     }
 }

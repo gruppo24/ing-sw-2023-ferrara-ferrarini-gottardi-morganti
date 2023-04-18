@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.controller.Contextable;
+import it.polimi.ingsw.server.controller.Middleware;
 import it.polimi.ingsw.server.model.Player;
 
 import java.io.Serial;
@@ -27,12 +28,7 @@ public class TilePick extends PacketContent {
 
     @Override
     public boolean performRequestedAction(Contextable context) {
-        Player player = context.getPlayer();
-        // NOTICE: we subtract 1 from player.getSelectionBufferSize() because we are about to
-        // push a new tile in the buffer
-        TileType pickedTile = context.getGame().getBoard().pick(this.x, this.y, player.getSelectionBufferSize()-1);
-        if (pickedTile != null) player.pushTileToSelectionBuffer(pickedTile);
-        synchronized (context.getGame().gameLock) { context.getGame().gameLock.notifyAll(); }
+        Middleware.doPickTile(context.getGame(), context.getPlayer(), this.x, this.y);
         return false;
     }
 }
