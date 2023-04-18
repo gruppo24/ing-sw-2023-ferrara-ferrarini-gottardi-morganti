@@ -6,7 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-public interface preGameStub extends Remote {
+public interface PreGameStub extends Remote {
 
     public Map<String, int[]> getAvailableGames() throws RemoteException;
 
