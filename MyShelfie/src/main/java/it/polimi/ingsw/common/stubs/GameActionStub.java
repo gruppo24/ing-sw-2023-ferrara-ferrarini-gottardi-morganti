@@ -10,6 +10,6 @@ public interface GameActionStub {
 
     public SharedGameState pickTile(int x, int y);
 
-    public SharedGameState reorder(int first, int second);
+    public SharedGameState reorder(int first, int second, int third);
 
 }

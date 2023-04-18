@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import it.polimi.ingsw.client.ReconnectionHandler;
 import it.polimi.ingsw.client.controller.Connection;
+import it.polimi.ingsw.client.controller.JRMIConnection;
 import it.polimi.ingsw.client.controller.SocketConnection;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
@@ -47,8 +48,7 @@ public class CLI {
             if (choice == '1') {
                 this.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
             } else if (choice == '2') {
-                this.connection = new SocketConnection(SERVER_ADDR, JRMI_PORT);
-                //this.connection = new JRMIConnection("localhost", 1059);
+                this.connection = new JRMIConnection("localhost", 1059);
             } else {
                 System.out.println("Invalid choice...");
                 valid = false;
