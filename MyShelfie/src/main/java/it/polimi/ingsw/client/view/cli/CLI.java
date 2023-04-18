@@ -12,7 +12,6 @@ import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.controller.SocketConnection;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
-import it.polimi.ingsw.common.messages.requests.CreateGame;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
@@ -118,7 +117,7 @@ public class CLI {
         System.out.println("Enter your username: ");
         String username = in.next();
 
-        String gameID = CreateGame.generateGameID();
+        String gameID = Connection.generateGameID();
         System.out.println("Creating game with " + numPlayers + " players...");
 
         ResponseStatus res = this.connection.createGame(gameID, username, numPlayers);

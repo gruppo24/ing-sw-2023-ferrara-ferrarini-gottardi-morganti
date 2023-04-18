@@ -14,6 +14,13 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
  * @author Morganti Tommaso
  */
 public abstract class Connection {
+    /**
+     * A static method to generate game IDs
+     */
+    public static String generateGameID() {
+        return "game-" + System.currentTimeMillis();
+    }
+
     // ==== PREGAME PHASE ====
 
     /**

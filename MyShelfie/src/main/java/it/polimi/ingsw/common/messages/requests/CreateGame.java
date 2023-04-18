@@ -76,10 +76,4 @@ public class CreateGame extends PacketContent {
         return true;
     }
 
-    /**
-     * A static method to generate game IDs
-     */
-    public static String generateGameID() {
-        return "game-" + System.currentTimeMillis();
-    }
 }
