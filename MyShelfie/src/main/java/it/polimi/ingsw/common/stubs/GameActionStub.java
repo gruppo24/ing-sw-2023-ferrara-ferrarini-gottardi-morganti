@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
  */
 public interface GameActionStub extends Remote {
 
+    SharedGameState getSharedGameStateImmediately() throws RemoteException;
+
     SharedGameState waitTurn() throws RemoteException;
 
     SharedGameState selectColumn(int column) throws RemoteException;

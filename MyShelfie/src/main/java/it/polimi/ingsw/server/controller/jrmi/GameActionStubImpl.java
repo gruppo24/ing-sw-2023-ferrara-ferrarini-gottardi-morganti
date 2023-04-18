@@ -28,6 +28,11 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
     }
 
     @Override
+    public SharedGameState getSharedGameStateImmediately() throws RemoteException{
+        return game.getSharedGameState(this.player);
+    }
+
+    @Override
     public SharedGameState waitTurn() throws RemoteException{
         synchronized (this.game.gameLock) {
             try {
@@ -44,7 +49,7 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
         Middleware.doSelectColumn(this.game, this.player, column);
         return game.getSharedGameState(this.player);
     }
-    
+
     @Override
     public SharedGameState pickTile(int x, int y) throws RemoteException{
         Middleware.doPickTile(this.game, this.player,x, y);
