@@ -27,6 +27,8 @@ public class JRMIConnection extends Connection{
     private PreGameStub preGame;
     private GameActionStub gameAction;
 
+    private SharedGameState cache;
+
     public JRMIConnection(String host, int port) throws RemoteException {
         super();
         this.host = host;
@@ -66,6 +68,8 @@ public class JRMIConnection extends Connection{
         if (status == ResponseStatus.SUCCESS) {
             try {
                 this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
+                cache = gameAction.getSharedGameStateImmediately();
+
             } catch (NotBoundException | RemoteException e) {
                 e.printStackTrace();
             }
@@ -86,6 +90,7 @@ public class JRMIConnection extends Connection{
             if (status == ResponseStatus.SUCCESS) {
                 try {
                     this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
+                    cache = gameAction.getSharedGameStateImmediately();
                 } catch (NotBoundException | RemoteException e) {
                     e.printStackTrace();
                 }
@@ -93,6 +98,7 @@ public class JRMIConnection extends Connection{
         } else {
             try {
                 this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
+                cache = gameAction.getSharedGameStateImmediately();
             } catch (NotBoundException | RemoteException e) {
                 status = ResponseStatus.INVALID_REQUEST;
             }
@@ -104,6 +110,12 @@ public class JRMIConnection extends Connection{
 
     @Override
     public SharedGameState waitTurn(){
+        if (cache != null) {
+            SharedGameState tmp = cache;
+            cache = null;
+            return tmp;
+        }
+
         try {
             return gameAction.waitTurn();
         }catch (RemoteException e){
