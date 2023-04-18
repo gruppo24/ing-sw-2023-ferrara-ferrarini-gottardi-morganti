@@ -2,6 +2,7 @@ package it.polimi.ingsw.common.stubs;
 
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
@@ -9,7 +10,7 @@ import java.rmi.RemoteException;
  *
  * @author Ferrara Silvia
  */
-public interface GameActionStub {
+public interface GameActionStub extends Remote {
 
     SharedGameState waitTurn() throws RemoteException;
 
