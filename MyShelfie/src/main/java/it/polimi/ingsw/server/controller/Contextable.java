@@ -1,4 +1,4 @@
-package it.polimi.ingsw.server.controller.socket;
+package it.polimi.ingsw.server.controller;
 
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;

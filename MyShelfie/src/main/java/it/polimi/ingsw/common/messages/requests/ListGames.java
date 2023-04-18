@@ -2,7 +2,7 @@ package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.common.messages.responses.GamesList;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
-import it.polimi.ingsw.server.controller.socket.Contextable;
+import it.polimi.ingsw.server.controller.Contextable;
 import it.polimi.ingsw.server.model.GameState;
 
 import java.io.IOException;

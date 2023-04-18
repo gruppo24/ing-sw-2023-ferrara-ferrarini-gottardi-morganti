@@ -1,7 +1,7 @@
 package it.polimi.ingsw.common.messages.requests;
 
 import it.polimi.ingsw.common.TileType;
-import it.polimi.ingsw.server.controller.socket.Contextable;
+import it.polimi.ingsw.server.controller.Contextable;
 import it.polimi.ingsw.server.model.Player;
 
 import java.io.Serial;

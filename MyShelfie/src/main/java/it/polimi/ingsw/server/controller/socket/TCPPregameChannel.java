@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.controller.socket;
 import it.polimi.ingsw.common.messages.responses.RequestPacket;
 import it.polimi.ingsw.common.messages.responses.ResponsePacket;
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
+import it.polimi.ingsw.server.controller.Contextable;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
