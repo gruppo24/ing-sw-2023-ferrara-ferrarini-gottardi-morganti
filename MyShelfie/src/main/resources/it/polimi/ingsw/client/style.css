@@ -1,0 +1,11 @@
+#main-view {
+    -fx-background-color: #ccacac;
+    -fx-background-image: url("../../../../misc/sfondo%20parquet.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+#main-title {
+    -fx-height: 30px;
+}

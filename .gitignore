@@ -14,7 +14,7 @@ MyShelfie/backups/
 .DS_Store
 
 # Ignore game assets
-assets/*
+assets
 
 # Ignore recovery files director
 tmp/*
