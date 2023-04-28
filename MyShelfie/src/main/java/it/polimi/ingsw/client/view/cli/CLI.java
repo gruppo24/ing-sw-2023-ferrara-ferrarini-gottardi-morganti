@@ -182,6 +182,9 @@ public class CLI {
 
     }
 
+    /**
+     * Rejoins a game manually (asks for gameID and username) ==> to be used only for debugging
+     */
     private void manualRejoin() {
         System.out.println("=== MANUAL REJOIN (debugging only) ===\nEnter game ID and username: ");
         String gameID = in.next();
@@ -425,15 +428,15 @@ public class CLI {
         // check they have selected a column
         if (game.selectionBuffer == null) {
             System.out.print("Select a column > ");
-            return connection.selectColumn(in.nextInt());
+            return connection.selectColumn(CLIUtils.safeNextInt(in));
         }
 
         // Checking if it is possible to pick tiles
         if (this.areThereTilesPickable(game.boardState) && game.selectionBuffer[game.selectionBuffer.length-1] == null) {
             System.out.print("Pick a tile - tile x coordinate (-1 if done): ");
-            int x = in.nextInt();
+            int x = CLIUtils.safeNextInt(in);
             System.out.print("Pick a tile - tile y coordinate (also -1 if done): ");
-            int y = in.nextInt();
+            int y = CLIUtils.safeNextInt(in);
 
             // Checking if the player has actually picked a tile
             if (x != -1 || y != -1) return this.connection.pickTile(x, y);
@@ -444,7 +447,7 @@ public class CLI {
             int[] r = {0, 1, 2};
             for (int index = 0; index < Arrays.stream(game.selectionBuffer).filter(Objects::nonNull).count(); index++) {
                 System.out.println("Index of tile number " + index + " to insert in library");
-                r[index] = in.nextInt();
+                r[index] = CLIUtils.safeNextInt(in);
             }
             return connection.reorder(r[0], r[1], r[2]);
         }

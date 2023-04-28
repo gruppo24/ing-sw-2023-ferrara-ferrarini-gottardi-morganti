@@ -2,6 +2,8 @@ package it.polimi.ingsw.client.view.cli;
 
 import it.polimi.ingsw.common.TileType;
 
+import java.util.Scanner;
+
 public class CLIUtils {
     // ANSI strings
     private static final String ANSI_RESET = "\u001B[0m";
@@ -69,5 +71,23 @@ public class CLIUtils {
 
     public static void clearScreen() {
         System.out.print(ANSI_CLEAR_SCREEN);
+    }
+
+    /**
+     * Method in charge of reading from a Scanner inputs as long as the user doesn't
+     * insert a valid integer
+     * @param s Scanner to use for reading
+     * @return the valid integer inserted by the user
+     */
+    public static int safeNextInt(Scanner s) {
+        // Loop as long as the user doesn't insert a valid integer
+        while (!s.hasNextInt()) {
+            String invalid = s.next();
+            System.out.println("'" + invalid + "' IS NOT A VALID INTEGER");
+            System.out.print("Retry: ");
+        }
+
+        // Finally, return inserted value
+        return s.nextInt();
     }
 }
