@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 import it.polimi.ingsw.common.messages.requests.*;
@@ -51,13 +50,21 @@ public class SocketConnection extends Connection {
     }
 
     private Object sendPacket(ContentType type, PacketContent content) {
-        // Otherwise, perform routine operations...
+        // Try sending requested packet
         RequestPacket packet = new RequestPacket(type, content);
         try {
             this.out.writeObject(packet);
             this.out.flush();
+        } catch (IOException e) {
+            System.out.println("\nServer-side disconnection...\n");
+        }
+
+        // Even if packet sending fails, check whether some (perhaps error) message
+        // has been received
+        try {
             return this.in.readObject();
         } catch (ClassNotFoundException | IOException e) {
+            // In case of any other problem, throw exception
             e.printStackTrace();
             return null;
         }
