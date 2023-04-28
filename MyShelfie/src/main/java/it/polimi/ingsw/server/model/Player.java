@@ -36,6 +36,9 @@ public class Player implements Serializable {
     private TileType[] selectionBuffer;
     private int bufferTop = 0;
 
+    // Reconnection timer thread
+    public transient Thread reconnectionTimer;
+
 
     /**
      * Class constructor

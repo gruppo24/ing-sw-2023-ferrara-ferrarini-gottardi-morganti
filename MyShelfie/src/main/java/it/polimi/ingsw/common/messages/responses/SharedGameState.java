@@ -57,8 +57,9 @@ public class SharedGameState implements Serializable {
     public String[][] commonsAchievers;
 
     // Game dynamics attributes
-    public boolean gameOngoing;  // Tells the client whether the game has started or not
-    public boolean gameOver;     // Tells the client whether the game has ended or not
+    public boolean gameOngoing;     // Tells the client whether the game has started or not
+    public boolean gameOver;        // Tells the client whether the game has ended or not
+    public boolean gameTerminated;  // Tells the client that the game has been prematurely terminated
 
     // Game ending information (ONLY AVAILABLE AFTER GAME HAS ENDED)
     public HashMap<String, Integer> leaderboard;

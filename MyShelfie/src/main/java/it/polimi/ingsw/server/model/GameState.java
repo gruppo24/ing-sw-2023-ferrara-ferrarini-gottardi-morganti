@@ -48,6 +48,7 @@ public class GameState implements Serializable {
     transient public Object gameLock = new Object();
     private boolean gameOver = false;
     private boolean gameOngoing = false;
+    private boolean gameTerminated = false;
 
     /**
      * Class constructor
@@ -103,15 +104,18 @@ public class GameState implements Serializable {
         // If it already isn't the final round, checking if the current player has filled their library entirely
         if (!this.finalRound) {
             this.finalRound = this.players[this.currPlayerIndex].checkIfFilled();
-            firstFilledPlayer = this.players[this.currPlayerIndex];
+
+            // If the player has now triggered the final round, they obtain an additional point
+            if (this.finalRound)
+                firstFilledPlayer = this.players[this.currPlayerIndex];
         }
 
         // We update the player-turn index and check if the game has ended
         this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
-        this.gameOver = this.currPlayerIndex == this.armchair && this.finalRound;
+        this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
 
         // Only if the game hasn't ended, update the current board-state
-        if (!this.gameOver) {
+        if (!this.gameOver ) {
             if (this.board.shouldBeRefilled())
                 this.board.refillBoard(this.players.length);
             this.board.definePickable();
@@ -127,6 +131,15 @@ public class GameState implements Serializable {
         synchronized (this.gameLock) {
             this.gameLock.notifyAll();
         }
+    }
+
+    /**
+     * When called, this method will immediately terminate the game.
+     * This could be needed in case of long player disconnections...
+     */
+    public void terminate() {
+        this.gameTerminated = true;
+        this.turnIsOver();
     }
 
     /**
@@ -309,13 +322,14 @@ public class GameState implements Serializable {
         for (int index = 0; index < this.commonCards.length; index++)
             for (Player p : this.players)
                 if (p != null && p.commonsOrder[index] != 0)
-                    sgs.commonsAchievers[index][p.commonsOrder[index]-1] = p.nickname;
+                    sgs.commonsAchievers[index][p.commonsOrder[index] - 1] = p.nickname;
 
         // Lastly, we set the game dynamics attributes
         sgs.gameOngoing = this.gameOngoing;
         sgs.gameOver = this.gameOver;
+        sgs.gameTerminated = this.gameTerminated;
 
-        // If the game is over, we also
+        // If the game is over, we also build a leaderboard
         if (sgs.gameOver) {
             sgs.leaderboard = new HashMap<>();
             for (Player value : this.players) {

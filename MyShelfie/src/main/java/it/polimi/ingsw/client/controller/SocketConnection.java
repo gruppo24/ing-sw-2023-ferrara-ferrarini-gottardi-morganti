@@ -39,22 +39,25 @@ public class SocketConnection extends Connection {
         if (this.socket != null) {
             try { out.close(); } catch (IOException ex) { System.out.println("Error closing ObjectOutputStream"); }
             try { in.close(); } catch (IOException ex) { System.out.println("Error closing ObjectInputStream"); }
-            this.socket.close();
+            try { this.socket.close(); } catch(IOException ex) { System.out.println("Error closing socket"); }
         }
 
         this.socket = new Socket(host, port);
         this.out = new ObjectOutputStream(this.socket.getOutputStream());
         this.in = new ObjectInputStream(this.socket.getInputStream());
+
+        // Start new thread for keep-alive periodic pings
+        new Thread(new AsyncKeepAliveEcho(this.out, this)).start();
     }
 
     private Object sendPacket(ContentType type, PacketContent content) {
+        // Otherwise, perform routine operations...
         RequestPacket packet = new RequestPacket(type, content);
         try {
             this.out.writeObject(packet);
             this.out.flush();
             return this.in.readObject();
         } catch (ClassNotFoundException | IOException e) {
-            // TODO: handle IOException and reconnection
             e.printStackTrace();
             return null;
         }

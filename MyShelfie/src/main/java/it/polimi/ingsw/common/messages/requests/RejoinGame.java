@@ -60,6 +60,12 @@ public class RejoinGame extends PacketContent {
         }
         Player player = maybePlayer.get();
 
+        // We stop the player's reconnection timer
+        if (player.reconnectionTimer != null) {
+            player.reconnectionTimer.interrupt();
+            player.reconnectionTimer = null;
+        }
+
         // Send a success response message to the client
         sendEmptyMessage(context.getOutput(), ResponseStatus.SUCCESS);
 

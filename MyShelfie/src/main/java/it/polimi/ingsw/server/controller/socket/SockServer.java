@@ -34,6 +34,10 @@ public class SockServer implements Runnable {
             System.out.println("[SockServer] entering connection-accepting loop...");
             while (true) {
                 Socket incomingConnection = dispatcher.accept();
+
+                // Setting a 10 seconds timeout (should be enough...)
+                incomingConnection.setSoTimeout(10_000);
+
                 // As soon as a new connection has been received,
                 // we send the client in pregame-state
                 Thread clientChannelThread = new Thread(new TCPPregameChannel(

@@ -226,7 +226,11 @@ public class CLI {
                     handleTurn(gameState);
         }
 
-        System.out.println("=== GAME IS OVER ===\nFinal leaderboard: ");
+        if (gameState.gameTerminated)
+            System.out.println("=== GAME TERMINATED (one or more players disconnected...) ===\nCurrent points were:");
+        else
+            System.out.println("=== GAME IS OVER ===\nFinal leaderboard:");
+
         for (String player : gameState.leaderboard.keySet())
             System.out.println(" ".repeat(4) + "- " + player + ": " + gameState.leaderboard.get(player) + "pts");
         System.out.println("\nPress any key to go back to menu...");

@@ -42,7 +42,7 @@ public class TCPIngameChannelDownlink implements Contextable, Runnable {
 
     @Override
     public ObjectInputStream getInput() {
-        return null;
+        return this.input;
     }
 
     @Override

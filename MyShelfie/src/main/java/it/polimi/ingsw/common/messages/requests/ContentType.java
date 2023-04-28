@@ -9,6 +9,8 @@ import java.io.Serial;
  * @author Ferrarini Andrea
  */
 public enum ContentType {
+    KEEP_ALIVE, // Required to reset socket-server timeout
+
     LIST_GAMES, // Requests the list of all currently available games
     JOIN_GAME, // Requests to join a game
     REJOIN_GAME, // Requests to re-join (after disconnection) a game
