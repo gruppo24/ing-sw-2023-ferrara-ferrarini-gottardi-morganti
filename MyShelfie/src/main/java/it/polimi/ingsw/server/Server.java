@@ -31,8 +31,9 @@ public class Server implements Serializable {
 
     /**
      * Method that populates commonCards array
+     * public for testing purposes
      */
-    private static void createCommonCards() {
+    public static void createCommonCards() {
         for (int i = 0; i < commonCards.length; i++) {
             commonCards[i] = CommonCardFactory.cardBuilder(i);
         }
@@ -43,7 +44,7 @@ public class Server implements Serializable {
      * The information needed to PrivateCard constructor are read from csv files
      * with the CSVReader
      */
-    private static void createPrivateCards() {
+    public static void createPrivateCards() {
         for (int i = 0; i < 12; i++) {
             CSVReader reader = new CSVReader();
             privateCards[i] = reader.getRow(i + 1);
