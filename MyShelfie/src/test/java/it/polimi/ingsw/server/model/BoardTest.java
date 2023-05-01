@@ -52,8 +52,8 @@ public class BoardTest {
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 5)) {
-                    board.pick(i, j, 1);
                     board.definePickable();
+                    board.pick(i, j, 1);
                 }
             }
         }
@@ -67,8 +67,26 @@ public class BoardTest {
         // pick all tiles except (4,4) and (5,4) two adjacent cells
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 4))
+                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 5 && j == 4)) {
+                    board.definePickable();
                     board.pick(i, j, 1);
+                }
+            }
+        }
+        Assert.assertFalse(board.shouldBeRefilled());
+    }
+
+    @Test
+    public void shouldBeRefilled_boardNotEmptyAfterPickExceptAdjacentVertical_shouldBeTrue() {
+        board.refillBoard(2);
+
+        // pick all tiles except (4,4) and (4,5) two adjacent cells
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board.getBoardContent()[i][j] != null && !(i == 4 && j == 4) && !(i == 4 && j == 5)) {
+                    board.definePickable();
+                    board.pick(i, j, 1);
+                }
             }
         }
         Assert.assertFalse(board.shouldBeRefilled());
@@ -103,6 +121,28 @@ public class BoardTest {
     }
 
     @Test
+    public void refillBoard_differentPlayers_shouldHaveDifferentTiles() {
+        // tile at coords (2, 3) should always be filled
+        // tile at coords (2, 2) should be filled with numPlayers >= 3
+        // tile at coords (3, 1) should be filled with numPlayers >= 4
+
+        board.refillBoard(2);
+        Assert.assertNotNull(board.getBoardContent()[2][3]);
+        Assert.assertNull(board.getBoardContent()[2][2]);
+        Assert.assertNull(board.getBoardContent()[3][1]);
+
+        board.refillBoard(3);
+        Assert.assertNotNull(board.getBoardContent()[2][3]);
+        Assert.assertNotNull(board.getBoardContent()[2][2]);
+        Assert.assertNull(board.getBoardContent()[3][1]);
+
+        board.refillBoard(4);
+        Assert.assertNotNull(board.getBoardContent()[2][3]);
+        Assert.assertNotNull(board.getBoardContent()[2][2]);
+        Assert.assertNotNull(board.getBoardContent()[3][1]);
+    }
+
+    @Test
     public void refillBoard_refillAfterPick_tilesShouldntChange() {
         board.refillBoard(2);
         board.definePickable();
@@ -127,6 +167,26 @@ public class BoardTest {
                     Assert.assertNotNull(board.getBoardContent()[i][j]);
             }
         }
+    }
+
+    @Test
+    public void refillBoard_emptyBag_boardShouldBeEmpty() {
+        // after 5 refills, the bag should be empty
+        for (int n = 0; n < 5; n++) {
+            board.refillBoard(2);
+
+            // pick all tiles
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    board.definePickable();
+                    board.pick(i, j, 1);
+                }
+            }
+        }
+
+        // refill once more, nothing should happen
+        board.refillBoard(2);
+        Assert.assertTrue(board.shouldBeRefilled());
     }
 
     // ==================== pick ====================
@@ -174,10 +234,8 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && (
-                                (column == 4 && row == 1) || (column == 5 && row == 2)
-                        )
-                );
+                                newState[column][row] == TileState.PICKABLE
+                                        && ((column == 4 && row == 1) || (column == 5 && row == 2)));
     }
 
     @Test
@@ -197,9 +255,8 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && column == 4 && row == 2 ||
-                        newState[column][row] == TileState.PICKABLE_NEXT && column == 3 && row == 2
-                );
+                                newState[column][row] == TileState.PICKABLE && column == 4 && row == 2 ||
+                                newState[column][row] == TileState.PICKABLE_NEXT && column == 3 && row == 2);
     }
 
     @Test
@@ -220,8 +277,7 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && column == 3 && row == 2
-                );
+                                newState[column][row] == TileState.PICKABLE && column == 3 && row == 2);
     }
 
     @Test
@@ -255,8 +311,7 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && column == 4 && row == 2
-                );
+                                newState[column][row] == TileState.PICKABLE && column == 4 && row == 2);
     }
 
     @Test
@@ -279,9 +334,10 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && (column == 3 || column == 5) && row == 3 ||
-                        newState[column][row] == TileState.PICKABLE_NEXT && (column == 2 || column == 6) && row == 3
-                );
+                                newState[column][row] == TileState.PICKABLE && (column == 3 || column == 5) && row == 3
+                                ||
+                                newState[column][row] == TileState.PICKABLE_NEXT && (column == 2 || column == 6)
+                                        && row == 3);
     }
 
     @Test
@@ -304,8 +360,8 @@ public class BoardTest {
             for (int row = 0; row < newState[0].length; row++)
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
-                        newState[column][row] == TileState.PICKABLE && (column == 3 || column == 5) && row == 3
-                );
+                                newState[column][row] == TileState.PICKABLE && (column == 3 || column == 5)
+                                        && row == 3);
     }
 
     @Test
@@ -330,8 +386,7 @@ public class BoardTest {
                 assertTrue(
                         newState[column][row] == TileState.NOT_PICKABLE ||
                                 newState[column][row] == TileState.PICKABLE && (column == 6 || column == 3)
-                                        && row == 3
-                );
+                                        && row == 3);
     }
 
     @Test
@@ -425,6 +480,25 @@ public class BoardTest {
                     Assert.assertFalse(emptyNeighbor);
                 }
             }
+        }
+    }
+
+    @Test
+    public void definePickable_nonNullBorderCell_alwaysPickable() {
+        board.refillBoard(4); // 2 players doesnt have border cells
+        board.definePickable();
+
+        // traverse the border cells
+        for (int i = 0; i < 9; i++) {
+            // if the cell is not null, it should be pickable by default
+            if (board.getBoardContent()[i][0] != null)
+                assertEquals(board.getBoardState()[i][0], TileState.PICKABLE);
+            if (board.getBoardContent()[i][8] != null)
+                assertEquals(board.getBoardState()[i][8], TileState.PICKABLE);
+            if (board.getBoardContent()[0][i] != null)
+                assertEquals(board.getBoardState()[0][i], TileState.PICKABLE);
+            if (board.getBoardContent()[8][i] != null)
+                assertEquals(board.getBoardState()[8][i], TileState.PICKABLE);
         }
     }
 

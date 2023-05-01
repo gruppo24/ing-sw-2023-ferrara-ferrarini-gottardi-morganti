@@ -116,7 +116,7 @@ public class Board implements Serializable {
 
         // for each type, if the random number is smaller than the number of tiles
         // of that type, return that type (as if the tile was picked in that position
-        // of an ordered list). Otherwise subtract the number of tiles of that type
+        // of an ordered list). Otherwise, subtract the number of tiles of that type
         // and continue with the next type.
         for (TileType type : this.tilesInBag.keySet()) {
             if (randomTileNum < this.tilesInBag.get(type)) {
@@ -128,7 +128,8 @@ public class Board implements Serializable {
 
         // this point should never be reached, generated number greater than total
         // number of tiles ??
-        return null;
+        throw new RuntimeException(
+                "This point should not be reachable, somehow a random number was generated that was greater than the maximum allowed by .nextInt()");
     }
 
     /**
@@ -154,18 +155,21 @@ public class Board implements Serializable {
             for (int j = 0; j < 9; j++) {
                 if (boardContent[i][j] != null) {
                     // if there is at leas one not null neighbour, the board should not be refilled
-                    if (i > 0 && boardContent[i - 1][j] != null) {
-                        return false;
-                    }
                     if (i < 8 && boardContent[i + 1][j] != null) {
-                        return false;
-                    }
-                    if (j > 0 && boardContent[i][j - 1] != null) {
                         return false;
                     }
                     if (j < 8 && boardContent[i][j + 1] != null) {
                         return false;
                     }
+
+                    // I dont think those can ever run since the loop goes from 0 to 8
+                    // previeous indexes are checked in the previous iteration
+                    // if (i > 0 && boardContent[i - 1][j] != null) {
+                    // return false;
+                    // }
+                    // if (j > 0 && boardContent[i][j - 1] != null) {
+                    // return false;
+                    // }
                 }
             }
         }
