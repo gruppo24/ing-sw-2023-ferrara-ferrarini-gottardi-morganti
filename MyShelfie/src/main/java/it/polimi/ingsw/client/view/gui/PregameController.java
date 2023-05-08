@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.client.ReconnectionHandler;
 import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.view.gui.gameslist.ListViewCell;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -57,6 +58,9 @@ public class PregameController implements Initializable {
         new Thread(() -> {
             synchronized (requestLock) {
                 App.connection.connectToGame(gameId, _username, false);
+
+                // Switching view
+                Platform.runLater( () -> App.setRoot("ingame") );
             }
         }).start();
     }
@@ -70,8 +74,10 @@ public class PregameController implements Initializable {
             synchronized (requestLock) {
                 ObservableList<Entry<String, int[]>> observableList = FXCollections.observableArrayList();
                 observableList.setAll(App.connection.getAvailableGames().entrySet());
-                gameList.setItems(observableList);
-                gameList.setCellFactory(l -> new ListViewCell());
+                Platform.runLater(() -> {
+                    gameList.setItems(observableList);
+                    gameList.setCellFactory(l -> new ListViewCell());
+                });
             }
         }).start();
     }
@@ -85,6 +91,9 @@ public class PregameController implements Initializable {
                 try {
                     String[] parameters = new ReconnectionHandler().getParameters();
                     App.connection.connectToGame(parameters[0], parameters[1], true);
+
+                    // Switching view
+                    Platform.runLater( () -> App.setRoot("ingame") );
                 } catch (IOException | ClassNotFoundException ex) {
                     System.out.println("ERROR: Couldn't rejoin game...");
                 }
@@ -102,6 +111,9 @@ public class PregameController implements Initializable {
                         username.getText(),
                         numOfPlayers.getValue()
                 );
+
+                // Switching view
+                Platform.runLater( () -> App.setRoot("ingame") );
             }
         }).start();
     }
