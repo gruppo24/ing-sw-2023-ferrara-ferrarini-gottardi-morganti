@@ -1,0 +1,28 @@
+.pregameTitleSection {
+    -fx-padding: 20 0 50 0;
+}
+
+.title {
+    -fx-font-family: System Bold;
+    -fx-font-size: 40;
+}
+
+.pregameTextField {
+    -fx-max-width: 200;
+}
+
+.numOfPlayers {
+    -fx-max-width: 50;
+}
+
+.createButton {
+    -fx-max-width: 100;
+}
+
+.joinGame {
+    -fx-padding: 50 0 50 0;
+}
+
+.pregameBottomButtons {
+    -fx-padding: 0 0 50 0;
+}

@@ -1,37 +1,74 @@
 package it.polimi.ingsw.client;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.UnknownHostException;
 
+import java.io.IOException;
+
+import it.polimi.ingsw.client.controller.Connection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+
+/**
+ * GUI initialization and management class
+ */
 public class App extends Application {
-    private static Scene scene;
 
-    public static void main(String[] args) throws UnknownHostException, IOException {
-        launch();
+    // Main scene within the GUI stage
+    public static Scene scene;
+
+    // Connection to server instance
+    public static Connection connection;
+
+    // Thread lock
+    public static final Object requestLock = new Object();
+
+
+    public static void main(String[] args) throws IOException {
+        launch(args);  // We simply launch our GUI...
     }
 
-    private static Parent loadFXML(String fxml) throws IOException {
-        URL url = App.class.getResource(fxml + ".fxml");
-        System.out.println(url);
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
-    }
-
-    public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
+    /** @see Application#start(Stage)  */
     @Override
     public void start(Stage stage) throws Exception {
-        scene = new Scene(loadFXML("main_menu"), 640, 480);
-        stage.setScene(scene);
+        // We create our initial scene and set main_menu.fxml to be our initial scene-graph root
+        App.scene = new Scene(loadFXML("main_menu"), 800, 600);
+        stage.setScene(App.scene);
+        stage.setOnCloseRequest(event -> System.exit(0));  // On window close --> kill all connections / threads
         stage.show();
     }
+
+
+    /**
+     * Method in charge of switching scene-graph root (= changing view)
+     *
+     * @param fxml FXML file to switch to (*without extension*)
+     */
+    public static void setRoot(String fxml) {
+        App.scene.setRoot(loadFXML(fxml));
+    }
+
+    /**
+     * Method in charge of loading FXML file
+     *
+     * @param fxml FXML file name (*without extension*) to load
+     * @return FXML Parent instance (null if FXML file couldn't be loaded)
+     */
+    public static Parent loadFXML(String fxml) {
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
+
+        // Trying to load FXML file
+        Parent view = null;
+        try {
+            view = fxmlLoader.load();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        return view;
+    }
+
 }
