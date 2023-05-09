@@ -75,6 +75,8 @@ public class PregameController implements Initializable {
                 ObservableList<Entry<String, int[]>> observableList = FXCollections.observableArrayList();
                 observableList.setAll(App.connection.getAvailableGames().entrySet());
                 Platform.runLater(() -> {
+                    gameList.setItems(FXCollections.observableArrayList());
+                    gameList.setCellFactory(l -> new ListViewCell());
                     gameList.setItems(observableList);
                     gameList.setCellFactory(l -> new ListViewCell());
                 });
