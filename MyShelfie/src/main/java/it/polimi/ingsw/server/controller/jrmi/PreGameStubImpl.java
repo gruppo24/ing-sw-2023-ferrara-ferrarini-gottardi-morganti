@@ -28,13 +28,14 @@ public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub 
     /**
      * Class constructor
      * @param reg jRMI registry to be used
-     * @throws RemoteException
+     * @throws RemoteException if jRMI exception
      */
     public PreGameStubImpl (Registry reg) throws RemoteException{
         super();
         PreGameStubImpl.reg = reg;
     }
 
+    /** @see PreGameStub#getAvailableGames() */
     @Override
     public HashMap<String, int[]> getAvailableGames() throws RemoteException{
         HashMap<String, int[]> availableGames = new HashMap<>();
@@ -46,6 +47,7 @@ public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub 
         return availableGames;
     }
 
+    /** @see PreGameStub#createGame(String, int, String) */ 
     @Override
     public ResponseStatus createGame(String gameID, int numPlayers, String username) throws RemoteException{
         // Checking if a game with the requested gameID already exists
@@ -74,6 +76,7 @@ public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub 
         return ResponseStatus.SUCCESS;
     }
 
+    /** @see PreGameStub#joinGame */
     @Override
     public ResponseStatus joinGame(String gameID, String username) throws RemoteException{
         // Checking the requested game exists:
@@ -124,7 +127,7 @@ public class PreGameStubImpl extends UnicastRemoteObject implements PreGameStub 
      * @param gameID id of the game to which we are adding a new remote player
      * @param username username of the player we are adding
      * @param remotePlayer remote player which we are adding
-     * @throws RemoteException
+     * @throws RemoteException if jRMI exception
      */
     public static void addRemotePlayer(String gameID, String username, GameActionStubImpl remotePlayer) throws RemoteException {
         reg.rebind(gameID + "/" + username, remotePlayer);

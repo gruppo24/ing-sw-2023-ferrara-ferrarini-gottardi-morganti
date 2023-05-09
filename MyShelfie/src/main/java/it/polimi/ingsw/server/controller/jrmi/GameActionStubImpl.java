@@ -12,7 +12,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 
 /**
- * GameActionStubImpl for JRMI
+ * GameActionStubImpl for jRMI
  *
  * @author Ferrara Silvia
  */
@@ -23,9 +23,10 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
 
     /**
      * Class constructor
+     *
      * @param game game associated with this remote player
      * @param player player associated with this remote player
-     * @throws RemoteException
+     * @throws RemoteException if jRMI exception
      */
     public GameActionStubImpl(GameState game, Player player) throws RemoteException {
         super();
@@ -33,11 +34,23 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
         this.player = player;
     }
 
+    /** @see GameActionStub#getSharedGameStateImmediately() */
     @Override
     public SharedGameState getSharedGameStateImmediately() throws RemoteException{
         return game.getSharedGameState(this.player);
     }
 
+    /** @see GameActionStub#resetDisconnectionTimer() */
+    @Override
+    public void resetDisconnectionTimer() throws RemoteException {
+        // We force the interruption of the disconnection timer, if there is one
+        if (this.player.reconnectionTimer != null) {
+            this.player.reconnectionTimer.interrupt();
+            player.reconnectionTimer = null;
+        }
+    }
+
+    /** @see GameActionStub#waitTurn() */
     @Override
     public SharedGameState waitTurn() throws RemoteException{
         synchronized (this.game.gameLock) {
@@ -50,6 +63,7 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
         return game.getSharedGameState(this.player);
     }
 
+    /** @see GameActionStub#selectColumn(int)  */
     @Override
     public SharedGameState selectColumn(int column) throws RemoteException{
         // Checking if it actually is the player's turn
@@ -64,6 +78,7 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
         return game.getSharedGameState(this.player);
     }
 
+    /** @see GameActionStub#pickTile(int, int) */
     @Override
     public SharedGameState pickTile(int x, int y) throws RemoteException{
         // Checking if it actually is the player's turn
@@ -77,7 +92,8 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
 
         return game.getSharedGameState(this.player);
     }
-
+    
+    /** @see GameActionStub#reorder(int, int, int) */
     @Override
     public SharedGameState reorder(int first, int second, int third) throws RemoteException{
         // Checking if it actually is the player's turn

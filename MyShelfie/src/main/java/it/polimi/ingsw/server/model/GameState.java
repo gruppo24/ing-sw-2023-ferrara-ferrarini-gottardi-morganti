@@ -19,7 +19,7 @@ import static it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl.addRemoteGa
 import static it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl.addRemotePlayer;
 
 /**
- * Class that describes the state of a specif game
+ * Class that describes the state of a specific game
  *
  * @author Ferrara Silvia
  * @author Ferrarini Andrea

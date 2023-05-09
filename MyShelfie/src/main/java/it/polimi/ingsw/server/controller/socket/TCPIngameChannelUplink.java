@@ -86,7 +86,6 @@ public class TCPIngameChannelUplink implements Contextable, Runnable {
                     if (requestPacket.contentType != ContentType.KEEP_ALIVE) {
                         Thread backupThread = new Thread(new Backupper(this.game));
                         backupThread.start();
-                        // TODO: would be nice to automatically delete old backups when the game is over
                     }
                 } else
                     System.out.println("PACKED FOR WRONG TURN!!!!!");
