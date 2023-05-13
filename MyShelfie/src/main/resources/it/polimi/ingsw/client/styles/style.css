@@ -6,6 +6,28 @@
     -fx-background-position: center center;
 }
 
+.board {
+    -fx-background-color: #ccacac;
+    /*-fx-background-image: url("/boards/livingroom.png");*/
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+.board-tile-pickable {
+    -fx-border-color: black;
+    -fx-border-style: solid;
+    -fx-border-width: 5;
+}
+
+.board-tile-pickable-next {
+
+}
+
+.board-tile-not-pickable {
+
+}
+
 #main-title {
     -fx-height: 30px;
 }

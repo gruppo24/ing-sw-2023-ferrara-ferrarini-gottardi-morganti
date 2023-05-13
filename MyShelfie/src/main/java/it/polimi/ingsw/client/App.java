@@ -6,7 +6,6 @@ import java.io.IOException;
 import it.polimi.ingsw.client.controller.Connection;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -16,6 +15,8 @@ import javafx.stage.Stage;
  * GUI initialization and management class
  */
 public class App extends Application {
+
+    public static final String ASSETS_BASE_PATH = "../assets";
 
     // Main scene within the GUI stage
     public static Scene scene;

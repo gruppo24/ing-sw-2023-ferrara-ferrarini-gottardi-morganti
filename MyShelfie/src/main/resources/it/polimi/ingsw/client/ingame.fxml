@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<StackPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="it.polimi.ingsw.client.view.gui.IngameController"
-            prefHeight="400.0" prefWidth="600.0">
 
-    <Label fx:id="example" />
+<VBox xmlns="http://javafx.com/javafx/19"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="it.polimi.ingsw.client.view.gui.IngameController"
+      maxHeight="-Infinity" maxWidth="-Infinity"
+      minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="600.0" prefWidth="800.0"
+      stylesheets="@styles/style.css, @styles/PregameStyles.css"
+      styleClass="background" >
 
-</StackPane>
+    <HBox fx:id="upperContainer" prefHeight="400.0" prefWidth="800.0">
+
+    </HBox>
+
+    <HBox fx:id="bottomContainer" prefHeight="200.0" prefWidth="800.0">
+
+    </HBox>
+
+</VBox>
