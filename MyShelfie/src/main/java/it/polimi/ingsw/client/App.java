@@ -1,6 +1,5 @@
 package it.polimi.ingsw.client;
 
-
 import java.io.IOException;
 
 import it.polimi.ingsw.client.controller.Connection;
@@ -9,7 +8,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
 
 /**
  * GUI initialization and management class
@@ -27,21 +25,20 @@ public class App extends Application {
     // Thread lock
     public static final Object requestLock = new Object();
 
-
     public static void main(String[] args) throws IOException {
-        launch(args);  // We simply launch our GUI...
+        launch(args); // We simply launch our GUI...
     }
 
-    /** @see Application#start(Stage)  */
+    /** @see Application#start(Stage) */
     @Override
     public void start(Stage stage) throws Exception {
-        // We create our initial scene and set main_menu.fxml to be our initial scene-graph root
+        // We create our initial scene and set main_menu.fxml to be our initial
+        // scene-graph root
         App.scene = new Scene(loadFXML("main_menu"), 800, 600);
         stage.setScene(App.scene);
-        stage.setOnCloseRequest(event -> System.exit(0));  // On window close --> kill all connections / threads
+        stage.setOnCloseRequest(event -> System.exit(0)); // On window close --> kill all connections / threads
         stage.show();
     }
-
 
     /**
      * Method in charge of switching scene-graph root (= changing view)

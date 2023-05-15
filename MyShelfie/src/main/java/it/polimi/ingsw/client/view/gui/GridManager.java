@@ -6,7 +6,6 @@ import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;

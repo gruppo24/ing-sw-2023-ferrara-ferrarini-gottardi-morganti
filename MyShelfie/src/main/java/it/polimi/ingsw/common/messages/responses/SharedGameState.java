@@ -21,6 +21,9 @@ public class SharedGameState implements Serializable {
     // List of all players connected to the current game
     public String[] players;
 
+    // index of the player that the shared game state is relative to
+    public int selfPlayerIndex;
+
     // Board related attributes
     public TileType[][] boardContent;
     public TileState[][] boardState;
@@ -42,7 +45,7 @@ public class SharedGameState implements Serializable {
     public TileType[][][] libraries;
 
     // Achieved points attributes
-    public int commonPts;  // Actual points, not achievement 'order'
+    public int commonPts; // Actual points, not achievement 'order'
     public int privatePts;
     public int clusterPts;
     public boolean firstFilled;
@@ -57,9 +60,9 @@ public class SharedGameState implements Serializable {
     public String[][] commonsAchievers;
 
     // Game dynamics attributes
-    public boolean gameOngoing;     // Tells the client whether the game has started or not
-    public boolean gameOver;        // Tells the client whether the game has ended or not
-    public boolean gameTerminated;  // Tells the client that the game has been prematurely terminated
+    public boolean gameOngoing; // Tells the client whether the game has started or not
+    public boolean gameOver; // Tells the client whether the game has ended or not
+    public boolean gameTerminated; // Tells the client that the game has been prematurely terminated
 
     // Game ending information (ONLY AVAILABLE AFTER GAME HAS ENDED)
     public HashMap<String, Integer> leaderboard;

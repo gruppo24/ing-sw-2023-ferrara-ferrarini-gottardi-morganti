@@ -101,11 +101,13 @@ public class GameState implements Serializable {
         this.players[this.currPlayerIndex].updateClusterPoints();
         this.obtainedCommons();
 
-        // If it already isn't the final round, checking if the current player has filled their library entirely
+        // If it already isn't the final round, checking if the current player has
+        // filled their library entirely
         if (!this.finalRound) {
             this.finalRound = this.players[this.currPlayerIndex].checkIfFilled();
 
-            // If the player has now triggered the final round, they obtain an additional point
+            // If the player has now triggered the final round, they obtain an additional
+            // point
             if (this.finalRound)
                 firstFilledPlayer = this.players[this.currPlayerIndex];
         }
@@ -115,7 +117,7 @@ public class GameState implements Serializable {
         this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
 
         // Only if the game hasn't ended, update the current board-state
-        if (!this.gameOver ) {
+        if (!this.gameOver) {
             if (this.board.shouldBeRefilled())
                 this.board.refillBoard(this.players.length);
             this.board.definePickable();
@@ -211,7 +213,7 @@ public class GameState implements Serializable {
         // Add a new remote object for this player
         try {
             addRemotePlayer(this.gameUniqueCode, newPlayer.nickname, new GameActionStubImpl(this, newPlayer));
-        } catch(RemoteException ex) {
+        } catch (RemoteException ex) {
             System.out.println("Error: couldn't add a remote player: " + ex);
         }
 
@@ -219,10 +221,10 @@ public class GameState implements Serializable {
         if (newPlayerIndex == this.players.length - 1) {
             this.gameOngoing = true;
 
-            //Assign each player a private card calling random of RandomGenerator
-            //(in order to have a different card for each player)
+            // Assign each player a private card calling random of RandomGenerator
+            // (in order to have a different card for each player)
             int[] random = RandomGenerator.random(players.length);
-            for(int i = 0 ; i < players.length; i++)
+            for (int i = 0; i < players.length; i++)
                 players[i].setPrivateCard(privateCards[random[i]]);
 
             // Choose randomly a player who will be the first
@@ -273,6 +275,7 @@ public class GameState implements Serializable {
         for (int index = 0; index < this.players.length; index++)
             if (this.players[index] != null)
                 sgs.players[index] = this.players[index].nickname;
+        sgs.selfPlayerIndex = Arrays.asList(this.players).indexOf(player);
 
         // Current board information
         sgs.boardContent = this.board.getBoardContent();
