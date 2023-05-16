@@ -23,7 +23,9 @@ public class BoardComponent extends GridManager implements SGSConsumer {
         this.setActionHandler((x, y) -> {
             SharedGameState gameState = IngameController.getLastState();
             System.out.println("Picked tile " + x + ", " + y);
-            if (gameState.selectionBuffer != null &&
+            if (gameState.gameOngoing &&
+                    gameState.currPlayerIndex == gameState.selfPlayerIndex &&
+                    gameState.selectionBuffer != null &&
                     gameState.selectionBuffer[gameState.selectionBuffer.length-1] == null) {
                 System.out.println("SENDING PICK REQUEST");
                 IngameController.setGameState(App.connection.pickTile(x, y));

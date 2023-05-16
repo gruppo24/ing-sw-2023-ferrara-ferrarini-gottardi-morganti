@@ -37,7 +37,7 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         library.setActionHandler((x, y) -> {
             SharedGameState gameState = IngameController.getLastState();
             System.out.println("Selected column: " + x);
-            if (gameState.currPlayerIndex == gameState.selfPlayerIndex) {
+            if (gameState.gameOngoing && gameState.currPlayerIndex == gameState.selfPlayerIndex) {
                 System.out.println("SENDING COLUMN SELECTION REQUEST");
                 IngameController.setGameState(App.connection.selectColumn(x));
             }
@@ -47,10 +47,8 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
     /** @see SGSConsumer#updateSGS(SharedGameState) */
     @Override
     public void updateSGS(SharedGameState sgs) {
-        if (sgs != null) {
-            label.setText("Current Player: " + sgs.players[sgs.currPlayerIndex]);
-            library.setGridContent(sgs.libraries[sgs.currPlayerIndex]);
-        }
+        label.setText("Current Player: " + sgs.players[sgs.currPlayerIndex]);
+        library.setGridContent(sgs.libraries[sgs.currPlayerIndex]);
     }
 
     /** @see Initializable#initialize(URL, ResourceBundle) */
