@@ -19,6 +19,8 @@ public class IngameController implements Initializable {
     // list of all components dependent on the shared game state
     private static List<SGSConsumer> consumers = new LinkedList<>();
 
+    private static SharedGameState lastState;
+
     /**
      * Add a component to the list of components dependent on the shared game state
      * 
@@ -30,6 +32,7 @@ public class IngameController implements Initializable {
     }
 
     public static void setGameState(SharedGameState gameState) {
+        lastState = gameState;
         System.out.println("GameState recieved, updating " + consumers.size() + " consumers");
 
         // dispatching update to all shared game state consumers
@@ -42,6 +45,13 @@ public class IngameController implements Initializable {
         // if sgs is null, or it is not the player's turn, wait for turn
         if (gameState == null || !gameState.gameOngoing || gameState.currPlayerIndex != gameState.selfPlayerIndex)
             setGameState(App.connection.waitTurn());
+    }
+
+    /**
+     * lastState getter method
+     */
+    public static SharedGameState getLastState() {
+        return lastState;
     }
 
     @FXML

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.view.gui;
 
+
 import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
@@ -8,12 +9,16 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.BiConsumer;
+
 
 /**
  * Class in charge of creating a tile grid (either for boards or libraries) of
@@ -48,15 +53,22 @@ public class GridManager extends GridPane {
         // Creating the ImageView tile-grid
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
+                Pane container = new Pane();
+                container.setMinWidth(tileSize);
+                container.setMinHeight(tileSize);
+
                 // Create a new ImageView for the tile
                 ImageView tileHolder = new ImageView();
 
                 // Forcing tile size
-                tileHolder.setFitHeight(tileSize);
+                tileHolder.minWidth(tileSize);
+                tileHolder.minHeight(tileSize);
                 tileHolder.setFitWidth(tileSize);
+                tileHolder.setFitHeight(tileSize);
 
                 // Adding ImageView to grid at correct coordinates
-                this.add(tileHolder, column, row);
+                container.getChildren().add(tileHolder);
+                this.add(container, column, row);
             }
         }
     }
@@ -78,10 +90,12 @@ public class GridManager extends GridPane {
 
         // Iterating over each node of the grid
         int column, row;
-        for (Node node : this.getChildren()) {
+        for (Node _node : this.getChildren()) {
+            Node node = ((Pane) _node).getChildren().get(0);
+
             // Fetching the node's coordinates
-            column = GridPane.getColumnIndex(node);
-            row = content[column].length - GridPane.getRowIndex(node) - 1;
+            column = GridPane.getColumnIndex(_node);
+            row = content[column].length - GridPane.getRowIndex(_node) - 1;
 
             // Check if there is content at the current coordinates
             if (content[column][row] != null) {
@@ -93,6 +107,9 @@ public class GridManager extends GridPane {
                 } catch (IOException ex) {
                     System.out.println("ERROR: IMAGE NOT FOUND");
                 }
+            } else {
+                // Resetting ImageView in case no tile is present
+                ((ImageView) node).setImage(null);
             }
         }
     }
@@ -123,14 +140,34 @@ public class GridManager extends GridPane {
             // Check if there is content at the current coordinates
             if (states[column][row] == TileState.PICKABLE) {
                 // ...
-                System.out.println("pick-able at (" + column + ", " + row + ")");
+                // System.out.println("pick-able at (" + column + ", " + row + ")");
             } else if (states[column][row] == TileState.PICKABLE_NEXT) {
                 // ...
-                System.out.println("pick-able_next at (" + column + ", " + row + ")");
+                // System.out.println("pick-able_next at (" + column + ", " + row + ")");
             } else {
                 // Reset border if NOT_PICK-ABLE (must be done!)
-                System.out.println("not_pick-able at (" + column + ", " + row + ")");
+                // System.out.println("not_pick-able at (" + column + ", " + row + ")");
             }
+        }
+    }
+
+    /**
+     * Method in charge of attaching an event handler to tile click in grid
+     *
+     * @param callback callback method, takes tile coordinates as argument
+     */
+    public void setActionHandler(BiConsumer<Integer, Integer> callback) {
+        // Iterating over each node of the grid
+        for (Node node : this.getChildren()) {
+
+            // Fetching the node's coordinates
+            final int column = GridPane.getColumnIndex(node);
+            final int row = rows - GridPane.getRowIndex(node) - 1;
+
+            // Attaching event to ImageView
+            node.addEventHandler(MouseEvent.MOUSE_CLICKED, (event) -> {
+                new Thread( () -> callback.accept(column, row) ).start();
+            });
         }
     }
 

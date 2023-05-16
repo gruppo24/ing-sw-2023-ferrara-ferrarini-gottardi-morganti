@@ -2,6 +2,7 @@ package it.polimi.ingsw.server.controller;
 
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
+import it.polimi.ingsw.server.exceptions.EmptySelectionBuffer;
 import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
@@ -38,7 +39,7 @@ public class Middleware {
             player.flushBufferIntoLibrary();
             game.turnIsOver();
             // No need to notify the gameLock: GameState::turnIsOver will already do o for us
-        } catch (AlreadyUsedIndex | InvalidReorderingIndices | IndexOutOfBoundsException ex) {
+        } catch (AlreadyUsedIndex | InvalidReorderingIndices | IndexOutOfBoundsException | EmptySelectionBuffer ex) {
             System.out.println("---> Error during reordering for " + player.nickname + ": " + ex);
             // We wake up the threads here, since turnIsOver hasn't done so for us in case of an exception
             synchronized (game.gameLock) { game.gameLock.notifyAll(); }

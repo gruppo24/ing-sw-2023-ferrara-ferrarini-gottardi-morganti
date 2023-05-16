@@ -30,7 +30,7 @@ public class ThumbnailWrapper extends HBox implements SGSConsumer {
     public void updateSGS(SharedGameState sgs) {
         if (sgs.gameOngoing) {
             // Clearing all previous bottom libraries
-            this.getChildren().removeAll();
+            this.getChildren().removeAll(this.getChildren());
 
             // Re-rendering all bottom libraries
             for (int i = 0; i < sgs.libraries.length; i++) {

@@ -1,5 +1,6 @@
 package it.polimi.ingsw.client.view.gui;
 
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -10,6 +11,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+
 
 public class LibraryComponent extends VBox implements SGSConsumer, Initializable {
     @FXML
@@ -30,8 +32,19 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         }
 
         IngameController.appendConsumer(this);
+
+        // Attaching event to tile click
+        library.setActionHandler((x, y) -> {
+            SharedGameState gameState = IngameController.getLastState();
+            System.out.println("Selected column: " + x);
+            if (gameState.currPlayerIndex == gameState.selfPlayerIndex) {
+                System.out.println("SENDING COLUMN SELECTION REQUEST");
+                IngameController.setGameState(App.connection.selectColumn(x));
+            }
+        });
     }
 
+    /** @see SGSConsumer#updateSGS(SharedGameState) */
     @Override
     public void updateSGS(SharedGameState sgs) {
         if (sgs != null) {
@@ -40,6 +53,7 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         }
     }
 
+    /** @see Initializable#initialize(URL, ResourceBundle) */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         label.setText("Current Player: N/A");
