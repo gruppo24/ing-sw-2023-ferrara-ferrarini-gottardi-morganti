@@ -37,10 +37,15 @@
 
 .current-library-label {
     -fx-font-size: 1.5em;
-    -fx-font-weight: "bold";
+    /*-fx-font-weight: "bold";*/
     -fx-text-alignment: "center";
 }
 
 #main-title {
     -fx-height: 30px;
+}
+
+.lib-thumb-icon {
+    -fx-fit-to-width: 20;
+    -fx-fit-to-height: 20;
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import it.polimi.ingsw.client.view.gui.GridManager?>
+<?import javafx.scene.image.ImageView?>
+<fx:root type="javafx.scene.layout.VBox"
+         xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         stylesheets="@styles/style.css">
+
+    <VBox>
+        <HBox>
+            <GridManager fx:id="bottomLibrary" columns="5" rows="6" tileSize="20" styleClass="current-library" />
+            <VBox spacing="5">
+                <ImageView fx:id="hasArmchair" styleClass="lib-thumb-icon" />
+                <ImageView fx:id="common1Obtained" styleClass="lib-thumb-icon" />
+                <ImageView fx:id="common2Obtained" styleClass="lib-thumb-icon" />
+                <ImageView fx:id="firstFinished" styleClass="lib-thumb-icon" />
+            </VBox>
+        </HBox>
+
+        <Label fx:id="username" />
+    </VBox>
+
+</fx:root>
