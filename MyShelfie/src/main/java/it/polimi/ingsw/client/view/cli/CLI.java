@@ -396,7 +396,8 @@ public class CLI {
      *                   PICKABLE_NEXT, NOT_PICKABLE)
      */
     private void printBoard(TileType[][] boardContent, TileState[][] boardState) {
-        for (int i = 0; i < boardContent[0].length; i++) {
+//        for (int i = 0; i < boardContent[0].length; i++) {
+        for (int i = boardContent[0].length-1; i >= 0; i--) {
             System.out.print(i + " | ");
             for (int j = 0; j < boardContent.length; j++) {
                 if (boardContent[j][i] != null) {

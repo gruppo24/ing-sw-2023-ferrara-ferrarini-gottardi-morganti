@@ -5,6 +5,7 @@ import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.client.ReconnectionHandler;
 import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.client.view.gui.gameslist.ListViewCell;
+import it.polimi.ingsw.common.messages.responses.ResponseStatus;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,15 +55,22 @@ public class PregameController implements Initializable {
     public static void joinGame(String gameId) {
         String _username = self.username.getText();
 
-        // Executing request on separate thread
-        new Thread(() -> {
-            synchronized (requestLock) {
-                App.connection.connectToGame(gameId, _username, false);
+        if (!_username.isBlank()) {
+            // Executing request on separate thread
+            new Thread(() -> {
+                synchronized (requestLock) {
+                    ResponseStatus response = App.connection.connectToGame(gameId, _username, false);
 
-                // Switching view
-                Platform.runLater( () -> App.setRoot("ingame") );
-            }
-        }).start();
+                    // Switching view
+                    if (response == ResponseStatus.SUCCESS) {
+                        Platform.runLater(() -> App.setRoot("ingame"));
+                    } else {
+                        System.out.println("COULDN'T JOIN GAME: " + response);
+                    }
+
+                }
+            }).start();
+        }
     }
 
 
@@ -92,10 +100,14 @@ public class PregameController implements Initializable {
             synchronized (requestLock) {
                 try {
                     String[] parameters = new ReconnectionHandler().getParameters();
-                    App.connection.connectToGame(parameters[0], parameters[1], true);
+                    ResponseStatus response = App.connection.connectToGame(parameters[0], parameters[1], true);
 
                     // Switching view
-                    Platform.runLater( () -> App.setRoot("ingame") );
+                    if (response == ResponseStatus.SUCCESS) {
+                        Platform.runLater( () -> App.setRoot("ingame") );
+                    } else {
+                        System.out.println("COULDN'T REJOIN GAME: " + response);
+                    }
                 } catch (IOException | ClassNotFoundException ex) {
                     System.out.println("ERROR: Couldn't rejoin game...");
                 }
@@ -106,18 +118,26 @@ public class PregameController implements Initializable {
     /** Method in charge of creating a new game */
     @FXML
     private void createGame() {
-        new Thread(() -> {
-            synchronized (requestLock) {
-                App.connection.createGame(
-                        Connection.generateGameID(),
-                        username.getText(),
-                        numOfPlayers.getValue()
-                );
+        String _username = self.username.getText();
 
-                // Switching view
-                Platform.runLater( () -> App.setRoot("ingame") );
-            }
-        }).start();
+        if (!_username.isBlank()) {
+            new Thread(() -> {
+                synchronized (requestLock) {
+                    ResponseStatus response = App.connection.createGame(
+                            Connection.generateGameID(),
+                            username.getText(),
+                            numOfPlayers.getValue()
+                    );
+
+                    // Switching view
+                    if (response == ResponseStatus.SUCCESS) {
+                        Platform.runLater(() -> App.setRoot("ingame"));
+                    } else {
+                        System.out.println("COULDN'T CREATE GAME: " + response);
+                    }
+                }
+            }).start();
+        }
     }
 
 }
