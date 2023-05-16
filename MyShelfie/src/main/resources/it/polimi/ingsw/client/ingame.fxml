@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
+<?import it.polimi.ingsw.client.view.gui.BoardComponent?>
 <VBox xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.view.gui.IngameController"
@@ -12,14 +13,13 @@
       minHeight="-Infinity" minWidth="-Infinity"
       prefHeight="600.0" prefWidth="800.0"
       stylesheets="@styles/style.css, @styles/PregameStyles.css"
-      styleClass="background" >
-
+      styleClass="background"
+>
     <HBox fx:id="upperContainer" prefHeight="400.0" prefWidth="800.0">
-
+        <children>
+            <BoardComponent/>
+        </children>
     </HBox>
-
     <HBox fx:id="bottomContainer" prefHeight="200.0" prefWidth="800.0">
-
     </HBox>
-
 </VBox>
