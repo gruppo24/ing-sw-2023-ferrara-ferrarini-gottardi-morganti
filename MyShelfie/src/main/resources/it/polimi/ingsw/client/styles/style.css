@@ -28,6 +28,19 @@
 
 }
 
+.current-library {
+    -fx-background-color: #6099b5;
+    -fx-background-repeat: no-repeat;
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+.current-library-label {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: "bold";
+    -fx-text-alignment: "center";
+}
+
 #main-title {
     -fx-height: 30px;
 }

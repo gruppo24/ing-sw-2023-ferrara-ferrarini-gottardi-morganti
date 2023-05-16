@@ -1,9 +1,9 @@
 package it.polimi.ingsw.client.view.gui;
 
-
 import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
+import javafx.beans.NamedArg;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
 /**
- * Class in charge of creating a tile grid (either for boards or libraries) of specified size
+ * Class in charge of creating a tile grid (either for boards or libraries) of
+ * specified size
  *
  * @author Ferrarini Andrea
  */
@@ -26,15 +26,15 @@ public class GridManager extends GridPane {
     // Grid dimensions
     private final int columns, rows;
 
-
     /**
      * Class constructor
      *
-     * @param columns number of columns for the grid
-     * @param rows number of rows for the grid
+     * @param columns  number of columns for the grid
+     * @param rows     number of rows for the grid
      * @param tileSize each tile is going to be a square. Specify square size here
      */
-    public GridManager(int columns, int rows, int tileSize) {
+    public GridManager(@NamedArg("columns") int columns, @NamedArg("rows") int rows,
+            @NamedArg("tileSize") int tileSize) {
         super();
         this.columns = columns;
         this.rows = rows;
@@ -46,8 +46,8 @@ public class GridManager extends GridPane {
         this.setAlignment(Pos.CENTER);
 
         // Creating the ImageView tile-grid
-        for (int column=0; column < columns; column++) {
-            for (int row=0; row < rows; row++) {
+        for (int column = 0; column < columns; column++) {
+            for (int row = 0; row < rows; row++) {
                 // Create a new ImageView for the tile
                 ImageView tileHolder = new ImageView();
 
@@ -64,7 +64,8 @@ public class GridManager extends GridPane {
     /**
      * Method in charge of updating the grid's content with new tiles
      *
-     * @param content new content to be rendered in the grid. "content" is a matrix of columns * rows
+     * @param content new content to be rendered in the grid. "content" is a matrix
+     *                of columns * rows
      */
     public void setGridContent(TileType[][] content) {
         // Checking argument is valid
@@ -72,8 +73,7 @@ public class GridManager extends GridPane {
             throw new IllegalArgumentException(
                     "ERROR: content matrix must match the grid's size." +
                             "Grid: " + columns + " * " + rows + ", " +
-                            "content: " + content.length + " * " + content[0].length
-            );
+                            "content: " + content.length + " * " + content[0].length);
         }
 
         // Iterating over each node of the grid
@@ -81,13 +81,14 @@ public class GridManager extends GridPane {
         for (Node node : this.getChildren()) {
             // Fetching the node's coordinates
             column = GridPane.getColumnIndex(node);
-            row = GridPane.getRowIndex(node);
+            row = content[column].length - GridPane.getRowIndex(node) - 1;
 
             // Check if there is content at the current coordinates
             if (content[column][row] != null) {
                 try {
                     // Assemble path to the tile's asset and set the asset in the ImageView
-                    Path pathToAsset = Paths.get(App.ASSETS_BASE_PATH, "item tiles", content[column][row].getAssetName());
+                    Path pathToAsset = Paths.get(App.ASSETS_BASE_PATH, "item tiles",
+                            content[column][row].getAssetName());
                     ((ImageView) node).setImage(new Image(new FileInputStream(pathToAsset.toString())));
                 } catch (IOException ex) {
                     System.out.println("ERROR: IMAGE NOT FOUND");
@@ -97,9 +98,11 @@ public class GridManager extends GridPane {
     }
 
     /**
-     * Method in charge of decorating each item in the grid according to a TileState value
+     * Method in charge of decorating each item in the grid according to a TileState
+     * value
      *
-     * @param states TileState of each tile in the grid. "states" is a matrix of columns * rows
+     * @param states TileState of each tile in the grid. "states" is a matrix of
+     *               columns * rows
      */
     public void setGridItemDecorators(TileState[][] states) {
         // Checking argument is valid
@@ -107,8 +110,7 @@ public class GridManager extends GridPane {
             throw new IllegalArgumentException(
                     "ERROR: states matrix must match the grid's size." +
                             "Grid: " + columns + " * " + rows + ", " +
-                            "states: " + states.length + " * " + states[0].length
-            );
+                            "states: " + states.length + " * " + states[0].length);
         }
 
         // Iterating over each node of the grid
