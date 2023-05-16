@@ -29,7 +29,6 @@ public class BoardComponent extends GridManager implements SGSConsumer {
                     gameState.selectionBuffer[gameState.selectionBuffer.length-1] == null) {
                 System.out.println("SENDING PICK REQUEST");
                 IngameController.setGameState(App.connection.pickTile(x, y));
-                IngameController.setGameState(App.connection.reorder(0, 1, 2));
             }
         });
     }

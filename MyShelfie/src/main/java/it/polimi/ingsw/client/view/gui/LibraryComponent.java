@@ -13,12 +13,20 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 
+/**
+ * LibraryComponent class to be rendered in the UI
+ */
 public class LibraryComponent extends VBox implements SGSConsumer, Initializable {
+
     @FXML
     Label label;
     @FXML
     GridManager library;
 
+
+    /**
+     * Class constructor
+     */
     public LibraryComponent() {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("library.fxml"));
         loader.setRoot(this);
@@ -37,7 +45,9 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         library.setActionHandler((x, y) -> {
             SharedGameState gameState = IngameController.getLastState();
             System.out.println("Selected column: " + x);
-            if (gameState.gameOngoing && gameState.currPlayerIndex == gameState.selfPlayerIndex) {
+            if (gameState.gameOngoing &&
+                    gameState.currPlayerIndex == gameState.selfPlayerIndex &&
+                    gameState.selectionBuffer == null) {
                 System.out.println("SENDING COLUMN SELECTION REQUEST");
                 IngameController.setGameState(App.connection.selectColumn(x));
             }
