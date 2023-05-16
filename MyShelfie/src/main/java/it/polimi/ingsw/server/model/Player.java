@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
+import it.polimi.ingsw.server.exceptions.EmptySelectionBuffer;
 import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 import it.polimi.ingsw.server.exceptions.SelectionBufferFullException;
 
@@ -262,10 +263,12 @@ public class Player implements Serializable {
      * @throws InvalidReorderingIndices when the index of an unused cell (no tile pushed into
      *                                  it) is provided for reordering
      * @throws IndexOutOfBoundsException when an invalid index is provided
+     * @throws EmptySelectionBuffer when trying to reorder an empty selection buffer
      */
     public void reorderSelectionBuffer(int firstIndex, int secondIndex, int thirdIndex)
-            throws AlreadyUsedIndex, InvalidReorderingIndices, IndexOutOfBoundsException {
-        System.out.println(firstIndex + ", " + secondIndex + ", " + thirdIndex);
+            throws AlreadyUsedIndex, InvalidReorderingIndices, IndexOutOfBoundsException, EmptySelectionBuffer {
+        if (this.selectionBuffer[0] == null) throw new EmptySelectionBuffer();
+
         // Checking if the indices are all different
         if (firstIndex == secondIndex) throw new AlreadyUsedIndex(1);
         if (secondIndex == thirdIndex) throw new AlreadyUsedIndex(2);
