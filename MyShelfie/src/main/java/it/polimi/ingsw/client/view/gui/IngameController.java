@@ -40,7 +40,7 @@ public class IngameController implements Initializable {
         });
 
         // if sgs is null, or it is not the player's turn, wait for turn
-        if (gameState == null || gameState.currPlayerIndex != gameState.selfPlayerIndex)
+        if (gameState == null || !gameState.gameOngoing || gameState.currPlayerIndex != gameState.selfPlayerIndex)
             setGameState(App.connection.waitTurn());
     }
 
