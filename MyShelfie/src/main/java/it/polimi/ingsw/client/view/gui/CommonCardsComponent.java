@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.FileInputStream;
@@ -43,36 +44,35 @@ public class CommonCardsComponent extends VBox implements SGSConsumer, Initializ
         }
 
         IngameController.appendConsumer(this);
+        setupLayout();
     }
     @Override
     public void updateSGS(SharedGameState sgs) {
         card1.setImage(loadAsset("common goal cards", sgs.commonsId[0], 130, 80));
         card2.setImage(loadAsset("common goal cards", sgs.commonsId[1], 130,80));
-        for(int i=1; i<= sgs.commonsId.length; i++){
-            for(int j=1; j<=sgs.players.length;j++){
+        for(int i=0; i< sgs.commonsId.length; i++){
+            for(int j=0; j<sgs.players.length;j++){
                 if(sgs.commonsAchievers[i][j] == null){
                     if(sgs.players.length == 2){
-                        switch (j) {
+                        switch (j+1) {
                             case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg",40,40));
                             case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg",40,40));
                         }
                         break;
                     }else if(sgs.players.length == 3){
-                        switch (j) {
+                        switch (j+1) {
                             case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg",40,40));
                             case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg",40,40));
                             case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg",40,40));
 
                         }
                         break;
-
                     }else if(sgs.players.length == 4){
-                        switch (j) {
+                        switch (j+1) {
                             case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg",40,40));
                             case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg",40,40));
                             case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg",40,40));
                             case 4 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_2.jpg",40,40));
-
                         }
                         break;
                     }
@@ -97,10 +97,25 @@ public class CommonCardsComponent extends VBox implements SGSConsumer, Initializ
         }
     }
     private ImageView chooseCommon(int i){
-        if(i == 1)
+        if(i == 0)
             return order1;
         else
-            return  order2;
+            return order2;
+    }
+    private void setupLayout() {
+        HBox hbox1 = new HBox();
+        hbox1.getChildren().addAll(card1, order1);
+        hbox1.setAlignment(Pos.CENTER);
+        hbox1.setSpacing(10);
+
+        HBox hbox2 = new HBox();
+        hbox2.getChildren().addAll(card2, order2);
+        hbox2.setAlignment(Pos.CENTER);
+        hbox2.setSpacing(10);
+
+        getChildren().addAll(hbox1, hbox2);
+        setSpacing(10);
+        setAlignment(Pos.CENTER);
     }
 
 }

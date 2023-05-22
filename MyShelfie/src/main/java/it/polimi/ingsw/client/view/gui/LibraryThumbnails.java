@@ -75,23 +75,23 @@ public class LibraryThumbnails extends VBox implements SGSConsumer{
         if(sgs.firstFilled) {
             firstFinished.setImage(loadAsset("scoring tokens", "end game.png"));
         }
-        for(int i=1; i<= sgs.commonsId.length; i++){
-            for(int j=1; j<=sgs.players.length;j++){
+        for(int i=0; i< sgs.commonsId.length; i++){
+            for(int j=0; j<sgs.players.length;j++){
                 if(sgs.players[sgs.currPlayerIndex].equals(sgs.commonsAchievers[i][j])){
                     if(sgs.players.length == 2){
-                        switch (j) {
+                        switch (j+1) {
                             case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg"));
                             case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg"));
                         }
                     }else if(sgs.players.length == 3){
-                        switch (j) {
+                        switch (j+1) {
                             case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg"));
                             case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg"));
                             case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg"));
                         }
 
                     }else if(sgs.players.length == 4){
-                        switch (j) {
+                        switch (j+1) {
                             case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg"));
                             case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg"));
                             case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg"));
@@ -119,7 +119,7 @@ public class LibraryThumbnails extends VBox implements SGSConsumer{
         }
     }
     private ImageView chooseCommon(int i){
-        if(i == 1)
+        if(i == 0)
             return common1Obtained;
         else
             return  common2Obtained;
