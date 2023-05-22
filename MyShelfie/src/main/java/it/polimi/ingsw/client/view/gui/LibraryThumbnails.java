@@ -21,7 +21,7 @@ import java.nio.file.Paths;
  *
  * @author Ferrarini Andrea
  */
-public class LibraryThumbnails extends VBox {
+public class LibraryThumbnails extends VBox implements SGSConsumer{
 
     @FXML
     GridManager bottomLibrary;
@@ -70,6 +70,38 @@ public class LibraryThumbnails extends VBox {
         // Rendering player's username
         username.setText(sgs.players[index]);
     }
+    @Override
+    public void updateSGS(SharedGameState sgs) {
+        if(sgs.firstFilled) {
+            firstFinished.setImage(loadAsset("scoring tokens", "end game.png"));
+        }
+        for(int i=1; i<= sgs.commonsId.length; i++){
+            for(int j=1; j<=sgs.players.length;j++){
+                if(sgs.players[sgs.currPlayerIndex].equals(sgs.commonsAchievers[i][j])){
+                    if(sgs.players.length == 2){
+                        switch (j) {
+                            case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg"));
+                            case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg"));
+                        }
+                    }else if(sgs.players.length == 3){
+                        switch (j) {
+                            case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg"));
+                            case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg"));
+                            case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg"));
+                        }
+
+                    }else if(sgs.players.length == 4){
+                        switch (j) {
+                            case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg"));
+                            case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg"));
+                            case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg"));
+                            case 4 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_2.jpg"));
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Helper method in charge of opening a FileInputStream for asset loading
@@ -86,5 +118,12 @@ public class LibraryThumbnails extends VBox {
             throw new RuntimeException(ex);
         }
     }
+    private ImageView chooseCommon(int i){
+        if(i == 1)
+            return common1Obtained;
+        else
+            return  common2Obtained;
+    }
+
 
 }

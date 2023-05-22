@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+
 
 <?import it.polimi.ingsw.client.view.gui.BoardComponent?>
 <?import it.polimi.ingsw.client.view.gui.LibraryComponent?>
 <?import it.polimi.ingsw.client.view.gui.ThumbnailWrapper?>
-<?import it.polimi.ingsw.client.view.gui.PlayerPointsComponent?>
 <?import it.polimi.ingsw.client.view.gui.SelectionBuffer?>
-
-
+<?import it.polimi.ingsw.client.view.gui.PlayerPointsComponent?>
+<?import it.polimi.ingsw.client.view.gui.CommonCardsComponent?>
 <VBox xmlns="http://javafx.com/javafx/19"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="it.polimi.ingsw.client.view.gui.IngameController"
@@ -22,7 +23,7 @@
 
     <HBox fx:id="upperContainer" prefHeight="400.0" prefWidth="800.0" spacing="20" >
         <children>
-            <BoardComponent />
+            <BoardComponent/>
             <VBox>
                 <LibraryComponent />
                 <SelectionBuffer />
@@ -30,7 +31,8 @@
             <PlayerPointsComponent />
         </children>
     </HBox>
-    <HBox fx:id="bottomContainer" prefHeight="200.0" prefWidth="800.0">
+    <HBox fx:id="bottomContainer" prefHeight="200.0" prefWidth="800.0" spacing="40">
         <ThumbnailWrapper />
+        <CommonCardsComponent />
     </HBox>
 </VBox>
