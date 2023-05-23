@@ -37,8 +37,8 @@ public class Player implements Serializable {
     private TileType[] selectionBuffer;
     private int bufferTop = 0;
 
-    // Reconnection timer thread
-    public transient Thread reconnectionTimer;
+    // Disconnection handling
+    private boolean online = true;
 
 
     /**
@@ -48,6 +48,28 @@ public class Player implements Serializable {
      */
     public Player(String nickname) {
         this.nickname = nickname;
+    }
+
+    /**
+     * Method in charge of setting this.online to false
+     */
+    public void hasDisconnected() {
+        this.online = false;
+    }
+
+    /**
+     * Method in charge of setting this.online to true
+     */
+    public void hasReconnected() {
+        this.online = true;
+    }
+
+    /**
+     * Getter method for the this.online attribute
+     * @return this.online
+     */
+    public boolean isConnected() {
+        return this.online;
     }
 
     /**

@@ -60,10 +60,18 @@ public class RejoinGame extends PacketContent {
         }
         Player player = maybePlayer.get();
 
-        // We stop the player's reconnection timer
-        if (player.reconnectionTimer != null) {
-            player.reconnectionTimer.interrupt();
-            player.reconnectionTimer = null;
+        // We update the players connection status
+        player.hasReconnected();
+
+        // We stop the reconnection timer associated to the game
+        if (game.reconnectionTimer != null && game.remainingOnline() > 1) {
+            game.reconnectionTimer.interrupt();
+            game.reconnectionTimer = null;
+        }
+
+        // If the game had been suspended, we resume it
+        if (game.isSuspended()) {
+            game.turnIsOver();
         }
 
         // Send a success response message to the client

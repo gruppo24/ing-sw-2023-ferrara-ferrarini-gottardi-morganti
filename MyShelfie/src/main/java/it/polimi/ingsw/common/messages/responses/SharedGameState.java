@@ -20,6 +20,7 @@ public class SharedGameState implements Serializable {
 
     // List of all players connected to the current game
     public String[] players;
+    public Boolean[] playerStatus; // Tells which players are online and which are not
 
     // index of the player that the shared game state is relative to
     public int selfPlayerIndex;
@@ -62,6 +63,7 @@ public class SharedGameState implements Serializable {
 
     // Game dynamics attributes
     public boolean gameOngoing; // Tells the client whether the game has started or not
+    public boolean gameSuspended; // Tells the client whether the game has been suspended due to too many disconnections
     public boolean gameOver; // Tells the client whether the game has ended or not
     public boolean gameTerminated; // Tells the client that the game has been prematurely terminated
 

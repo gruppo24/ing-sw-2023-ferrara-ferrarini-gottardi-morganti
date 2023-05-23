@@ -48,7 +48,12 @@ public class GameState implements Serializable {
     transient public Object gameLock = new Object();
     private boolean gameOver = false;
     private boolean gameOngoing = false;
+    private boolean suspended = false;
     private boolean gameTerminated = false;
+
+    // Disconnection handling
+    public transient Thread reconnectionTimer;
+
 
     /**
      * Class constructor
@@ -91,6 +96,26 @@ public class GameState implements Serializable {
     }
 
     /**
+     * Method in charge of returning number of currently online players
+     * @return number of online players
+     */
+    public int remainingOnline() {
+        int remaining = 0;
+        for (Player player : this.players)
+            if (player.isConnected())
+                remaining++;
+        return remaining;
+    }
+
+    /**
+     * Getter method for the this.suspended attribute
+     * @return this.suspended
+     */
+    public boolean isSuspended() {
+        return this.suspended;
+    }
+
+    /**
      * Method to be called after the turn of a player has ended. The
      * method is in charge of performing all the required end-of-turn
      * operations
@@ -113,15 +138,25 @@ public class GameState implements Serializable {
         }
 
         // We update the player-turn index and check if the game has ended
-        this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
-        this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
+        int online = this.remainingOnline();
+        if (online > 1 || online == 1 && !this.players[this.currPlayerIndex].isConnected()) {
+            do {
+                this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
+                this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
+            } while(!this.players[this.currPlayerIndex].isConnected() || this.gameOver);
+            this.suspended = false;
+        } else {
+            this.suspended = true;
+        }
 
         // Only if the game hasn't ended, update the current board-state
-        if (!this.gameOver) {
+        if (!this.gameOver && !this.gameTerminated) {
             if (this.board.shouldBeRefilled())
                 this.board.refillBoard(this.players.length);
             this.board.definePickable();
         } else {
+            // Forcing gameOver to true (in case game has been terminated)
+            this.gameOver = true;
             // Otherwise, we remove this game from the games data structure
             GAMES.remove(this);
             // TODO: REMOVE REMOTE OBJECTS AS WELL!!!
@@ -276,6 +311,8 @@ public class GameState implements Serializable {
             if (this.players[index] != null)
                 sgs.players[index] = this.players[index].nickname;
         sgs.selfPlayerIndex = Arrays.asList(this.players).indexOf(player);
+        if (this.gameOngoing)
+            sgs.playerStatus = Arrays.stream(this.players).map(Player::isConnected).toArray(Boolean[]::new);
 
         // Current board information
         sgs.boardContent = this.board.getBoardContent();
@@ -285,7 +322,7 @@ public class GameState implements Serializable {
         sgs.currPlayerIndex = this.currPlayerIndex;
         sgs.armchairIndex = this.armchair;
         sgs.isFinalRound = this.finalRound;
-        if ( this.firstFilledPlayer != null)
+        if (this.firstFilledPlayer != null)
             sgs.firstCompleter =  this.firstFilledPlayer.nickname;
 
         // Common cards information
@@ -331,6 +368,7 @@ public class GameState implements Serializable {
 
         // Lastly, we set the game dynamics attributes
         sgs.gameOngoing = this.gameOngoing;
+        sgs.gameSuspended = this.suspended;
         sgs.gameOver = this.gameOver;
         sgs.gameTerminated = this.gameTerminated;
 

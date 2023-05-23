@@ -62,15 +62,21 @@ public class TCPIngameChannelUplink implements Contextable, Runnable {
 
     @Override
     public void run() {
+        // Boolean variable to hide keep-alive loging
+        boolean last_was_ping = false;
         while (!this.game.isGameOver()) {
             try {
-                System.out.println("UPLINK-'" + this.player.nickname + "' WAITING FOR PACKETS...");
+                if (!last_was_ping)
+                    System.out.println("UPLINK-'" + this.player.nickname + "' WAITING FOR PACKETS...");
                 RequestPacket requestPacket = (RequestPacket) this.input.readObject();
 
                 // If a keep-alive ping has been received, skip the rest of the loop...
                 if (requestPacket.contentType == ContentType.KEEP_ALIVE) {
-                    System.out.println("[SocketServer] echo received for player: '" + this.getPlayer() + "'");
+                    // System.out.println("[SocketServer] echo received for player: '" + this.getPlayer() + "'");  // DEBUG ONLY
+                    last_was_ping = true;
                     continue;
+                } else {
+                    last_was_ping = false;
                 }
 
                 System.out.println("UPLINK-'" + this.player.nickname + "' PACKET RECEIVED!");
@@ -92,9 +98,19 @@ public class TCPIngameChannelUplink implements Contextable, Runnable {
             } catch (ClassNotFoundException | IOException ex) {
                 System.out.println("[SocketServer] DISCONNECTION IN UPLINK");
 
-                // We start a reconnection timer, after which the game will be automatically terminate
-                this.player.reconnectionTimer = new Thread(new ReconnectionTimer(this.game));
-                this.player.reconnectionTimer.start();
+                // Mark player as disconnected
+                this.player.hasDisconnected();
+
+                // If only one player has remained online, we start a reconnection timer
+                if (this.game.remainingOnline() == 1) {
+                    this.game.reconnectionTimer = new Thread(new ReconnectionTimer(this.game));
+                    this.game.reconnectionTimer.start();
+                }
+
+                // If it was the player's turn, change turn
+                if (this.game.actuallyIsPlayersTurn(this.player)) {
+                    game.turnIsOver();
+                }
 
                 break;
             }

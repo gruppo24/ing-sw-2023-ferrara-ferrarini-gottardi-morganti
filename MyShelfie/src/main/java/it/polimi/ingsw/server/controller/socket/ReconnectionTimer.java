@@ -32,6 +32,7 @@ public class ReconnectionTimer implements Runnable {
     public void run() {
         try {
             Thread.sleep(this.waitTime);
+            System.out.println("===> GAME TERMINATED DUE TO TIMER ELAPSING!");
             this.game.terminate();
         } catch (InterruptedException e) {
             // Do nothing...

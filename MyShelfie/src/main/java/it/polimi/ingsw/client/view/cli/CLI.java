@@ -224,7 +224,7 @@ public class CLI {
 
             // Checking if the game has started OR if our turn hasn't come yet
             myIndex = Arrays.asList(gameState.players).indexOf(this.myUsername);
-            gameState = (!gameState.gameOngoing || myIndex != gameState.currPlayerIndex) ?
+            gameState = (!gameState.gameOngoing || gameState.gameSuspended || myIndex != gameState.currPlayerIndex) ?
                     this.connection.waitTurn() :
                     handleTurn(gameState);
         }
@@ -352,7 +352,7 @@ public class CLI {
         }
         System.out.println();
 
-        // Printing other players' usernames
+        // Printing other players' usernames and connection status
         System.out.print(" ".repeat(4));
         for (int playerIndex=0; playerIndex < game.players.length; playerIndex++) {
             if (playerIndex != myIndex) {
@@ -366,6 +366,9 @@ public class CLI {
                     player = CLIUtils.makeUnderlined(CLIUtils.makeBold(player));
 
                 System.out.print(player);
+                System.out.print(game.playerStatus[playerIndex] ?
+                    CLIUtils.color("*", CLIColor.ANSI_GREEN) : CLIUtils.color("*", CLIColor.ANSI_RED)
+                );
                 System.out.print(" ".repeat(padding + 8));
             }
         }

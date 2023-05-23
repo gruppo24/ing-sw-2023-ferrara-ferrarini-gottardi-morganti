@@ -43,10 +43,18 @@ public class GameActionStubImpl extends UnicastRemoteObject implements GameActio
     /** @see GameActionStub#resetDisconnectionTimer() */
     @Override
     public void resetDisconnectionTimer() throws RemoteException {
-        // We force the interruption of the disconnection timer, if there is one
-        if (this.player.reconnectionTimer != null) {
-            this.player.reconnectionTimer.interrupt();
-            player.reconnectionTimer = null;
+        // We update the players connection status
+        player.hasReconnected();
+
+        // We stop the reconnection timer associated to the game
+        if (game.reconnectionTimer != null && game.remainingOnline() > 1) {
+            game.reconnectionTimer.interrupt();
+            game.reconnectionTimer = null;
+        }
+
+        // If the game had been suspended, we resume it
+        if (game.isSuspended()) {
+            game.turnIsOver();
         }
     }
 
