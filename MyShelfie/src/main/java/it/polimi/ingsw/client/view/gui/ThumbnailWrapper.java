@@ -1,9 +1,7 @@
 package it.polimi.ingsw.client.view.gui;
 
-
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import javafx.scene.layout.HBox;
-
 
 /**
  * Class representing an FXML ThumbnailWrapper object. This fxml element will
@@ -12,7 +10,6 @@ import javafx.scene.layout.HBox;
  * @author Ferrarini Andrea
  */
 public class ThumbnailWrapper extends HBox implements SGSConsumer {
-
 
     /**
      * Class constructor
@@ -24,13 +21,12 @@ public class ThumbnailWrapper extends HBox implements SGSConsumer {
         this.setSpacing(10);
     }
 
-
-    /** @see SGSConsumer#updateSGS(SharedGameState)  */
+    /** @see SGSConsumer#updateSGS(SharedGameState) */
     @Override
     public void updateSGS(SharedGameState sgs) {
         if (sgs.gameOngoing) {
             // Clearing all previous bottom libraries
-            this.getChildren().removeAll(this.getChildren());
+            this.getChildren().clear();
 
             // Re-rendering all bottom libraries
             for (int i = 0; i < sgs.libraries.length; i++) {

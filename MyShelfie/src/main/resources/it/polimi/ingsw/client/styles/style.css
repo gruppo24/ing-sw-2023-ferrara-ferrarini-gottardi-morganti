@@ -8,24 +8,28 @@
 
 .board {
     -fx-background-color: #ccacac;
-    /*-fx-background-image: url("/boards/livingroom.png");*/
+    -fx-background-image: url("/boards/livingroom.png");
     -fx-background-repeat: no-repeat;
     -fx-background-size: cover;
     -fx-background-position: center center;
+    -fx-padding: 20 22 20 18;
 }
 
 .board-tile-pickable {
-    -fx-border-color: black;
+    -fx-border-color: white;
     -fx-border-style: solid;
-    -fx-border-width: 5;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, #0003, 8, 0.9, 0, 2);
 }
 
 .board-tile-pickable-next {
-
+    -fx-border-color: #999;
+    -fx-border-style: solid;
+    -fx-border-width: 2;
 }
 
 .board-tile-not-pickable {
-
+    -fx-opacity: 0.5;
 }
 
 .current-library {
