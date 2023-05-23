@@ -105,9 +105,10 @@ public class Player implements Serializable {
     public void updatePrivatePoints() {
         // We iterate over all private objectives and check how many matches we have in our library
         int matches = 0;
-        for (TileType tile : privateCard.objectives.keySet())
-            if (this.library[privateCard.objectives.get(tile)[0]][privateCard.objectives.get(tile)[1]] == tile)
-                matches++;
+        if (this.privateCard != null)
+            for (TileType tile : privateCard.objectives.keySet())
+                if (this.library[privateCard.objectives.get(tile)[0]][privateCard.objectives.get(tile)[1]] == tile)
+                    matches++;
 
         this.privatePoints = PrivateCard.mapPrivatePoints(matches);
     }

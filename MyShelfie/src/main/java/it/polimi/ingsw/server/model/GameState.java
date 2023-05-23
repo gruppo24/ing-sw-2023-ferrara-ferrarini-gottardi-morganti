@@ -170,7 +170,12 @@ public class GameState implements Serializable {
             this.gameOver = true;
             // Otherwise, we remove this game from the games data structure
             GAMES.remove(this);
-            // TODO: REMOVE REMOTE OBJECTS AS WELL!!!
+
+            // Deleting game backup file here
+            File backupFile = new File("backups/" + gameUniqueCode + ".back");
+            if (backupFile.exists() && !backupFile.delete())
+                    System.out.println("ERROR: something went wrong deleting the '" + gameUniqueCode + "' backup file...");
+
             // TODO: REMOVE BACKUP FILE!!!
         }
 
