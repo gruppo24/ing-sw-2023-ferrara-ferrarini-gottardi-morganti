@@ -34,7 +34,7 @@ public class App extends Application {
     public void start(Stage stage) throws Exception {
         // We create our initial scene and set main_menu.fxml to be our initial
         // scene-graph root
-        App.scene = new Scene(loadFXML("main_menu"), 800, 600);
+        App.scene = new Scene(loadFXML("main_menu"), 1000, 800);
         stage.setScene(App.scene);
         stage.setOnCloseRequest(event -> System.exit(0)); // On window close --> kill all connections / threads
         stage.show();

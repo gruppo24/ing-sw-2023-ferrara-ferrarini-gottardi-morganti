@@ -1,8 +1,6 @@
 package it.polimi.ingsw.client.view.gui;
 
-
 import it.polimi.ingsw.client.App;
-import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.TileType;
 import javafx.beans.NamedArg;
 import javafx.geometry.Pos;
@@ -19,7 +17,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.BiConsumer;
 
-
 /**
  * Class in charge of creating a tile grid (either for boards or libraries) of
  * specified size
@@ -29,7 +26,7 @@ import java.util.function.BiConsumer;
 public class GridManager extends GridPane {
 
     // Grid dimensions
-    private final int columns, rows;
+    public final int columns, rows;
 
     /**
      * Class constructor
@@ -45,20 +42,22 @@ public class GridManager extends GridPane {
         this.rows = rows;
 
         // Setting up the grid
-        this.setMinSize(columns * tileSize, rows * tileSize);
-        this.setVgap(tileSize / 10.0);
-        this.setHgap(tileSize / 10.0);
+        this.setMinSize(columns * (tileSize + 5) + 40, rows * (tileSize + 5) + 40);
+        this.setHgap(1);
+        this.setVgap(1);
         this.setAlignment(Pos.CENTER);
 
         // Creating the ImageView tile-grid
         for (int column = 0; column < columns; column++) {
             for (int row = 0; row < rows; row++) {
                 Pane container = new Pane();
-                container.setMinWidth(tileSize);
-                container.setMinHeight(tileSize);
+                container.setMinWidth(tileSize + 4);
+                container.setMinHeight(tileSize + 4);
 
                 // Create a new ImageView for the tile
                 ImageView tileHolder = new ImageView();
+                tileHolder.translateXProperty().set(2);
+                tileHolder.translateYProperty().set(2);
 
                 // Forcing tile size
                 tileHolder.minWidth(tileSize);
@@ -115,43 +114,6 @@ public class GridManager extends GridPane {
     }
 
     /**
-     * Method in charge of decorating each item in the grid according to a TileState
-     * value
-     *
-     * @param states TileState of each tile in the grid. "states" is a matrix of
-     *               columns * rows
-     */
-    public void setGridItemDecorators(TileState[][] states) {
-        // Checking argument is valid
-        if (states.length != this.columns || states[0].length != this.rows) {
-            throw new IllegalArgumentException(
-                    "ERROR: states matrix must match the grid's size." +
-                            "Grid: " + columns + " * " + rows + ", " +
-                            "states: " + states.length + " * " + states[0].length);
-        }
-
-        // Iterating over each node of the grid
-        int column, row;
-        for (Node node : this.getChildren()) {
-            // Fetching the node's coordinates
-            column = GridPane.getColumnIndex(node);
-            row = GridPane.getRowIndex(node);
-
-            // Check if there is content at the current coordinates
-            if (states[column][row] == TileState.PICKABLE) {
-                // ...
-                // System.out.println("pick-able at (" + column + ", " + row + ")");
-            } else if (states[column][row] == TileState.PICKABLE_NEXT) {
-                // ...
-                // System.out.println("pick-able_next at (" + column + ", " + row + ")");
-            } else {
-                // Reset border if NOT_PICK-ABLE (must be done!)
-                // System.out.println("not_pick-able at (" + column + ", " + row + ")");
-            }
-        }
-    }
-
-    /**
      * Method in charge of attaching an event handler to tile click in grid
      *
      * @param callback callback method, takes tile coordinates as argument
@@ -166,7 +128,7 @@ public class GridManager extends GridPane {
 
             // Attaching event to ImageView
             node.addEventHandler(MouseEvent.MOUSE_CLICKED, (event) -> {
-                new Thread( () -> callback.accept(column, row) ).start();
+                new Thread(() -> callback.accept(column, row)).start();
             });
         }
     }
