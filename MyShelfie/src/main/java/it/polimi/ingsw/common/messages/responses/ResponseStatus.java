@@ -23,4 +23,18 @@ public enum ResponseStatus {
 
     @Serial
     private final static long serialVersionUID = 1L;
+
+    public String toString() {
+        return switch (this) {
+            case SUCCESS                -> "Operation successful!";
+            case GAME_ID_TAKEN          -> "An already used gameID was chosen...";
+            case NO_SUCH_GAME_ID        -> "The selected game doesn't exist...";
+            case SELECTED_GAME_FULL     -> "The selected game is already full...";
+            case USERNAME_TAKEN         -> "This username has already been taken in this game...";
+            case USERNAME_NOT_IN_GAME   -> "Can't rejoin with this username...";
+            case INVALID_REQUEST        -> "Invalid request";
+            case SERVER_ERROR           -> "Server error. Retry later";
+            default -> "  ";
+        };
+    }
 }

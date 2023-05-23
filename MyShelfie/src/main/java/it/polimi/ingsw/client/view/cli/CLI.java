@@ -369,7 +369,7 @@ public class CLI {
                 System.out.print(game.playerStatus[playerIndex] ?
                     CLIUtils.color("*", CLIColor.ANSI_GREEN) : CLIUtils.color("*", CLIColor.ANSI_RED)
                 );
-                System.out.print(" ".repeat(padding + 8));
+                System.out.print(" ".repeat(padding + 7));
             }
         }
         System.out.println("\n");   // New line

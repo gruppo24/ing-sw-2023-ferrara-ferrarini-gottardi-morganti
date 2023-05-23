@@ -11,6 +11,10 @@
     -fx-max-width: 200;
 }
 
+.error-message {
+    -fx-fill: #dd1100;
+}
+
 .numOfPlayers {
     -fx-max-width: 50;
 }

@@ -23,6 +23,7 @@
         <VBox spacing="10" alignment="CENTER" styleClass="pregameTitleSection">
             <Label text="Start playing!" styleClass="title"/>
             <TextField fx:id="username" styleClass="pregameTextField" promptText="Your username..." />
+            <Label fx:id="errorMessage" styleClass="error-message" />
         </VBox>
         <!-- END: Title & username -->
     </top>

@@ -102,7 +102,9 @@ public class GameState implements Serializable {
     public int remainingOnline() {
         int remaining = 0;
         for (Player player : this.players)
-            if (player.isConnected())
+            if (player == null)  // If a player hasn't joined yet, we consider them online in the count...
+                remaining++;
+            else if (player.isConnected())
                 remaining++;
         return remaining;
     }
