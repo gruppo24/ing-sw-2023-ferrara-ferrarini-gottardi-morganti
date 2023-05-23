@@ -14,7 +14,7 @@ public class BoardComponent extends GridManager implements SGSConsumer {
      * Class constructor
      */
     public BoardComponent() {
-        super(9, 9, 50);
+        super(9, 9, 50, 5, 40);
         this.getStyleClass().add("board");
         IngameController.appendConsumer(this);
 

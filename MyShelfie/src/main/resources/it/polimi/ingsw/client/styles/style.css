@@ -34,12 +34,14 @@
 
 .current-library {
     -fx-background-color: #6099b5;
+    -fx-background-image: url("/boards/bookshelf_orth.png");
     -fx-background-repeat: no-repeat;
-    -fx-background-size: cover;
+    -fx-background-size: contain;
     -fx-background-position: center center;
+    -fx-padding: 19.2 34 34.4 34;
 }
 
-.current-library-label {
+.current-label {
     -fx-font-size: 1.5em;
     /*-fx-font-weight: "bold";*/
     -fx-text-alignment: "center";

@@ -33,18 +33,66 @@ public class GridManager extends GridPane {
      *
      * @param columns  number of columns for the grid
      * @param rows     number of rows for the grid
-     * @param tileSize each tile is going to be a square. Specify square size here
+     * @param tileSize each tile is going to be a square. Specify square size
+     *                 here
      */
-    public GridManager(@NamedArg("columns") int columns, @NamedArg("rows") int rows,
-            @NamedArg("tileSize") int tileSize) {
+    public GridManager(
+            @NamedArg("columns") int columns,
+            @NamedArg("rows") int rows,
+            @NamedArg("tileSize") double tileSize) {
+        this(columns, rows, tileSize, 4, 0);
+    }
+
+    /**
+     * Class constructor
+     *
+     * @param columns     number of columns for the grid
+     * @param rows        number of rows for the grid
+     * @param tileSize    each tile is going to be a square. Specify square size
+     *                    here
+     * @param borderSize  Dimension separating each tile
+     * @param paddingSize Dimension to be added to both vertical and horizontal size
+     */
+    public GridManager(
+            @NamedArg("columns") int columns,
+            @NamedArg("rows") int rows,
+            @NamedArg("tileSize") double tileSize,
+            @NamedArg("borderSize") double borderSize,
+            @NamedArg("paddingSize") double paddingSize) {
+        this(columns, rows, tileSize, borderSize, borderSize, paddingSize, paddingSize);
+    }
+
+    /**
+     * Class constructor
+     *
+     * @param columns      number of columns for the grid
+     * @param rows         number of rows for the grid
+     * @param tileSize     each tile is going to be a square. Specify square size
+     *                     here
+     * @param borderSize   Dimension separating each tile
+     * @param paddingSizeH Dimension to be added to the horizontal size
+     * @param paddingSizeV Dimension to be added to the vertical size
+     */
+    public GridManager(
+            @NamedArg("columns") int columns,
+            @NamedArg("rows") int rows,
+            @NamedArg("tileSize") double tileSize,
+            @NamedArg("borderSizeH") double borderSizeH,
+            @NamedArg("borderSizeV") double borderSizeV,
+            @NamedArg("paddingSizeH") double paddingSizeH,
+            @NamedArg("paddingSizeV") double paddingSizeV) {
         super();
+        if (borderSizeH < 4 || borderSizeV < 4)
+            throw new IllegalArgumentException("GridManager borderSize cannot be less than 4px");
         this.columns = columns;
         this.rows = rows;
 
         // Setting up the grid
-        this.setMinSize(columns * (tileSize + 5) + 40, rows * (tileSize + 5) + 40);
-        this.setHgap(1);
-        this.setVgap(1);
+        this.setMinSize(
+                columns * (tileSize + borderSizeH) + paddingSizeH,
+                rows * (tileSize + borderSizeV) + paddingSizeV);
+        this.setHgap(borderSizeH - 4);
+        this.setVgap(borderSizeV - 4);
         this.setAlignment(Pos.CENTER);
 
         // Creating the ImageView tile-grid
@@ -53,6 +101,7 @@ public class GridManager extends GridPane {
                 Pane container = new Pane();
                 container.setMinWidth(tileSize + 4);
                 container.setMinHeight(tileSize + 4);
+                // container.setStyle("-fx-background-color: #ffa");
 
                 // Create a new ImageView for the tile
                 ImageView tileHolder = new ImageView();

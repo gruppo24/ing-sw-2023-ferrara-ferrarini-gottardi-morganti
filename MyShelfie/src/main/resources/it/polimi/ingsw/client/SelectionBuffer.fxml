@@ -6,11 +6,10 @@
 
 
 <fx:root xmlns="http://javafx.com/javafx"
-         xmlns:fx="http://javafx.com/fxml"
-         stylesheets="@styles/style.css, @styles/PregameStyles.css"
-         type="javafx.scene.layout.Pane">
+  xmlns:fx="http://javafx.com/fxml"
+  stylesheets="@styles/style.css, @styles/PregameStyles.css"
+  type="javafx.scene.layout.Pane">
 
-    <GridManager fx:id="selectionBuffer" columns="3" rows="1" tileSize="40"
-                 styleClass="current-library"/>
+  <GridManager fx:id="selectionBuffer" columns="3" rows="1" tileSize="40" />
 
 </fx:root>

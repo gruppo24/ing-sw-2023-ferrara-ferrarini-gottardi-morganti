@@ -9,7 +9,16 @@
          xmlns:fx="http://javafx.com/fxml"
          stylesheets="@styles/style.css, @styles/PregameStyles.css"
          type="javafx.scene.layout.VBox">
-    <GridManager fx:id="library" columns="5" rows="6" tileSize="40"
-                 styleClass="current-library"/>
-    <Label fx:id="label" styleClass="current-library-label"/>
+    <GridManager
+            fx:id="library"
+            columns="5"
+            rows="6"
+            tileSize="32"
+            borderSizeH="12.6"
+            borderSizeV="6.4"
+            paddingSizeH="47"
+            paddingSizeV="68"
+            styleClass="current-library"
+    />
+    <Label fx:id="label" styleClass="current-label"/>
 </fx:root>
