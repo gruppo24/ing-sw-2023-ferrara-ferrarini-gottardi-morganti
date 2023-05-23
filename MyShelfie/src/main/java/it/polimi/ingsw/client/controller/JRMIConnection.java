@@ -98,10 +98,10 @@ public class JRMIConnection extends Connection{
         } else {
             try {
                 this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
-                cache = gameAction.getSharedGameStateImmediately();
 
-                // Right after having rejoined, we make sure any disconnection timer is immediately reset
+                // We make sure any disconnection timer is immediately reset and only afterwards request latest game state
                 this.gameAction.resetDisconnectionTimer();
+                cache = gameAction.getSharedGameStateImmediately();
             } catch (NotBoundException | RemoteException e) {
                 status = ResponseStatus.INVALID_REQUEST;
             }

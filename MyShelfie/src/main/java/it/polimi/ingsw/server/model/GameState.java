@@ -7,10 +7,7 @@ import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.controller.jrmi.GameActionStubImpl;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serial;
-import java.io.Serializable;
+import java.io.*;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -93,6 +90,18 @@ public class GameState implements Serializable {
                 System.out.println("Error in restoring remote player: " + ex);
             }
         }
+    }
+
+    /**
+     * Upon game restoring, all players should be marked as offline initially...
+     * This method is in charge of forcing all player connection states to "disconnected"
+     */
+    public void setAllPlayersOffline() {
+        for (Player player: this.players)
+            player.hasDisconnected();
+
+        // As a consequence, the game HAS to be in the "suspended" state
+        this.suspended = true;
     }
 
     /**

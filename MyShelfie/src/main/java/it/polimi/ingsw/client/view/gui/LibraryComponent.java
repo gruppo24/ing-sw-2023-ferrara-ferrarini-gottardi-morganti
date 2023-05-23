@@ -57,7 +57,10 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
     /** @see SGSConsumer#updateSGS(SharedGameState) */
     @Override
     public void updateSGS(SharedGameState sgs) {
-        label.setText("Current Player: " + sgs.players[sgs.currPlayerIndex]);
+        if (sgs.gameSuspended)
+            label.setText("Game suspended...");
+        else
+            label.setText("Current Player: " + sgs.players[sgs.currPlayerIndex]);
         library.setGridContent(sgs.libraries[sgs.currPlayerIndex]);
     }
 

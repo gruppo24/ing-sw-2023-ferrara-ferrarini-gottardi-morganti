@@ -1,6 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl;
+import it.polimi.ingsw.server.controller.socket.ReconnectionTimer;
 import it.polimi.ingsw.server.model.*;
 import it.polimi.ingsw.server.controller.socket.SockServer;
 
@@ -99,8 +100,14 @@ public class Server implements Serializable {
                         // GameState game = GameState.deserialize(file.getName());
                         if (game != null) {
                             GAMES.add(game);
-                            // Restoring remote players
+                            // Restoring remote players and marking all players as offline
                             game.restoreRemotePlayers();
+                            game.setAllPlayersOffline();
+
+                            // Game will automatically be deleted if players don't rejoin within 5 minutes
+                            game.reconnectionTimer = new Thread(new ReconnectionTimer(game, 5 * 60 * 1_000));
+                            game.reconnectionTimer.start();
+
                             System.out.println("[main] >>> Game " + game.getGameID() + " restored from disk");
                         }
                     } catch (Exception e) {

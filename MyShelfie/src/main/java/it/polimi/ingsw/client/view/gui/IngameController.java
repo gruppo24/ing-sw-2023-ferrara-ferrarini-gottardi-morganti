@@ -33,7 +33,7 @@ public class IngameController implements Initializable {
 
     public static void setGameState(SharedGameState gameState) {
         lastState = gameState;
-        System.out.println("GameState recieved, updating " + consumers.size() + " consumers");
+        System.out.println("GameState received, updating " + consumers.size() + " consumers");
 
         // dispatching update to all shared game state consumers
         Platform.runLater(() -> { // run later bc we are not on the javafx thread
