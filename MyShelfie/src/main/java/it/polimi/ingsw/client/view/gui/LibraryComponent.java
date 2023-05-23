@@ -45,7 +45,7 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         library.setActionHandler((x, y) -> {
             SharedGameState gameState = IngameController.getLastState();
             System.out.println("Selected column: " + x);
-            if (gameState.gameOngoing &&
+            if (gameState.gameOngoing && !gameState.gameSuspended &&
                     gameState.currPlayerIndex == gameState.selfPlayerIndex &&
                     gameState.selectionBuffer == null) {
                 System.out.println("SENDING COLUMN SELECTION REQUEST");

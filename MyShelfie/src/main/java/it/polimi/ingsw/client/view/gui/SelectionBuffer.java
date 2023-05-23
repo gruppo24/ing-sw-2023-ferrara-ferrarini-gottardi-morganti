@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.Pane;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 
 
@@ -42,7 +43,7 @@ public class SelectionBuffer extends Pane implements SGSConsumer {
         // Reordering actions on tile click
         selectionBuffer.setActionHandler((x, y) -> {
             SharedGameState gameState = IngameController.getLastState();
-            if (gameState.gameOngoing &&
+            if (gameState.gameOngoing && !gameState.gameSuspended &&
                     gameState.currPlayerIndex == gameState.selfPlayerIndex &&
                     gameState.selectionBuffer != null) {
 
@@ -66,8 +67,9 @@ public class SelectionBuffer extends Pane implements SGSConsumer {
                     // we can't clear the list properly...
 
                     int first = this.reorderedBuffer.get(0);
-                    int second = this.reorderedBuffer.get(1);
-                    int third = this.reorderedBuffer.get(2);
+                    int second = this.reorderedBuffer.size() > 1 ? this.reorderedBuffer.get(1) : 1;
+                    int third = this.reorderedBuffer.size() > 2 ? this.reorderedBuffer.get(2) : 2;
+
                     this.reorderedBuffer = new LinkedList<>();
                     IngameController.setGameState(App.connection.reorder(first, second, third));
 
@@ -84,11 +86,11 @@ public class SelectionBuffer extends Pane implements SGSConsumer {
         // tile
         TileType[][] content;
         if (sgs.selectionBuffer != null) {
-            content = new TileType[][]{
-                    {sgs.selectionBuffer[0]},
-                    {sgs.selectionBuffer[1]},
-                    {sgs.selectionBuffer[2]}
-            };
+            Arrays.stream(sgs.selectionBuffer).forEach(System.out::println);
+            content = new TileType[3][1];
+            for (int tileIndex=0; tileIndex < sgs.selectionBuffer.length; tileIndex++) {
+                    content[tileIndex] = new TileType[] {sgs.selectionBuffer[tileIndex]};
+            }
         } else {
             content = new TileType[][]{{null}, {null}, {null}};
         }
