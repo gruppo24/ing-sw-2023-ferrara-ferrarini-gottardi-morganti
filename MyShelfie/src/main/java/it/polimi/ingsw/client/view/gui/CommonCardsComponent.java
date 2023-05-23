@@ -1,37 +1,36 @@
 package it.polimi.ingsw.client.view.gui;
 
+
 import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
+import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ResourceBundle;
 
-public class CommonCardsComponent extends VBox implements SGSConsumer, Initializable{
-    @FXML
-    ImageView card1;
-    @FXML
-    ImageView card2;
+/**
+ * Class in charge of constructing and rendering a common card and its points icon
+ */
+public class CommonCardsComponent extends HBox implements SGSConsumer {
 
     @FXML
-    ImageView order1;
+    ImageView card;
 
     @FXML
-    ImageView order2;
+    ImageView order;
 
-    public CommonCardsComponent(){
-        setSpacing(10);
+    // Common card number
+    private final int index;
+
+
+    /**
+     * Class constructor
+     *
+     * @param index index of the common card
+     */
+    public CommonCardsComponent(@NamedArg("index") int index) {
         FXMLLoader loader = new FXMLLoader(App.class.getResource("CommonCards.fxml"));
         loader.setRoot(this);
         loader.setController(this);
@@ -43,79 +42,35 @@ public class CommonCardsComponent extends VBox implements SGSConsumer, Initializ
             throw new RuntimeException(e);
         }
 
+        this.index = index;
         IngameController.appendConsumer(this);
-        setupLayout();
     }
+
+    /** @see SGSConsumer#updateSGS(SharedGameState) */
     @Override
     public void updateSGS(SharedGameState sgs) {
-        card1.setImage(loadAsset("common goal cards", sgs.commonsId[0], 130, 80));
-        card2.setImage(loadAsset("common goal cards", sgs.commonsId[1], 130,80));
-        for(int i=0; i< sgs.commonsId.length; i++){
-            for(int j=0; j<sgs.players.length;j++){
-                if(sgs.commonsAchievers[i][j] == null){
-                    if(sgs.players.length == 2){
-                        switch (j+1) {
-                            case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg",40,40));
-                            case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg",40,40));
-                        }
-                        break;
-                    }else if(sgs.players.length == 3){
-                        switch (j+1) {
-                            case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg",40,40));
-                            case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg",40,40));
-                            case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg",40,40));
+        // Loading static images
+        if (sgs.gameOngoing) {
+            card.setImage(GUIUtils.loadAsset("common goal cards", sgs.commonsId[index], 130, 80));
 
-                        }
-                        break;
-                    }else if(sgs.players.length == 4){
-                        switch (j+1) {
-                            case 1 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_8.jpg",40,40));
-                            case 2 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_6.jpg",40,40));
-                            case 3 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_4.jpg",40,40));
-                            case 4 -> chooseCommon(i).setImage(loadAsset("scoring tokens", "scoring_2.jpg",40,40));
-                        }
-                        break;
-                    }
-                }
+            int numOfPlayers = sgs.players.length;
+            int nextOrder = -1;
+            for (int i = 0; i < sgs.commonsAchievers[index].length; i++)
+                if (sgs.commonsAchievers[index][i] == null && nextOrder == -1)
+                    nextOrder = i;
+
+            if (nextOrder < numOfPlayers) {
+                String imgName = "scoring_" + GUIUtils.mapCommonPoints(numOfPlayers, nextOrder+1) + ".jpg";
+                order.setImage(GUIUtils.loadAsset("scoring tokens", imgName, 40, 40));
+            } else {
+                order.setImage(null);
             }
+
+        } else {
+            // If game hasn't started, we load all cards and icons on their backs
+            card.setImage(GUIUtils.loadAsset("common goal cards", "back.jpg", 130, 80));
+            order.setImage(GUIUtils.loadAsset("scoring tokens", "scoring_back_EMPTY.jpg", 40, 40));
         }
-
-    }
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        card1.setImage(loadAsset("common goal cards", "back.jpg",130,80));
-        card2.setImage(loadAsset("common goal cards", "back.jpg",130,80));
-        order1.setImage(loadAsset("scoring tokens", "scoring_back_EMPTY.jpg",40,40));
-        order2.setImage(loadAsset("scoring tokens", "scoring_back_EMPTY.jpg",40,40));
-    }
-    private static Image loadAsset(String assetDirectory, String assetName, int width, int height) {
-        Path pathToAsset = Paths.get(App.ASSETS_BASE_PATH, assetDirectory, assetName);
-        try {
-            return new Image(new FileInputStream(pathToAsset.toString()), width, height, false, false);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-    private ImageView chooseCommon(int i){
-        if(i == 0)
-            return order1;
-        else
-            return order2;
-    }
-    private void setupLayout() {
-        HBox hbox1 = new HBox();
-        hbox1.getChildren().addAll(card1, order1);
-        hbox1.setAlignment(Pos.CENTER);
-        hbox1.setSpacing(10);
-
-        HBox hbox2 = new HBox();
-        hbox2.getChildren().addAll(card2, order2);
-        hbox2.setAlignment(Pos.CENTER);
-        hbox2.setSpacing(10);
-
-        getChildren().addAll(hbox1, hbox2);
-        setSpacing(10);
-        setAlignment(Pos.CENTER);
     }
 
 }

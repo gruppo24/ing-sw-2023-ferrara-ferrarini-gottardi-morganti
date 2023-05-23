@@ -163,4 +163,5 @@ public class GameStateTest {
         SharedGameState sharedGameState1 = gameState.getSharedGameState(player1);
         Assert.assertTrue(sharedGameState1.isFinalRound);
     }
+
 }

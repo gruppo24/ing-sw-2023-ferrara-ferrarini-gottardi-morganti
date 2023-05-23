@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.image.ImageView?>
+
+
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          stylesheets="@styles/style.css, @styles/PregameStyles.css"
-         type="javafx.scene.layout.VBox">
-    <ImageView fx:id="card1" />
-    <ImageView fx:id="order1" />
-    <ImageView fx:id="card2" />
-    <ImageView fx:id="order2" />
+         type="javafx.scene.layout.HBox"
+        spacing="20">
+    <ImageView fx:id="card" />
+    <ImageView fx:id="order" />
 </fx:root>
 

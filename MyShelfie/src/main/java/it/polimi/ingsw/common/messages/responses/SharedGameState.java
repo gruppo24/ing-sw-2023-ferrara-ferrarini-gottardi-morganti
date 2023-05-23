@@ -32,6 +32,7 @@ public class SharedGameState implements Serializable {
     public int currPlayerIndex;
     public int armchairIndex;
     public boolean isFinalRound;
+    public String firstCompleter;
 
     // Common objectives related attributes
     public String[] commonsId;

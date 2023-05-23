@@ -285,6 +285,8 @@ public class GameState implements Serializable {
         sgs.currPlayerIndex = this.currPlayerIndex;
         sgs.armchairIndex = this.armchair;
         sgs.isFinalRound = this.finalRound;
+        if ( this.firstFilledPlayer != null)
+            sgs.firstCompleter =  this.firstFilledPlayer.nickname;
 
         // Common cards information
         sgs.commonsId = new String[this.commonCards.length];

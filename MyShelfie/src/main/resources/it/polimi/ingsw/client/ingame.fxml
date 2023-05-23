@@ -33,6 +33,9 @@
     </HBox>
     <HBox fx:id="bottomContainer" prefHeight="200.0" prefWidth="800.0" spacing="40">
         <ThumbnailWrapper />
-        <CommonCardsComponent />
+        <VBox spacing="10">
+            <CommonCardsComponent index="0" />
+            <CommonCardsComponent index="1" />
+        </VBox>
     </HBox>
 </VBox>
