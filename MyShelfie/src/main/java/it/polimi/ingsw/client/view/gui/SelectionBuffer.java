@@ -3,10 +3,12 @@ package it.polimi.ingsw.client.view.gui;
 import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.Pane;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -71,7 +73,12 @@ public class SelectionBuffer extends Pane implements SGSConsumer {
                     int third = this.reorderedBuffer.size() > 2 ? this.reorderedBuffer.get(2) : 2;
 
                     this.reorderedBuffer = new LinkedList<>();
-                    IngameController.setGameState(App.connection.reorder(first, second, third));
+                    try {
+                        IngameController.setGameState(App.connection.reorder(first, second, third));
+                    } catch (IOException ex) {
+                        System.err.println("REQUEST ERROR: " + ex);
+                        Platform.runLater( () -> App.setRoot("main_menu") );
+                    }
 
                 }
             }

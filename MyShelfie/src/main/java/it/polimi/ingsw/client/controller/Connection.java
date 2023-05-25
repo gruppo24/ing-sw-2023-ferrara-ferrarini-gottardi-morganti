@@ -1,6 +1,7 @@
 package it.polimi.ingsw.client.controller;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.util.Map;
 
 import it.polimi.ingsw.common.messages.responses.ResponseStatus;
@@ -29,25 +30,33 @@ public abstract class Connection {
      * @return a Map, the key is the game id and the value is an array of two
      *         integers, the first is the num of players connected, the second is
      *         the num of players required
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
      */
-    public abstract Map<String, int[]> getAvailableGames();
+    public abstract Map<String, int[]> getAvailableGames() throws IOException;
 
     /**
      * Method in charge of actually performing the connection to a server
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
+     * @throws NotBoundException in case of remote object unavailable
      */
-    public abstract void establishConnection() throws IOException;
+    public abstract void establishConnection() throws IOException, NotBoundException;
 
     /**
      * Creates a new game and connects to it
      *
      * @param gameID unique gameID to be associated to the game which we create
-     * @param username   the username for the player with which the client will
-     *                   connect
+     * @param username the username for the player with which the client will connect
      * @param numPlayers the number of players for the game
-     * @return the status of the request, can be SUCCESS, GAME_ID_TAKEN if the
-     *         gameID is already taken
+     * @return the status of the request, can be SUCCESS, GAME_ID_TAKEN if the gameID is already taken
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
+     * @throws NotBoundException in case of remote object unavailable
      */
-    public abstract ResponseStatus createGame(String gameID, String username, int numPlayers);
+    public abstract ResponseStatus createGame(String gameID, String username, int numPlayers) throws IOException, NotBoundException;
 
     /**
      * Connects to an existing game with the given gameID and username
@@ -62,8 +71,12 @@ public abstract class Connection {
      *         game, also USERNAME_NOT_IN_GAME is a possible response status message,
      *         informing us that we are trying to rejoin with a username which doesn't
      *         exist.
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
+     * @throws NotBoundException in case of remote object unavailable
      */
-    public abstract ResponseStatus connectToGame(String gameID, String username, boolean rejoining);
+    public abstract ResponseStatus connectToGame(String gameID, String username, boolean rejoining) throws IOException, NotBoundException;
 
     // ==== GAME PHASE ====
 
@@ -71,22 +84,34 @@ public abstract class Connection {
      * This method awaits for the game state to be updated by the server.
      * This should be called over and over again in a loop, until the returned
      * SharedGameState indicates that it's the player's turn.
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
      */
-    public abstract SharedGameState waitTurn();
+    public abstract SharedGameState waitTurn() throws IOException;
 
     /**
      * Selects which column the player wants to fill
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
      */
-    public abstract SharedGameState selectColumn(int column);
+    public abstract SharedGameState selectColumn(int column) throws IOException;
 
     /**
      * Picks a tile from the board
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
      */
-    public abstract SharedGameState pickTile(int x, int y);
+    public abstract SharedGameState pickTile(int x, int y) throws IOException;
 
     /**
      * Reorders the tiles in the player's selection buffer, to fill the column
      * in the player's library in the desired order
+     *
+     * @throws IOException in case of socket connection unavailable (specifically, its
+     *          subclass RemoteException if RMI connection is unavailable)
      */
-    public abstract SharedGameState reorder(int first, int second, int third);
+    public abstract SharedGameState reorder(int first, int second, int third) throws IOException;
 }

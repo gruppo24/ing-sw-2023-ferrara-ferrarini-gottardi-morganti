@@ -1,11 +1,13 @@
 package it.polimi.ingsw.client.view.gui;
 
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -49,7 +51,12 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
                     gameState.currPlayerIndex == gameState.selfPlayerIndex &&
                     gameState.selectionBuffer == null) {
                 System.out.println("SENDING COLUMN SELECTION REQUEST");
-                IngameController.setGameState(App.connection.selectColumn(x));
+                try {
+                    IngameController.setGameState(App.connection.selectColumn(x));
+                } catch (IOException ex) {
+                    System.err.println("REQUEST ERROR: " + ex);
+                    Platform.runLater( () -> App.setRoot("main_menu") );
+                }
             }
         });
     }

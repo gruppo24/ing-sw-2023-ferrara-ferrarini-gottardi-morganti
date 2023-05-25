@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.rmi.NotBoundException;
 import java.util.Map;
 
 import it.polimi.ingsw.common.messages.requests.*;
@@ -26,6 +27,12 @@ public class SocketConnection extends Connection {
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
+    /**
+     * Class constructor
+     *
+     * @param host server address
+     * @param port socket port
+     */
     public SocketConnection(String host, int port) {
         super();
         this.host = host;
@@ -49,7 +56,15 @@ public class SocketConnection extends Connection {
         new Thread(new AsyncKeepAliveEcho(this.out, this)).start();
     }
 
-    private Object sendPacket(ContentType type, PacketContent content) {
+    /**
+     * Method in charge of sending packet of requested type and returning the server's response to it
+     *
+     * @param type packet type
+     * @param content content of the packet
+     * @return server response
+     * @throws IOException in case of exceptions during packet sending
+     */
+    private Object sendPacket(ContentType type, PacketContent content) throws IOException {
         // Try sending requested packet
         RequestPacket packet = new RequestPacket(type, content);
         try {
@@ -63,28 +78,28 @@ public class SocketConnection extends Connection {
         // has been received
         try {
             return this.in.readObject();
-        } catch (ClassNotFoundException | IOException e) {
-            // In case of any other problem, throw exception
+        } catch (ClassNotFoundException e) {
+            // In case of class conversion problems throw and report...
             e.printStackTrace();
-            return null;
+            throw new RuntimeException();
         }
     }
 
     @Override
-    public Map<String, int[]> getAvailableGames() {
+    public Map<String, int[]> getAvailableGames() throws IOException {
         final GamesList response = (GamesList) this.sendPacket(ContentType.LIST_GAMES, new ListGames());
         return response.availableGames;
     }
 
     @Override
-    public ResponseStatus createGame(String gameID, String username, int numPlayers) {
+    public ResponseStatus createGame(String gameID, String username, int numPlayers) throws IOException {
         final ResponsePacket response = (ResponsePacket) this.sendPacket(ContentType.CREATE_GAME,
                 new CreateGame(gameID, username, numPlayers));
         return response.status;
     }
 
     @Override
-    public ResponseStatus connectToGame(String gameID, String username, boolean rejoining) {
+    public ResponseStatus connectToGame(String gameID, String username, boolean rejoining) throws IOException {
         final ResponsePacket response;
         if (rejoining)
             response = (ResponsePacket) this.sendPacket(ContentType.REJOIN_GAME, new RejoinGame(gameID, username));
@@ -94,27 +109,28 @@ public class SocketConnection extends Connection {
     }
 
     @Override
-    public SharedGameState waitTurn() {
+    public SharedGameState waitTurn() throws IOException {
         try {
             return (SharedGameState) this.in.readObject();
-        } catch (ClassNotFoundException | IOException e) {
+        } catch (ClassNotFoundException e) {
+            // In case of class conversion problems throw and report...
             e.printStackTrace();
-            return null;
+            throw new RuntimeException();
         }
     }
 
     @Override
-    public SharedGameState selectColumn(int column) {
+    public SharedGameState selectColumn(int column) throws IOException {
         return (SharedGameState) this.sendPacket(ContentType.SELECT_COLUMN, new ColumnSelection(column));
     }
 
     @Override
-    public SharedGameState pickTile(int x, int y) {
+    public SharedGameState pickTile(int x, int y) throws IOException {
         return (SharedGameState) this.sendPacket(ContentType.PICK_TILE, new TilePick(x, y));
     }
 
     @Override
-    public SharedGameState reorder(int first, int second, int third) {
+    public SharedGameState reorder(int first, int second, int third) throws IOException {
         return (SharedGameState) this.sendPacket(ContentType.REORDER, new Reorder(first, second, third));
     }
 }

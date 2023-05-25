@@ -7,7 +7,7 @@ import it.polimi.ingsw.client.controller.SocketConnection;
 import javafx.fxml.FXML;
 
 import java.io.IOException;
-import java.rmi.RemoteException;
+import java.rmi.NotBoundException;
 
 import static it.polimi.ingsw.client.Client.*;
 
@@ -25,8 +25,8 @@ public class MainMenuController {
             App.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
             App.connection.establishConnection();
             App.setRoot("pregame");
-        } catch (IOException ex) {
-            System.out.println("ERROR: failed to establish connection with jRMI server: " + ex);
+        } catch (IOException | NotBoundException ex) {
+            System.out.println("ERROR: failed to establish connection with socket server: " + ex);
             App.connection = null;
         }
     }
@@ -39,10 +39,8 @@ public class MainMenuController {
             App.connection = new JRMIConnection(SERVER_ADDR, JRMI_PORT);
             App.connection.establishConnection();
             App.setRoot("pregame");
-        } catch (RemoteException ex) {
+        } catch (IOException | NotBoundException ex) {
             System.out.println("ERROR: failed to connect to jRMI server: " + ex);
-        } catch (IOException ex) {
-            System.out.println("ERROR: failed to establish connection with jRMI server: " + ex);
             App.connection = null;
         }
     }

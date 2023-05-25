@@ -1,7 +1,9 @@
 package it.polimi.ingsw.client.view.cli;
 
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -30,17 +32,25 @@ public class CLI {
 
     private String myUsername;
 
-    /**
-     * The connection to the server
-     */
-    Connection connection;
-    /**
-     * Scanner to read user input from the terminal
-     */
-    Scanner in = new Scanner(System.in);
+    // The connection to the server & scanner to read user input from the terminal
+    private Connection connection;
+    private final Scanner in = new Scanner(System.in);
 
-    public CLI() throws IOException {
+
+    /**
+     * Class constructor
+     */
+    public CLI() {
+        // Establish a server connection
+        doConnect();
+    }
+
+    /**
+     * Method in charge of actually connecting to server
+     */
+    private void doConnect() {
         System.out.println("Select server (1 - Socket, 2 - jRMI):");
+
         boolean valid = false;
         while (!valid) {
             valid = true;
@@ -53,44 +63,53 @@ public class CLI {
                 System.out.println("Invalid choice...");
                 valid = false;
             }
-        }
 
-        // After having selected the type of connection, we actually open a
-        // communication channel with the server
-        this.connection.establishConnection();
-
-    }
-
-    /**
-     * Pre-game menu, allows the user to create a new game or connect to an existing
-     * one
-     */
-    public void menu() {
-        while (true) {
-            System.out.println("\n\033[1mMyShelfie - Gruppo 24\033[0m");
-            System.out.println("1. Create a new game");
-            System.out.println("2. List existing games");
-            System.out.println("3. Join a game");
-            System.out.println("4. Rejoin a game");
-            System.out.println("5. Exit");
-
-            char choice = in.next().charAt(0);
-            switch (choice) {
-                case '1' -> createNewGame();
-                case '2' -> listGames();
-                case '3' -> joinGame(false);
-                case '4' -> joinGame(true);
-                case '5' -> {
-                    System.out.println("Exiting...");
-                    System.exit(0);
-                }
-                case '0' -> manualRejoin();
-                default -> {
-                    System.out.println("Invalid choice");
-                    menu();
+            // If a valid choice has been selected, actually try connecting...
+            if (valid) {
+                try {
+                    // After having selected the type of connection, we actually open a
+                    // communication channel with the server
+                    this.connection.establishConnection();
+                } catch (IOException | NotBoundException ex) {
+                    System.out.println("Couldn't reach server... retry later");
+                    System.out.println("Select server (1 - Socket, 2 - jRMI):");
+                    // After connection failure, enter loop again
+                    valid = false;
                 }
             }
         }
+    }
+
+    /**
+     * Pre-game menu, allows the user to create a new game or connect to an existing one
+     *
+     * @return whether the user has requested the game to terminate or not
+     */
+    public boolean menu() {
+        // Displaying options
+        System.out.println("\n\033[1mMyShelfie - Gruppo 24\033[0m");
+        System.out.println("1. Create a new game");
+        System.out.println("2. List existing games");
+        System.out.println("3. Join a game");
+        System.out.println("4. Rejoin a game");
+        System.out.println("5. Exit");
+
+        char choice = in.next().charAt(0);
+        switch (choice) {
+            case '1' -> createNewGame();
+            case '2' -> listGames();
+            case '3' -> joinGame(false);
+            case '4' -> joinGame(true);
+            case '5' -> {
+                System.out.println("Exiting...");
+                return true;
+            }
+            case '0' -> manualRejoin();
+            default -> System.out.println("Invalid choice");
+        }
+
+        // Unless '5' has been selected, we automatically return false
+        return false;
     }
 
     /**
@@ -99,7 +118,15 @@ public class CLI {
      */
     private void listGames() {
         System.out.println("\n\033[1mExisting games:\033[0m");
-        Map<String, int[]> games = this.connection.getAvailableGames();
+        Map<String, int[]> games;
+        try {
+            games = this.connection.getAvailableGames();
+        } catch (IOException ex) {
+            // In case of server disconnection, retry connecting and return to lobby...
+            System.out.println("Couldn't reach server... retry later");
+            doConnect();
+            return;
+        }
 
         if (games.keySet().size() == 0)
             System.out.println("No games available");
@@ -120,7 +147,16 @@ public class CLI {
         String gameID = Connection.generateGameID();
         System.out.println("Creating game with " + numPlayers + " players...");
 
-        ResponseStatus res = this.connection.createGame(gameID, username, numPlayers);
+        ResponseStatus res;
+        try {
+            res = this.connection.createGame(gameID, username, numPlayers);
+        } catch (IOException | NotBoundException ex) {
+            // In case of server disconnection, retry connecting and return to lobby...
+            System.out.println("Couldn't reach server... retry later");
+            doConnect();
+            return;
+        }
+
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
 
@@ -167,7 +203,16 @@ public class CLI {
         }
 
         // If previous operations were successful, (re)join a game
-        ResponseStatus res = this.connection.connectToGame(gameID, username, rejoining);
+        ResponseStatus res;
+        try {
+            res = this.connection.connectToGame(gameID, username, rejoining);
+        } catch (IOException | NotBoundException ex) {
+            // In case of server disconnection, retry connecting and return to lobby...
+            System.out.println("Couldn't reach server... retry later");
+            doConnect();
+            return;
+        }
+
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
 
@@ -189,7 +234,16 @@ public class CLI {
         System.out.println("=== MANUAL REJOIN (debugging only) ===\nEnter game ID and username: ");
         String gameID = in.next();
         String username = in.next();
-        ResponseStatus res = this.connection.connectToGame(gameID, username, true);
+
+        ResponseStatus res;
+        try {
+            res = this.connection.connectToGame(gameID, username, true);
+        } catch (IOException | NotBoundException ex) {
+            // In case of server disconnection, retry connecting and return to lobby...
+            System.out.println("Couldn't reach server... retry later");
+            doConnect();
+            return;
+        }
 
         if (res == ResponseStatus.SUCCESS) {
             this.myUsername = username;
@@ -211,7 +265,15 @@ public class CLI {
      */
     private void game() {
         // As soon as we enter the game loop, we check whether it is our turn
-        SharedGameState gameState = this.connection.waitTurn();
+        SharedGameState gameState;
+        try {
+            gameState = this.connection.waitTurn();
+        } catch (IOException ex) {
+            // In case of server disconnection, retry connecting and return to lobby...
+            System.out.println("Couldn't reach server... retry later");
+            doConnect();
+            return;
+        }
 
         int myIndex;
         while (!gameState.gameOver) {
@@ -224,9 +286,16 @@ public class CLI {
 
             // Checking if the game has started OR if our turn hasn't come yet
             myIndex = Arrays.asList(gameState.players).indexOf(this.myUsername);
-            gameState = (!gameState.gameOngoing || gameState.gameSuspended || myIndex != gameState.currPlayerIndex) ?
-                    this.connection.waitTurn() :
-                    handleTurn(gameState);
+            try {
+                gameState = (!gameState.gameOngoing || gameState.gameSuspended || myIndex != gameState.currPlayerIndex) ?
+                        this.connection.waitTurn() :
+                        handleTurn(gameState);
+            } catch (IOException ex) {
+                // In case of server disconnection, retry connecting and return to lobby...
+                System.out.println("Couldn't reach server... retry later");
+                doConnect();
+                return;
+            }
         }
 
         if (gameState.gameTerminated)
@@ -243,9 +312,12 @@ public class CLI {
         // TCP/jRMI communication channel will be closed when the game is terminated.
         // For this reason, we reopen a new connection
         try {
+            // Initially, simply try reconnecting to same server automatically...
             this.connection.establishConnection();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException | NotBoundException ex) {
+            // In case of failure, call doConnect and request a potential server change
+            System.out.println("Couldn't reach server... retry later");
+            doConnect();
         }
     }
 
@@ -425,8 +497,9 @@ public class CLI {
      * Method in charge of handling user interactions whenever it is their turn
      * @param game latest SharedGameState instance
      * @return instance of SharedGameState after user interaction
+     * @throws IOException in case of connection issues
      */
-    private SharedGameState handleTurn(SharedGameState game) {
+    private SharedGameState handleTurn(SharedGameState game) throws IOException {
         // If it actually is the player's turn, we, at first,
         // check they have selected a column
         if (game.selectionBuffer == null) {

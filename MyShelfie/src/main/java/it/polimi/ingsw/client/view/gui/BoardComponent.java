@@ -3,8 +3,11 @@ package it.polimi.ingsw.client.view.gui;
 import it.polimi.ingsw.client.App;
 import it.polimi.ingsw.common.TileState;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+
+import java.io.IOException;
 
 /**
  * Board component class, renders the game board in the GUI
@@ -27,7 +30,13 @@ public class BoardComponent extends GridManager implements SGSConsumer {
                     gameState.selectionBuffer != null &&
                     gameState.selectionBuffer[gameState.selectionBuffer.length - 1] == null) {
                 System.out.println("SENDING PICK REQUEST");
-                IngameController.setGameState(App.connection.pickTile(x, y));
+                try {
+                    IngameController.setGameState(App.connection.pickTile(x, y));
+                } catch (IOException ex) {
+                    // In case of disconnections, go back to server selection page
+                    System.err.println("REQUEST ERROR: " + ex);
+                    Platform.runLater( () -> App.setRoot("main_menu") );
+                }
             }
         });
     }

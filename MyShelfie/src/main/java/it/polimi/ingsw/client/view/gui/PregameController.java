@@ -18,6 +18,8 @@ import javafx.scene.control.TextField;
 
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.NotBoundException;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
@@ -61,7 +63,14 @@ public class PregameController implements Initializable {
             // Executing request on separate thread
             new Thread(() -> {
                 synchronized (requestLock) {
-                    ResponseStatus response = App.connection.connectToGame(gameId, _username, false);
+                    ResponseStatus response;
+                    try {
+                        response = App.connection.connectToGame(gameId, _username, false);
+                    } catch (IOException | NotBoundException ex) {
+                        System.err.println("REQUEST ERROR: " + ex);
+                        Platform.runLater( () -> App.setRoot("main_menu") );
+                        return;
+                    }
 
                     // Switching view
                     if (response == ResponseStatus.SUCCESS) {
@@ -89,7 +98,17 @@ public class PregameController implements Initializable {
         new Thread(() -> {
             synchronized (requestLock) {
                 ObservableList<Entry<String, int[]>> observableList = FXCollections.observableArrayList();
-                observableList.setAll(App.connection.getAvailableGames().entrySet());
+
+                Map<String, int[]> games;
+                try {
+                    games = App.connection.getAvailableGames();
+                } catch (IOException ex) {
+                    System.err.println("REQUEST ERROR: " + ex);
+                    Platform.runLater( () -> App.setRoot("main_menu") );
+                    return;
+                }
+
+                observableList.setAll(games.entrySet());
                 Platform.runLater(() -> {
                     gameList.setItems(FXCollections.observableArrayList());
                     gameList.setCellFactory(l -> new ListViewCell());
@@ -109,7 +128,15 @@ public class PregameController implements Initializable {
                 try {
                     String[] parameters = new ReconnectionHandler().getParameters();
                     System.out.println(parameters[0] + ", " + parameters[1]);
-                    ResponseStatus response = App.connection.connectToGame(parameters[0], parameters[1], true);
+
+                    ResponseStatus response;
+                    try {
+                        response = App.connection.connectToGame(parameters[0], parameters[1], true);
+                    } catch (IOException | NotBoundException ex) {
+                        System.err.println("REQUEST ERROR: " + ex);
+                        Platform.runLater( () -> App.setRoot("main_menu") );
+                        return;
+                    }
 
                     // Switching view
                     if (response == ResponseStatus.SUCCESS) {
@@ -134,11 +161,18 @@ public class PregameController implements Initializable {
             new Thread(() -> {
                 synchronized (requestLock) {
                     String gameId = Connection.generateGameID();
-                    ResponseStatus response = App.connection.createGame(
-                            gameId,
-                            username.getText(),
-                            numOfPlayers.getValue()
-                    );
+                    ResponseStatus response;
+                    try {
+                        response = App.connection.createGame(
+                                gameId,
+                                username.getText(),
+                                numOfPlayers.getValue()
+                        );
+                    } catch (IOException | NotBoundException ex) {
+                        System.err.println("REQUEST ERROR: " + ex);
+                        Platform.runLater( () -> App.setRoot("main_menu") );
+                        return;
+                    }
 
                     // Switching view
                     if (response == ResponseStatus.SUCCESS) {

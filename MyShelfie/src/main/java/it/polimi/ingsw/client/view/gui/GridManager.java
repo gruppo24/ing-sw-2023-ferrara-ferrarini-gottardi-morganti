@@ -69,7 +69,8 @@ public class GridManager extends GridPane {
      * @param rows         number of rows for the grid
      * @param tileSize     each tile is going to be a square. Specify square size
      *                     here
-     * @param borderSize   Dimension separating each tile
+     * @param borderSizeH  Horizontal dimension separating each tile
+     * @param borderSizeV  Vertical dimension separating each tile
      * @param paddingSizeH Dimension to be added to the horizontal size
      * @param paddingSizeV Dimension to be added to the vertical size
      */

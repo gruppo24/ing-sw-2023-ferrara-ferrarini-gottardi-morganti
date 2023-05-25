@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.HBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -46,8 +47,15 @@ public class IngameController implements Initializable {
         if (gameState == null ||
                 !gameState.gameOngoing ||
                 gameState.gameSuspended ||
-                gameState.currPlayerIndex != gameState.selfPlayerIndex)
-            setGameState(App.connection.waitTurn());
+                gameState.currPlayerIndex != gameState.selfPlayerIndex) {
+            try {
+                setGameState(App.connection.waitTurn());
+            } catch (IOException ex) {
+                // In case of disconnections, go back to server selection page
+                System.err.println("REQUEST ERROR: " + ex);
+                Platform.runLater( () -> App.setRoot("main_menu") );
+            }
+        }
     }
 
     /**
@@ -67,7 +75,13 @@ public class IngameController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // run the wait turn loop on a separate thread
         new Thread(() -> {
-            setGameState(App.connection.waitTurn());
+            try {
+                setGameState(App.connection.waitTurn());
+            } catch (IOException ex) {
+                // In case of disconnections, go back to server selection page
+                System.err.println("REQUEST ERROR: " + ex);
+                Platform.runLater( () -> App.setRoot("main_menu") );
+            }
         }).start();
     }
 }
