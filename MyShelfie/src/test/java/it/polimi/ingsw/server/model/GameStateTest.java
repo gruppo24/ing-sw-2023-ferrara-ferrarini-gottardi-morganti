@@ -66,11 +66,12 @@ public class GameStateTest {
         Board board = gameState.getBoard();
         // empty board
         for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++)
+            for (int j = 0; j < 9; j++) {
                 if (board.getBoardContent()[i][j] != null) {
                     board.definePickable();
                     board.pick(i, j, 1);
                 }
+            }
         }
         Assert.assertTrue(board.shouldBeRefilled());
         gameState.turnIsOver();

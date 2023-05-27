@@ -6,15 +6,6 @@ package it.polimi.ingsw.server.exceptions;
  * @author Ferrarini Andrea
  */
 public class SelectionBufferFullException extends RuntimeException {
-
-    /**
-     * Class constructor
-     */
-    public SelectionBufferFullException() {
-        // Default error message
-        super("ERROR: selection buffer for selected column is full!");
-    }
-
     /**
      * Class constructor
      * @param column the selected column which happened to be full

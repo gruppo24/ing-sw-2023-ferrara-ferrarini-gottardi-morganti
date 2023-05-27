@@ -118,18 +118,17 @@ public class Board implements Serializable {
         // of that type, return that type (as if the tile was picked in that position
         // of an ordered list). Otherwise, subtract the number of tiles of that type
         // and continue with the next type.
+        TileType result = null;
         for (TileType type : this.tilesInBag.keySet()) {
             if (randomTileNum < this.tilesInBag.get(type)) {
                 this.tilesInBag.put(type, this.tilesInBag.get(type) - 1);
-                return type;
+                result = type;
+                break;
             }
             randomTileNum -= this.tilesInBag.get(type);
         }
 
-        // this point should never be reached, generated number greater than total
-        // number of tiles ??
-        throw new RuntimeException(
-                "This point should not be reachable, somehow a random number was generated that was greater than the maximum allowed by .nextInt()");
+        return result;
     }
 
     /**

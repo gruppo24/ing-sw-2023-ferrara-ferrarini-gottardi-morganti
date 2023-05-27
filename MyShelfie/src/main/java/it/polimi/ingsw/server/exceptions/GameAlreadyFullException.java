@@ -7,14 +7,6 @@ package it.polimi.ingsw.server.exceptions;
  * @author Ferrarini Andrea
  */
 public class GameAlreadyFullException extends RuntimeException {
-
-    /**
-     * Class constructor
-     */
-    public GameAlreadyFullException() {
-        super("ERROR: This game can't accept any more players!");
-    }
-
     /**
      * Class constructor
      * @param maxPlayers maximum number of players allowed for the

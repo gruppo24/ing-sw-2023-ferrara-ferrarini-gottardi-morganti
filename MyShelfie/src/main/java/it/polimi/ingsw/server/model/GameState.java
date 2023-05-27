@@ -154,7 +154,7 @@ public class GameState implements Serializable {
             do {
                 this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
                 this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
-            } while(!this.players[this.currPlayerIndex].isConnected() || this.gameOver);
+            } while(!this.players[this.currPlayerIndex].isConnected() && !this.gameOver);
             this.suspended = false;
         } else {
             this.suspended = true;
@@ -174,7 +174,7 @@ public class GameState implements Serializable {
             // Deleting game backup file here
             File backupFile = new File("backups/" + gameUniqueCode + ".back");
             if (backupFile.exists() && !backupFile.delete())
-                    System.out.println("ERROR: something went wrong deleting the '" + gameUniqueCode + "' backup file...");
+                System.out.println("ERROR: something went wrong deleting the '" + gameUniqueCode + "' backup file...");
 
             // TODO: REMOVE BACKUP FILE!!!
         }

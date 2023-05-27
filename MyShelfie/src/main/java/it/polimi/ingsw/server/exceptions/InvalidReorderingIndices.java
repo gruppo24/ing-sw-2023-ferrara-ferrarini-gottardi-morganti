@@ -10,14 +10,6 @@ package it.polimi.ingsw.server.exceptions;
 public class InvalidReorderingIndices extends RuntimeException {
     /**
      * Class constructor
-     */
-    public InvalidReorderingIndices() {
-        // Default error message
-        super("ERROR: Indices passed are invalid for current buffer reordering.");
-    }
-
-    /**
-     * Class constructor
      * @param index buffer index which triggered the exception
      */
     public InvalidReorderingIndices(int index) {

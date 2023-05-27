@@ -3,6 +3,7 @@ package it.polimi.ingsw.server.model;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.Server;
 import it.polimi.ingsw.server.exceptions.AlreadyUsedIndex;
+import it.polimi.ingsw.server.exceptions.EmptySelectionBuffer;
 import it.polimi.ingsw.server.exceptions.InvalidReorderingIndices;
 import it.polimi.ingsw.server.exceptions.SelectionBufferFullException;
 import org.junit.Before;
@@ -49,6 +50,25 @@ public class PlayerTest {
 
     @After
     public void tearDown() { /* Do nothing */ }
+
+    // ==================== online getter/setter ====================
+    @Test
+    public void isConnected_userJustCreated_shouldReturnTrue() {
+        assertTrue(testPlayer.isConnected());
+    }
+
+    @Test
+    public void isConnected_userDisconnected_shouldReturnFalse() {
+        testPlayer.hasDisconnected();
+        assertFalse(testPlayer.isConnected());
+    }
+
+    @Test
+    public void isConnected_userDisconnectedThenReconnected_shouldReturnTrue() {
+        testPlayer.hasDisconnected();
+        testPlayer.hasReconnected();
+        assertTrue(testPlayer.isConnected());
+    }
 
     // ==================== privateCard getter/setter ====================
     @Test
@@ -725,8 +745,8 @@ public class PlayerTest {
     }
 
     // ==================== reorderSelectionBuffer ====================
-    @Test
-    public void reorderSelectionBuffer_emptyBufferReordering_doesNothing() {
+    @Test (expected = EmptySelectionBuffer.class)
+    public void reorderSelectionBuffer_emptyBufferReordering_throwsException() {
         this.testPlayer.selectColumn(0);
         this.testPlayer.reorderSelectionBuffer(0, 1, 2);
 
