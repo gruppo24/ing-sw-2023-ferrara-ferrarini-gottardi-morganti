@@ -81,14 +81,14 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         int column;
         for (Node node : library.getChildren()) {
             // Always remove any previous highlighting Removing
-            node.getStyleClass().remove("column-highlight");
+            node.getStyleClass().remove("cell-highlight");
 
             // Fetching the node's coordinates, and checking whether cell should be highlighted
             column = GridPane.getColumnIndex(node);
             if (sgs.currPlayerIndex == sgs.selfPlayerIndex &&
                     column == sgs.selectedColumn &&
                     sgs.selectionBuffer != null)
-                node.getStyleClass().add("column-highlight");
+                node.getStyleClass().add("cell-highlight");
         }
     }
 

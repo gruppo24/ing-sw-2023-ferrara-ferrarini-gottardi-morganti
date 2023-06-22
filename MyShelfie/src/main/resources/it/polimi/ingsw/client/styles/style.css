@@ -52,7 +52,7 @@
     -fx-padding: 16.6 19.8 25.5 19.5;
 }
 
-.column-highlight {
+.cell-highlight {
     -fx-background-color: rgba(240, 250, 100, 0.5);
 }
 
