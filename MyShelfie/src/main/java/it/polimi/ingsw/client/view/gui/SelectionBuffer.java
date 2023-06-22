@@ -6,6 +6,8 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 
 import java.io.IOException;
@@ -57,10 +59,23 @@ public class SelectionBuffer extends Pane implements SGSConsumer {
                     this.reorderedBuffer.add((x));
                 }
 
-                System.out.print("Current buffer state: ");
-                for (int index : this.reorderedBuffer)
-                    System.out.print(index + ", ");
-                System.out.println();
+//                // DEBUG ONLY
+//                System.out.print("Current buffer state: ");
+//                for (int index : this.reorderedBuffer)
+//                    System.out.print(index + ", ");
+//                System.out.println();
+
+                // Applying highlight to selected tiles in buffer
+                int column;
+                for (Node node : selectionBuffer.getChildren()) {
+                    // Always remove any previous highlighting Removing
+                    node.getStyleClass().remove("cell-highlight");
+
+                    // Fetching the node's coordinates, and checking whether cell should be highlighted
+                    column = GridPane.getColumnIndex(node);
+                    if (this.reorderedBuffer.contains(column))
+                        node.getStyleClass().add("cell-highlight");
+                }
 
                 // Checking if the buffer has been completely reordered
                 if (this.reorderedBuffer.size() == gameState.selectionBuffer.length) {
@@ -102,6 +117,12 @@ public class SelectionBuffer extends Pane implements SGSConsumer {
             content = new TileType[][]{{null}, {null}, {null}};
         }
         this.selectionBuffer.setGridContent(content);
+
+        // By default we also always clear any highlights:
+        // 1. either a reordering has been complete ==> highlight can be removed now
+        // 2. an invalid reordering occurred ==> reset the reordering
+        for (Node node : selectionBuffer.getChildren())
+            node.getStyleClass().remove("cell-highlight");
     }
 
 }
