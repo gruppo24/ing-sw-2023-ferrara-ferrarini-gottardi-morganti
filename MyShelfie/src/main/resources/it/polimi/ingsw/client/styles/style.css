@@ -32,13 +32,24 @@
     -fx-opacity: 0.5;
 }
 
-.current-library {
-    -fx-background-color: #6099b5;
+/* Styles common to all library objects */
+.current-library,
+.non-current-library {
+    /*-fx-background-color: #6099b5;*/  /* DEBUG ONLY */
     -fx-background-image: url("/boards/bookshelf_orth.png");
     -fx-background-repeat: no-repeat;
     -fx-background-size: contain;
     -fx-background-position: center center;
-    -fx-padding: 19.2 34 34.4 34;
+}
+
+/* Padding for current library object */
+.current-library {
+    -fx-padding: 19.2 32 33.7 32;
+}
+
+/* Padding for non-current library object */
+.non-current-library {
+    -fx-padding: 16.6 19.8 25.5 19.5;
 }
 
 .current-label {

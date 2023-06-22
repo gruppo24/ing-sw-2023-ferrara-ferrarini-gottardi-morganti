@@ -434,6 +434,7 @@ public class GameState implements Serializable {
      * Implementation of readObject method to restore the transient gameLock
      * attribute
      */
+    @Serial
     private void readObject(ObjectInputStream in)
             throws IOException, ClassNotFoundException {
         in.defaultReadObject();

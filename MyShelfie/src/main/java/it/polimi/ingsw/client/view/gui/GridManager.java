@@ -129,6 +129,11 @@ public class GridManager extends GridPane {
      *                of columns * rows
      */
     public void setGridContent(TileType[][] content) {
+        // Checking if some content has actually been passed
+        if (content == null) {
+            return;  // Do nothing...
+        }
+
         // Checking argument is valid
         if (content.length != this.columns || content[0].length != this.rows) {
             throw new IllegalArgumentException(

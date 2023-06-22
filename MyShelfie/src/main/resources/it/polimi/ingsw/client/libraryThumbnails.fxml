@@ -14,16 +14,30 @@
          stylesheets="@styles/style.css">
 
     <VBox>
-        <Label fx:id="username" />
-
-        <GridManager fx:id="bottomLibrary" columns="5" rows="6" tileSize="20" styleClass="current-library" />
 
         <HBox spacing="5">
+            <Label fx:id="username" />
+
             <ImageView fx:id="hasArmchair" styleClass="lib-thumb-icon" />
             <ImageView fx:id="common1Obtained" styleClass="lib-thumb-icon" />
             <ImageView fx:id="common2Obtained" styleClass="lib-thumb-icon" />
             <ImageView fx:id="firstFinished" styleClass="lib-thumb-icon" />
         </HBox>
+
+        <Pane>
+            <GridManager
+                    fx:id="bottomLibrary"
+                    columns="5"
+                    rows="6"
+                    tileSize="20"
+                    borderSizeH="8.5"
+                    borderSizeV="4.5"
+                    paddingSizeH="0"
+                    paddingSizeV="0"
+                    styleClass="non-current-library"
+            />
+        </Pane>
+
     </VBox>
 
 </fx:root>
