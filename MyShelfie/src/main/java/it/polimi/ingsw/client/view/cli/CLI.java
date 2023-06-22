@@ -49,13 +49,19 @@ public class CLI {
      * Method in charge of actually connecting to server
      */
     private void doConnect() {
-        System.out.println("Select server (1 - Socket, 2 - jRMI):");
+        System.out.println("=== Selected server address: " + SERVER_ADDR + " (0 - change) ===");
+        System.out.println("Select server type (1 - Socket, 2 - jRMI):");
 
         boolean valid = false;
         while (!valid) {
             valid = true;
             char choice = in.next().charAt(0);
-            if (choice == '1') {
+            if (choice == '0') {
+                System.out.print("New address >>> ");
+                SERVER_ADDR = in.next();
+                System.out.println("Now select serve type...");
+                valid = false;
+            } else if (choice == '1') {
                 this.connection = new SocketConnection(SERVER_ADDR, SOCKET_PORT);
             } else if (choice == '2') {
                 this.connection = new JRMIConnection("localhost", 1059);
@@ -72,6 +78,7 @@ public class CLI {
                     this.connection.establishConnection();
                 } catch (IOException | NotBoundException ex) {
                     System.out.println("Couldn't reach server... retry later");
+                    System.out.println("=== Selected server address: " + SERVER_ADDR + " (0 - change) ===");
                     System.out.println("Select server (1 - Socket, 2 - jRMI):");
                     // After connection failure, enter loop again
                     valid = false;
@@ -91,8 +98,9 @@ public class CLI {
         System.out.println("1. Create a new game");
         System.out.println("2. List existing games");
         System.out.println("3. Join a game");
-        System.out.println("4. Rejoin a game");
-        System.out.println("5. Exit");
+        System.out.println("4. Automatic game rejoin");
+        System.out.println("5. Manual game rejoin");
+        System.out.println("6. Exit");
 
         char choice = in.next().charAt(0);
         switch (choice) {
@@ -100,15 +108,16 @@ public class CLI {
             case '2' -> listGames();
             case '3' -> joinGame(false);
             case '4' -> joinGame(true);
-            case '5' -> {
+            case '5' -> manualRejoin();
+            case '6' -> {
                 System.out.println("Exiting...");
                 return true;
             }
-            case '0' -> manualRejoin();
+
             default -> System.out.println("Invalid choice");
         }
 
-        // Unless '5' has been selected, we automatically return false
+        // Unless '6' has been selected, we automatically return false
         return false;
     }
 
