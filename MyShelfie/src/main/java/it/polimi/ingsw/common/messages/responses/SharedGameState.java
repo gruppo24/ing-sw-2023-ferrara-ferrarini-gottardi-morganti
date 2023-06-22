@@ -6,6 +6,7 @@ import it.polimi.ingsw.common.TileType;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class holds a representation of the current state of the game
@@ -42,6 +43,7 @@ public class SharedGameState implements Serializable {
     // Private objective attributes
     public String privateId;
     public String privateDesc;
+    public Map<TileType, Integer[]> privateObjectives;
 
     // Libraries
     public TileType[][][] libraries;

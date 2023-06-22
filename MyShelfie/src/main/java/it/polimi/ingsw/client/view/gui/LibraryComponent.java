@@ -3,9 +3,11 @@ package it.polimi.ingsw.client.view.gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import it.polimi.ingsw.client.App;
+import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -65,6 +67,33 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
         });
     }
 
+    /**
+     * Method in charge of highlighting private objectives in library
+     *
+     * @param privateObjectives private objective Map
+     */
+    public void setGridItemDecorators(Map<TileType, Integer[]> privateObjectives) {
+        // Iterating over all private objectives...
+        for (TileType tile : privateObjectives.keySet()) {
+            // ... Then, looking for the associated tile in the grid
+            for (Node node : library.getChildren()) {
+                Integer[] coords = privateObjectives.get(tile);
+                if (GridPane.getRowIndex(node).equals(this.library.rows - coords[1] - 1) &&
+                        GridPane.getColumnIndex(node).equals(coords[0])) {
+                    node.getStyleClass().add(tile.toString());
+                }
+            }
+        }
+    }
+
+    /**
+     * Method in charge of removing any private objective highlights
+     */
+    public void removeGridItemDecorators() {
+        for (Node node : library.getChildren())
+            node.getStyleClass().removeAll("Bk", "Ca", "Fr", "Pl", "To", "Ty");
+    }
+
     /** @see SGSConsumer#updateSGS(SharedGameState) */
     @Override
     public void updateSGS(SharedGameState sgs) {
@@ -75,6 +104,13 @@ public class LibraryComponent extends VBox implements SGSConsumer, Initializable
 
         // Updating current library's content
         library.setGridContent(sgs.libraries[sgs.currPlayerIndex]);
+
+        // Checking whether it is the client's turn. If it is,
+        // also rendering private objectives in library
+        if (sgs.currPlayerIndex == sgs.selfPlayerIndex && sgs.privateObjectives != null)
+            this.setGridItemDecorators(sgs.privateObjectives);
+        else
+            removeGridItemDecorators();
 
         // Updating column highlighting
         // After successful request, we highlight the selected column

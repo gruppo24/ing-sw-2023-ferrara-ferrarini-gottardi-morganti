@@ -353,6 +353,7 @@ public class GameState implements Serializable {
         if (this.gameOngoing) {
             sgs.privateId = player.getPrivateCard().identifier;
             sgs.privateDesc = player.getPrivateCard().description;
+            sgs.privateObjectives = player.getPrivateCard().objectives;
         }
 
         // Library information

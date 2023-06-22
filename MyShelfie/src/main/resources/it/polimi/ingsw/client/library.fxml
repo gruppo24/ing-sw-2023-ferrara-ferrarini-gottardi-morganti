@@ -7,7 +7,7 @@
 
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         stylesheets="@styles/style.css, @styles/PregameStyles.css"
+         stylesheets="@styles/style.css, @styles/PregameStyles.css, @styles/TileColours.css"
          type="javafx.scene.layout.VBox">
     <GridManager
             fx:id="library"
