@@ -240,7 +240,7 @@ public class CLI {
      * Rejoins a game manually (asks for gameID and username) ==> to be used only for debugging
      */
     private void manualRejoin() {
-        System.out.println("=== MANUAL REJOIN (debugging only) ===\nEnter game ID and username: ");
+        System.out.println("=== MANUAL REJOIN ===\nEnter game ID and username: ");
         String gameID = in.next();
         String username = in.next();
 

@@ -9,10 +9,11 @@
 <?import javafx.scene.image.Image?>
 
 
+<?import javafx.scene.control.TextField?>
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="it.polimi.ingsw.client.view.gui.MainMenuController"
-            stylesheets="@styles/style.css"
+            stylesheets="@styles/style.css, @styles/PregameStyles.css"
             id="main-view"
             styleClass="background">
 
@@ -26,6 +27,7 @@
 
   <center>
     <VBox spacing="10" alignment="CENTER">
+      <TextField fx:id="address" styleClass="pregameTextField" promptText="Server IP address..." />
       <Button text="Socket connection" onAction="#enterPregameSocket" />
       <Button text="jRMI connection" onAction="#enterPregameJRMI" />
       <Button text="Exit" onAction="#exit" />
