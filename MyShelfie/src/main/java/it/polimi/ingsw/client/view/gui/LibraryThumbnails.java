@@ -66,20 +66,20 @@ public class LibraryThumbnails extends VBox {
 
         for (int j=0; j < sgs.commonsAchievers[0].length; j++) {
             if (sgs.players[index].equals(sgs.commonsAchievers[0][j])) {
-                String imgName = "scoring_" + GUIUtils.mapCommonPoints(sgs.commonsAchievers[0].length, j) + ".jpg";
+                String imgName = "scoring_" + GUIUtils.mapCommonPoints(sgs.commonsAchievers[0].length, j+1) + ".jpg";
                 this.common1Obtained.setImage(GUIUtils.loadAsset("scoring tokens", imgName));
             }
         }
 
         for (int j=0; j < sgs.commonsAchievers[1].length; j++) {
             if (sgs.players[index].equals(sgs.commonsAchievers[1][j])) {
-                String imgName = "scoring_" + GUIUtils.mapCommonPoints(sgs.commonsAchievers[0].length, j) + ".jpg";
+                String imgName = "scoring_" + GUIUtils.mapCommonPoints(sgs.commonsAchievers[0].length, j+1) + ".jpg";
                 this.common2Obtained.setImage(GUIUtils.loadAsset("scoring tokens", imgName));
             }
         }
 
         if (sgs.players[index].equals(sgs.firstCompleter)) {
-            firstFinished.setImage(GUIUtils.loadAsset("scoring tokens", "end game.png"));
+            firstFinished.setImage(GUIUtils.loadAsset("scoring tokens", "end game.jpg"));
         }
     }
 
