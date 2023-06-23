@@ -33,9 +33,13 @@ public class PregameController implements Initializable {
 
     // Interface nodes
     @FXML TextField username;
+
     @FXML Label errorMessage;
     @FXML Spinner<Integer> numOfPlayers;
     @FXML ListView<Entry<String, int[]>> gameList;
+
+    @FXML TextField rejoinGameId;
+    @FXML TextField rejoinUsername;
 
     // Reference to the scene
     private static PregameController self;
@@ -44,6 +48,15 @@ public class PregameController implements Initializable {
     /** @see Initializable#initialize(URL, ResourceBundle)  */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // We set the default rejoin parameters (if they exist)
+        try {
+            String[] parameters = new ReconnectionHandler().getParameters();
+            rejoinGameId.setText(parameters[0]);
+            rejoinUsername.setText(parameters[1]);
+        } catch (IOException | ClassNotFoundException ex) {
+            System.out.println("ERRORS IN READING AUTOMATIC REJOIN FILE");
+        }
+
         // As soon as the scene is set, we request all available games
         this.listGames();
 
@@ -122,31 +135,33 @@ public class PregameController implements Initializable {
     /** Method in charge of rejoining lastly disconnected game */
     @FXML
     private void rejoinGame() {
+        // Fetching rejoin parameters
+        String rejoinGameIdText = rejoinGameId.getText();
+        String rejoinUsernameText = rejoinUsername.getText();
+
         // Executing request on separate thread
         new Thread(() -> {
             synchronized (requestLock) {
+                ResponseStatus response;
                 try {
-                    String[] parameters = new ReconnectionHandler().getParameters();
-                    System.out.println(parameters[0] + ", " + parameters[1]);
+                    response = App.connection.connectToGame(rejoinGameIdText, rejoinUsernameText, true);
+                } catch (IOException | NotBoundException ex) {
+                    System.err.println("REQUEST ERROR: " + ex);
+                    Platform.runLater( () -> App.setRoot("main_menu") );
+                    return;
+                }
 
-                    ResponseStatus response;
-                    try {
-                        response = App.connection.connectToGame(parameters[0], parameters[1], true);
-                    } catch (IOException | NotBoundException ex) {
-                        System.err.println("REQUEST ERROR: " + ex);
-                        Platform.runLater( () -> App.setRoot("main_menu") );
-                        return;
-                    }
+                // Switching view
+                if (response == ResponseStatus.SUCCESS) {
+                    // After successful game (re)joining, we store our current game session information
+                    // for possible future game reconnections
+                    ReconnectionHandler rh = new ReconnectionHandler();
+                    rh.setParameters(rejoinGameIdText, rejoinUsernameText);
 
-                    // Switching view
-                    if (response == ResponseStatus.SUCCESS) {
-                        Platform.runLater( () -> App.setRoot("ingame") );
-                    } else {
-                        Platform.runLater( () -> errorMessage.setText(response.toString()) );
-                        System.out.println("COULDN'T REJOIN GAME: " + response);
-                    }
-                } catch (IOException | ClassNotFoundException ex) {
-                    System.out.println("ERROR: Couldn't rejoin game: " + ex);
+                    Platform.runLater( () -> App.setRoot("ingame") );
+                } else {
+                    Platform.runLater( () -> errorMessage.setText(response.toString()) );
+                    System.out.println("COULDN'T REJOIN GAME: " + response);
                 }
             }
         }).start();

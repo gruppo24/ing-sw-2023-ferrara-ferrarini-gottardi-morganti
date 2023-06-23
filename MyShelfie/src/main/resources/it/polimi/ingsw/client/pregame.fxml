@@ -7,9 +7,9 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 
-
 <?import javafx.scene.control.Spinner?>
-<?import javafx.scene.control.Separator?>
+
+
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="it.polimi.ingsw.client.view.gui.PregameController"
@@ -58,8 +58,11 @@
     <bottom>
         <!-- Rejoin game -->
         <HBox spacing="10" alignment="CENTER" styleClass="pregameBottomButtons">
-            <Label text="Disconnected?" />
-            <Button text="Rejoin" onAction="#rejoinGame" />
+            <Label text="Disconnected? Rejoin game" />
+            <TextField fx:id="rejoinGameId" styleClass="pregameTextField" promptText="GameId of game to rejoin" />
+            <Label text="as player" />
+            <TextField fx:id="rejoinUsername" styleClass="pregameTextField" promptText="Username to rejoin with" />
+            <Button text="Go!" onAction="#rejoinGame" />
         </HBox>
         <!-- END: Rejoin game -->
     </bottom>
