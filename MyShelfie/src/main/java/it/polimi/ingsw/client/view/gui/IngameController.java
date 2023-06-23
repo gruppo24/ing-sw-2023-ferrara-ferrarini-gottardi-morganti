@@ -32,28 +32,43 @@ public class IngameController implements Initializable {
         consumers.add(consumer);
     }
 
+    /**
+     * Method in charge of updating all SharedGameState consumers and
+     * verifying whether it is necessary to await for further game state
+     * updates (namely, it isn't the client's turn anymore) or not
+     *
+     * @param gameState last received SharedGameState
+     */
     public static void setGameState(SharedGameState gameState) {
         lastState = gameState;
         System.out.println("GameState received, updating " + consumers.size() + " consumers");
 
-        // dispatching update to all shared game state consumers
-        Platform.runLater(() -> { // run later bc we are not on the javafx thread
-            for (SGSConsumer consumer : consumers) {
-                consumer.updateSGS(gameState);
-            }
-        });
+        // Checking whether the SGS is notifying us of game termination
+        if (gameState != null && gameState.gameOver) {
+            System.out.println("=== GAME FINISHED ===");
+            // Switch to game-end page
+            Platform.runLater( () -> App.setRoot("gameEnd") );
+        } else {
 
-        // if sgs is null, or it is not the player's turn, wait for turn
-        if (gameState == null ||
-                !gameState.gameOngoing ||
-                gameState.gameSuspended ||
-                gameState.currPlayerIndex != gameState.selfPlayerIndex) {
-            try {
-                setGameState(App.connection.waitTurn());
-            } catch (IOException ex) {
-                // In case of disconnections, go back to server selection page
-                System.err.println("REQUEST ERROR: " + ex);
-                Platform.runLater( () -> App.setRoot("main_menu") );
+            // dispatching update to all shared game state consumers
+            Platform.runLater(() -> { // run later bc we are not on the javafx thread
+                for (SGSConsumer consumer : consumers) {
+                    consumer.updateSGS(gameState);
+                }
+            });
+
+            // if sgs is null, or it is not the player's turn, wait for turn
+            if (gameState == null ||
+                    !gameState.gameOngoing ||
+                    gameState.gameSuspended ||
+                    gameState.currPlayerIndex != gameState.selfPlayerIndex) {
+                try {
+                    setGameState(App.connection.waitTurn());
+                } catch (IOException ex) {
+                    // In case of disconnections, go back to server selection page
+                    System.err.println("REQUEST ERROR: " + ex);
+                    Platform.runLater(() -> App.setRoot("main_menu"));
+                }
             }
         }
     }
