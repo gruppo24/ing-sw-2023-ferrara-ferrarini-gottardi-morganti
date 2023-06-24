@@ -59,7 +59,7 @@ public class CommonCardsComponent extends HBox implements SGSConsumer {
                 if (sgs.commonsAchievers[index][i] == null && nextOrder == -1)
                     nextOrder = i;
 
-            if (nextOrder < numOfPlayers) {
+            if (nextOrder + 1 <= numOfPlayers && nextOrder != -1) {
                 String imgName = "scoring_" + GUIUtils.mapCommonPoints(numOfPlayers, nextOrder+1) + ".jpg";
                 order.setImage(GUIUtils.loadAsset("scoring tokens", imgName, 40, 40));
             } else {
