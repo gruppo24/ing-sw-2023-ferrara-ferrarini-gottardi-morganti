@@ -5,8 +5,6 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import it.polimi.ingsw.common.stubs.GameActionStub;
 import it.polimi.ingsw.common.stubs.PreGameStub;
 
-import java.io.IOException;
-import java.rmi.ConnectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -28,6 +26,8 @@ public class JRMIConnection extends Connection{
     private PreGameStub preGame;
     private GameActionStub gameAction;
 
+    private Thread keepAliveThread;
+
     private SharedGameState cache;
 
     /**
@@ -42,18 +42,47 @@ public class JRMIConnection extends Connection{
         this.port = port;
     }
 
+    /**
+     * Method in charge of starting a new keep-alive ping thread
+     */
+    private void startAsyncKeepAliveEcho() {
+        // Start new thread for keep-alive periodic pings
+        this.keepAliveThread = new Thread(this::asyncKeepAliveEcho);
+        this.keepAliveThread.start();
+    }
+
     @Override
     public void establishConnection() throws RemoteException, NotBoundException {
+        // Firstly, reset all in-game parameters (if there are any)
+        if (this.keepAliveThread != null) {
+            this.keepAliveThread.interrupt();
+            this.keepAliveThread = null;
+            this.gameAction = null;
+        }
+
         this.registry = LocateRegistry.getRegistry(host, port);
         this.preGame = (PreGameStub) registry.lookup("remotePreGame");
-
-        // Start new thread for keep-alive periodic pings
-        new Thread(this::asyncKeepAliveEcho).start();
     }
 
     @Override
     public void asyncKeepAliveEcho(int echoMillisDelay) {
-        System.out.println("CURRENTLY NOT IMPLEMENTED");
+        // As long as, we send keep-alive echoes
+        // to the server. When (at the end of a game for instance) the channel
+        // closes, we break out of the following loop
+        while (true) {
+            try {
+                gameAction.sendKeepAlive();
+//                System.out.println("[DEBUG]: ping sent!");  // DEBUG ONLY
+
+                Thread.sleep(echoMillisDelay);
+            } catch (RemoteException e) {
+                System.out.println("WARNING: AsyncKeepAliveEcho detected disconnection...");  // DEBUG ONLY
+                break;
+            } catch (InterruptedException e) {
+                System.out.println("=== ASYNC-KEEP-ALIVE-ECHO INTERRUPTED --> LEAVING IN-GAME MODE ===");  // DEBUG ONLY
+                break;
+            }
+        }
     }
 
     @Override
@@ -67,7 +96,8 @@ public class JRMIConnection extends Connection{
 
         if (status == ResponseStatus.SUCCESS) {
             this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
-            cache = gameAction.getSharedGameStateImmediately();
+            cache = gameAction.registerConnection();
+            this.startAsyncKeepAliveEcho();
         }
         return status;
     }
@@ -80,14 +110,15 @@ public class JRMIConnection extends Connection{
 
             if (status == ResponseStatus.SUCCESS) {
                 this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
-                cache = gameAction.getSharedGameStateImmediately();
+                cache = gameAction.registerConnection();
+                this.startAsyncKeepAliveEcho();
             }
         } else {
             this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
 
-            // We make sure any disconnection timer is immediately reset and only afterwards request latest game state
-            this.gameAction.resetDisconnectionTimer();
-            cache = gameAction.getSharedGameStateImmediately();
+            // Register connection and request latest game state
+            cache = gameAction.registerConnection();
+            this.startAsyncKeepAliveEcho();
         }
 
         return status;

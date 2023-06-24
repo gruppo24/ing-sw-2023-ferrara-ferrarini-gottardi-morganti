@@ -15,6 +15,9 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
  * @author Morganti Tommaso
  */
 public abstract class Connection {
+
+    private static final int KEEP_ALIVE_DEFAULT_DELAY_MS = 5_000;
+
     /**
      * A static method to generate game IDs
      */
@@ -57,7 +60,7 @@ public abstract class Connection {
      * with 5000 millisecond delays between each ping
      */
     public void asyncKeepAliveEcho() {
-        asyncKeepAliveEcho(5_000);
+        asyncKeepAliveEcho(Connection.KEEP_ALIVE_DEFAULT_DELAY_MS);
     }
 
     /**

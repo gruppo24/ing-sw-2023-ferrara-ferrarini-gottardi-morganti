@@ -19,14 +19,14 @@ public interface GameActionStub extends Remote {
      * @return current shared game state
      * @throws RemoteException if exception in jRMI
      */
-    SharedGameState getSharedGameStateImmediately() throws RemoteException;
+    SharedGameState registerConnection() throws RemoteException;
 
     /**
-     * Method in charge of terminating a disconnection-timer thread after reconnection
+     * Method in charge of picking up keep-alive pings from a client
      *
      * @throws RemoteException if exception in jRMI
      */
-    void resetDisconnectionTimer() throws RemoteException;
+    void sendKeepAlive() throws RemoteException;
 
     /**
      * Method in charge of queuing a shared game state request. SGS will be sent

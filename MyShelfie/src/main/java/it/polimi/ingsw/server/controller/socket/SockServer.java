@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import static it.polimi.ingsw.server.Server.TIMEOUT_MS;
+
 /**
  * This class will act as a dispatcher for incoming connections on the socket server.
  * All it does is accept all incoming connection requests, instance a new thread
@@ -36,7 +38,7 @@ public class SockServer implements Runnable {
                 Socket incomingConnection = dispatcher.accept();
 
                 // Setting a 10 seconds timeout (should be enough...)
-                incomingConnection.setSoTimeout(10_000);
+                incomingConnection.setSoTimeout(TIMEOUT_MS);
 
                 // As soon as a new connection has been received,
                 // we send the client in pregame-state

@@ -22,6 +22,8 @@ public class Server implements Serializable {
     public static final int SOCKET_PORT = 5050;
     public static final int JRMI_PORT = 1059;
 
+    public static final int TIMEOUT_MS = 10_000;
+
     // Array containing the instantiation of PrivateCards
     public static final PrivateCard[] privateCards = new PrivateCard[12];
 
