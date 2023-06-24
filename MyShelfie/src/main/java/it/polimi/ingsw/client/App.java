@@ -26,6 +26,10 @@ public class App extends Application {
     public static final Object requestLock = new Object();
 
     public static void main(String[] args) throws IOException {
+        startGUI(args);
+    }
+
+    public static void startGUI(String[] args) {
         launch(args); // We simply launch our GUI...
     }
 
