@@ -133,9 +133,11 @@ public class GameState implements Serializable {
      */
     public void turnIsOver() {
         // We update the points of the current player
-        this.players[this.currPlayerIndex].updatePrivatePoints();
-        this.players[this.currPlayerIndex].updateClusterPoints();
-        this.obtainedCommons();
+        if (this.players[this.currPlayerIndex] != null) {
+            this.players[this.currPlayerIndex].updatePrivatePoints();
+            this.players[this.currPlayerIndex].updateClusterPoints();
+            this.obtainedCommons();
+        }
 
         // If it already isn't the final round, checking if the current player has
         // filled their library entirely
