@@ -45,6 +45,22 @@ public abstract class Connection {
     public abstract void establishConnection() throws IOException, NotBoundException;
 
     /**
+     * Method in charge of sending periodic pings to the server during idle periods.
+     * This will prevent channel closure, confirming the client is still online
+     *
+     * @param echoMillisDelay delay between each echo
+     */
+    public abstract void asyncKeepAliveEcho(int echoMillisDelay);
+
+    /**
+     * Default implementation of {@link Connection#asyncKeepAliveEcho(int)}
+     * with 5000 millisecond delays between each ping
+     */
+    public void asyncKeepAliveEcho() {
+        asyncKeepAliveEcho(5_000);
+    }
+
+    /**
      * Creates a new game and connects to it
      *
      * @param gameID unique gameID to be associated to the game which we create

@@ -53,7 +53,31 @@ public class SocketConnection extends Connection {
         this.in = new ObjectInputStream(this.socket.getInputStream());
 
         // Start new thread for keep-alive periodic pings
-        new Thread(new AsyncKeepAliveEcho(this.out, this)).start();
+        new Thread(this::asyncKeepAliveEcho).start();
+//        new Thread(new AsyncKeepAliveEcho(this.out, this)).start();
+    }
+
+    @Override
+    public void asyncKeepAliveEcho(int echoMillisDelay) {
+        // As long as the uplink channel is open, we send keep-alive echoes
+        // to the server. When (at the end of a game for instance) the channel
+        // closes, we break out of the following loop
+        while (true) {
+            RequestPacket packet = new RequestPacket(ContentType.KEEP_ALIVE, new KeepAlive());
+            try {
+                this.out.writeObject(packet);
+                this.out.flush();
+                //System.out.println("[DEBUG]: ping sent!");  // DEBUG ONLY
+
+                Thread.sleep(echoMillisDelay);
+            } catch (IOException e) {
+                //System.out.println("WARNING: AsyncKeepAliveEcho detected disconnection (or game end...)");  // DEBUG ONLY
+                break;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
     }
 
     /**

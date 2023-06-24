@@ -46,6 +46,14 @@ public class JRMIConnection extends Connection{
     public void establishConnection() throws RemoteException, NotBoundException {
         this.registry = LocateRegistry.getRegistry(host, port);
         this.preGame = (PreGameStub) registry.lookup("remotePreGame");
+
+        // Start new thread for keep-alive periodic pings
+        new Thread(this::asyncKeepAliveEcho).start();
+    }
+
+    @Override
+    public void asyncKeepAliveEcho(int echoMillisDelay) {
+        System.out.println("CURRENTLY NOT IMPLEMENTED");
     }
 
     @Override

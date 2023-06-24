@@ -7,6 +7,8 @@ import it.polimi.ingsw.common.messages.responses.RequestPacket;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+
+@Deprecated  // Use the concrete implementation of the Connection class
 public class AsyncKeepAliveEcho implements Runnable {
 
     private final ObjectOutputStream channelUplink;
