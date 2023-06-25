@@ -272,7 +272,7 @@ public class Board implements Serializable {
 
         increment = 0;
         for (int left=1; left <= constraint + increment; left++) {
-            if (y - left < 0 ||
+            if (x - left < 0 ||
                     ((this.boardContent[x-left][y] == null || this.boardState[x-left][y] == TileState.NOT_PICKABLE) &&
                             !this.pickedContains(new int[]{x-left, y})))
                 break;

@@ -70,3 +70,10 @@
     -fx-fit-to-width: 20;
     -fx-fit-to-height: 20;
 }
+
+/* Common card component styles */
+.description-label {
+    -fx-max-width: 200;
+    -fx-wrap-text: true;
+    -fx-text-alignment: left;
+}

@@ -5,12 +5,14 @@
 <?import javafx.scene.image.ImageView?>
 
 
+<?import javafx.scene.control.Label?>
 <fx:root xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          stylesheets="@styles/style.css, @styles/PregameStyles.css"
          type="javafx.scene.layout.HBox"
-        spacing="20">
+         spacing="20">
     <ImageView fx:id="card" />
     <ImageView fx:id="order" />
+    <Label fx:id="description" styleClass="description-label" />
 </fx:root>
 

@@ -6,6 +6,7 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import javafx.beans.NamedArg;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
@@ -20,6 +21,9 @@ public class CommonCardsComponent extends HBox implements SGSConsumer {
 
     @FXML
     ImageView order;
+
+    @FXML
+    Label description;
 
     // Common card number
     private final int index;
@@ -65,6 +69,9 @@ public class CommonCardsComponent extends HBox implements SGSConsumer {
             } else {
                 order.setImage(null);
             }
+
+            // Setting common objective description
+            description.setText(sgs.commonsDesc[index]);
 
         } else {
             // If game hasn't started, we load all cards and icons on their backs
