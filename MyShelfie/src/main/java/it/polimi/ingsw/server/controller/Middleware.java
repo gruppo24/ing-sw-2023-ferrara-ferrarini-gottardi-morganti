@@ -13,6 +13,14 @@ import it.polimi.ingsw.server.model.Player;
  * @author Ferrara Silvia
  */
 public class Middleware {
+
+    /**
+     * Method in charge of actually performing column selection operations on the model
+     *
+     * @param game game whose model we want to access
+     * @param player player who has requested a column select
+     * @param column column selected by the player
+     */
     public static void doSelectColumn(GameState game, Player player, int column){
         try {
             player.selectColumn(column);
@@ -25,6 +33,14 @@ public class Middleware {
         }
     }
 
+    /**
+     * Method in charge of actually performing tile pick operations on the model
+     *
+     * @param game game whose model we want to access
+     * @param player player who has requested a tile pick
+     * @param x x coordinate of the picked tile
+     * @param y y coordinate of the picked tile
+     */
     public static void doPickTile(GameState game, Player player, int x, int y){
         // NOTICE: we subtract 1 from player.getSelectionBufferSize() because we are about to
         // push a new tile in the buffer
@@ -33,6 +49,15 @@ public class Middleware {
         synchronized (game.gameLock) { game.gameLock.notifyAll(); }
     }
 
+    /**
+     * Method in charge of actually performing selection buffer reordering operations on the model
+     *
+     * @param game game whose model we want to access
+     * @param player player who has requested a selection buffer reordering
+     * @param first index of the first tile to insert in the library
+     * @param second index of the second tile to insert in the library
+     * @param third index of the third tile to insert in the library
+     */
     public static void doReorder(GameState game, Player player, int first, int second, int third){
         try {
             player.reorderSelectionBuffer(first, second, third);
