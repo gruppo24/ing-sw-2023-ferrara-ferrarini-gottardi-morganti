@@ -27,7 +27,7 @@ To run the server and client jars simply run the following commands in a termina
 **Important:** in order to run the GUI, the ***assets*** folder is required: if
 running Client.jar from the Deliverables/Final/JAR directory, simply place the assets
 folder under Deliverables/Final <em>(<ins>not Deliverables/Final/JAR</ins>)</em>.
-If running Client.jar from somewhere else, always use the following structure:
+If running Client.jar from somewhere else, always use the following path structure:
 
 ```
 /
@@ -35,6 +35,17 @@ If running Client.jar from somewhere else, always use the following structure:
 │   └── Client.jar
 └── assets
     └── ...
+```
+
+The Server JAR, on the other hand, requires the file ***PrivateCards.csv***. This file
+is already included under the Deliverables/Final/JAR directory, so no additional action
+is required. If, however, running Server.jar from somewhere else, always use the following
+path structure:
+
+```
+/
+├── Server.jar
+└── PrivateCards.csv
 ```
 
 ### How to play in the GUI?
