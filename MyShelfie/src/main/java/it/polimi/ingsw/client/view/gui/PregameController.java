@@ -54,7 +54,7 @@ public class PregameController implements Initializable {
             rejoinGameId.setText(parameters[0]);
             rejoinUsername.setText(parameters[1]);
         } catch (IOException | ClassNotFoundException ex) {
-            System.out.println("ERRORS IN READING AUTOMATIC REJOIN FILE");
+//            System.out.println("ERRORS IN READING AUTOMATIC REJOIN FILE");  // DEBUG ONLY
         }
 
         // As soon as the scene is set, we request all available games

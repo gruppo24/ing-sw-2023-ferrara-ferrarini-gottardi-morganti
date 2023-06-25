@@ -18,6 +18,8 @@ assets/*
 
 # Ignore recovery files director
 tmp/*
+Deliverables/jar/backups/
+Deliverables/jar/tmp/
 
 # User-specific stuff
 .idea/**/workspace.xml

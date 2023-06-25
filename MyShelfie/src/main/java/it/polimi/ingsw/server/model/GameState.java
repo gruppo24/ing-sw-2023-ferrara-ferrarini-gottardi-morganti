@@ -153,10 +153,14 @@ public class GameState implements Serializable {
         // We update the player-turn index and check if the game has ended
         int online = this.remainingOnline();
         if (online > 1 || online == 1 && !this.players[this.currPlayerIndex].isConnected()) {
-            do {
-                this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
-                this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
-            } while(!this.players[this.currPlayerIndex].isConnected() && !this.gameOver);
+            try {
+                do {
+                    this.currPlayerIndex = (this.currPlayerIndex + 1) % this.players.length;
+                    this.gameOver = (this.currPlayerIndex == this.armchair && this.finalRound) || this.gameTerminated;
+                } while (!this.players[this.currPlayerIndex].isConnected() && !this.gameOver);
+            } catch (NullPointerException ex) {
+                return;
+            }
             this.suspended = false;
         } else {
             this.suspended = true;
@@ -177,8 +181,6 @@ public class GameState implements Serializable {
             File backupFile = new File("backups/" + gameUniqueCode + ".back");
             if (backupFile.exists() && !backupFile.delete())
                 System.out.println("ERROR: something went wrong deleting the '" + gameUniqueCode + "' backup file...");
-
-            // TODO: REMOVE BACKUP FILE!!!
         }
 
         // Finally, we awake all waiting threads. This will trigger a

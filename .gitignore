@@ -8,7 +8,10 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 MyShelfie/target/
+
+# Ignoring game backups
 MyShelfie/backups/
+Deliverables/jar/backups
 
 # Ignore .DS_Store files on Mac OS
 .DS_Store
@@ -18,6 +21,7 @@ assets
 
 # Ignore recovery files director
 tmp/*
+Deliverables/jar/tmp/
 
 # User-specific stuff
 .idea/**/workspace.xml
