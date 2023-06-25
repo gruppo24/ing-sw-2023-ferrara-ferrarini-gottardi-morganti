@@ -1,0 +1,16 @@
+it.polimi.ingsw.client
+it.polimi.ingsw.client.controller
+it.polimi.ingsw.client.view.cli
+it.polimi.ingsw.client.view.gui
+it.polimi.ingsw.client.view.gui.gameslist
+it.polimi.ingsw.common
+it.polimi.ingsw.common.messages.requests
+it.polimi.ingsw.common.messages.responses
+it.polimi.ingsw.common.stubs
+it.polimi.ingsw.server
+it.polimi.ingsw.server.controller
+it.polimi.ingsw.server.controller.jrmi
+it.polimi.ingsw.server.controller.socket
+it.polimi.ingsw.server.exceptions
+it.polimi.ingsw.server.model
+it.polimi.ingsw.server.model.CommonCardImpl
