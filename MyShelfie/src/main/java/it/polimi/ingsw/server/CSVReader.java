@@ -21,7 +21,7 @@ public class CSVReader {
      * Class constructor
      */
     public CSVReader(){
-        File file = new File("src/main/java/it/polimi/ingsw/server/PrivateCards.csv");
+        File file = new File("PrivateCards.csv");
 
         try{
             //creation of a new fileInputStream and a new scanner to read the file
