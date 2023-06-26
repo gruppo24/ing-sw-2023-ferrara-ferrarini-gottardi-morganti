@@ -17,7 +17,6 @@ public enum TileType {
             case PLANT -> "Piante1.1.png";
             case TOY -> "Giochi1.1.png";
             case TROPHY -> "Trofei1.1.png";
-            default -> "  ";
         };
     }
 
@@ -29,7 +28,6 @@ public enum TileType {
             case PLANT -> "Pl";
             case TOY -> "To";
             case TROPHY -> "Ty";
-            default -> "  ";
         };
     }
 }

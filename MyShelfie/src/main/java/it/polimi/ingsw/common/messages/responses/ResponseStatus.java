@@ -34,7 +34,6 @@ public enum ResponseStatus {
             case USERNAME_NOT_IN_GAME   -> "Can't rejoin with this username...";
             case INVALID_REQUEST        -> "Invalid request";
             case SERVER_ERROR           -> "Server error. Retry later";
-            default -> "  ";
         };
     }
 }
