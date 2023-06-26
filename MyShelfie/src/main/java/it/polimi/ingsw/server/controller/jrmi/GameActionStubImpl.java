@@ -4,7 +4,7 @@ import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import it.polimi.ingsw.common.stubs.GameActionStub;
 import it.polimi.ingsw.server.controller.Backupper;
 import it.polimi.ingsw.server.controller.Middleware;
-import it.polimi.ingsw.server.controller.socket.ReconnectionTimer;
+import it.polimi.ingsw.server.controller.ReconnectionTimer;
 import it.polimi.ingsw.server.model.GameState;
 import it.polimi.ingsw.server.model.Player;
 

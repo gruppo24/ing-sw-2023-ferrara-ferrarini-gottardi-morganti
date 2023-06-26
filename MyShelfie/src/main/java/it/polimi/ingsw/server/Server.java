@@ -1,7 +1,7 @@
 package it.polimi.ingsw.server;
 
 import it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl;
-import it.polimi.ingsw.server.controller.socket.ReconnectionTimer;
+import it.polimi.ingsw.server.controller.ReconnectionTimer;
 import it.polimi.ingsw.server.model.*;
 import it.polimi.ingsw.server.controller.socket.SockServer;
 
