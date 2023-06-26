@@ -20,6 +20,7 @@ assets/*
 tmp/*
 Deliverables/jar/backups/
 Deliverables/jar/tmp/
+*.mys
 
 # User-specific stuff
 .idea/**/workspace.xml

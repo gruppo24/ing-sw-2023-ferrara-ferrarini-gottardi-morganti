@@ -98,7 +98,8 @@ public class GameState implements Serializable {
      */
     public void setAllPlayersOffline() {
         for (Player player: this.players)
-            player.hasDisconnected();
+            if (player != null)
+                player.hasDisconnected();
 
         // As a consequence, the game HAS to be in the "suspended" state
         this.suspended = true;

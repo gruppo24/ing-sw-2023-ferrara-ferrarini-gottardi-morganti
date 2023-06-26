@@ -22,6 +22,8 @@ assets
 # Ignore recovery files director
 tmp/*
 Deliverables/jar/tmp/
+Deliverables/jar/backups/
+*.mys
 
 # User-specific stuff
 .idea/**/workspace.xml
