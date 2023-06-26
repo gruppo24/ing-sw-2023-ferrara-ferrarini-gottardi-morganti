@@ -14,7 +14,7 @@ import javafx.stage.Stage;
  */
 public class App extends Application {
 
-    public static final String ASSETS_BASE_PATH = "../assets";
+    public static final String ASSETS_BASE_PATH = "assets";
 
     // Main scene within the GUI stage
     public static Scene scene;

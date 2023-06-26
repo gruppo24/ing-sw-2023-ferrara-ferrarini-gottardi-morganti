@@ -18,8 +18,8 @@ assets/*
 
 # Ignore recovery files director
 tmp/*
-Deliverables/jar/backups/
-Deliverables/jar/tmp/
+Deliverables/Final/JAR/backups/
+Deliverables/Final/JAR/tmp/
 *.mys
 
 # User-specific stuff

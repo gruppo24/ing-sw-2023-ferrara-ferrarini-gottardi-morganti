@@ -20,7 +20,7 @@
   <top>
     <VBox spacing="10" alignment="CENTER">
       <ImageView fitHeight="120" fitWidth="388">
-        <Image url="@../../../../Publisher%20material/Title%202000x618px.png"/>
+        <Image url="@/assets/Publisher material/Title 2000x618px.png"/>
       </ImageView>
     </VBox>
   </top>

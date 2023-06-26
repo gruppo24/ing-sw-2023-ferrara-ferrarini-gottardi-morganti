@@ -3,11 +3,7 @@ package it.polimi.ingsw.client.view.gui;
 
 import it.polimi.ingsw.client.App;
 import javafx.scene.image.Image;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 
 
 /**
@@ -76,12 +72,11 @@ public class GUIUtils {
      * @return new Image instance with opened asset
      */
     public static Image loadAsset(String assetDirectory, String assetName, int width, int height) {
-        Path pathToAsset = Paths.get(App.ASSETS_BASE_PATH, assetDirectory, assetName);
-        try {
-            return new Image(new FileInputStream(pathToAsset.toString()), width, height, false, false);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        String path = App.ASSETS_BASE_PATH + "/" + assetDirectory + "/" + assetName;
+        InputStream is = GUIUtils.class.getClassLoader().getResourceAsStream(path);
+        if (is != null)
+            return new Image(is, width, height, false, false);
+        return null;
     }
 
     /**

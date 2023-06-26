@@ -1,10 +1,11 @@
 package it.polimi.ingsw.server;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+
+import it.polimi.ingsw.client.view.gui.GUIUtils;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.server.model.PrivateCard;
 
@@ -21,17 +22,12 @@ public class CSVReader {
      * Class constructor
      */
     public CSVReader(){
-        File file = new File("PrivateCards.csv");
+        InputStream is = GUIUtils.class.getClassLoader().getResourceAsStream("PrivateCards.csv");
 
-        try{
-            //creation of a new fileInputStream and a new scanner to read the file
-            //Throw an Exception if the given file doesn't exist
-            f = new FileInputStream(file);
-            scanner = new Scanner(f);
-
-        }catch(FileNotFoundException e){
-            e.printStackTrace();
-        }
+        if (is != null)
+            scanner = new Scanner(is);
+        else
+            throw new RuntimeException("COULDN'T READ PrivateCards.csv");
     }
 
     /**

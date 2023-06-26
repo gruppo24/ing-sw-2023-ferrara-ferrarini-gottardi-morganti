@@ -1,6 +1,6 @@
 .background {
     -fx-background-color: #ccacac;
-    -fx-background-image: url("/misc/sfondo%20parquet.jpg");
+    -fx-background-image: url("/assets/misc/sfondo%20parquet.jpg");
     -fx-background-repeat: no-repeat;
     -fx-background-size: cover;
     -fx-background-position: center center;
@@ -8,7 +8,7 @@
 
 .board {
     -fx-background-color: #ccacac;
-    -fx-background-image: url("/boards/livingroom.png");
+    -fx-background-image: url("/assets/boards/livingroom.png");
     -fx-background-repeat: no-repeat;
     -fx-background-size: cover;
     -fx-background-position: center center;
@@ -36,7 +36,7 @@
 .current-library,
 .non-current-library {
     /*-fx-background-color: #6099b5;*/  /* DEBUG ONLY */
-    -fx-background-image: url("/boards/bookshelf_orth.png");
+    -fx-background-image: url("/assets/boards/bookshelf_orth.png");
     -fx-background-repeat: no-repeat;
     -fx-background-size: contain;
     -fx-background-position: center center;

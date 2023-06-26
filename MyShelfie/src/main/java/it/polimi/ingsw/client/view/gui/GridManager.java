@@ -153,14 +153,8 @@ public class GridManager extends GridPane {
 
             // Check if there is content at the current coordinates
             if (content[column][row] != null) {
-                try {
-                    // Assemble path to the tile's asset and set the asset in the ImageView
-                    Path pathToAsset = Paths.get(App.ASSETS_BASE_PATH, "item tiles",
-                            content[column][row].getAssetName());
-                    ((ImageView) node).setImage(new Image(new FileInputStream(pathToAsset.toString())));
-                } catch (IOException ex) {
-                    System.out.println("ERROR: IMAGE NOT FOUND");
-                }
+                // Assemble path to the tile's asset and set the asset in the ImageView
+                ((ImageView) node).setImage(GUIUtils.loadAsset("item tiles", content[column][row].getAssetName()));
             } else {
                 // Resetting ImageView in case no tile is present
                 ((ImageView) node).setImage(null);
