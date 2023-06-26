@@ -1,39 +1,106 @@
 package it.polimi.ingsw.server.model;
 
+
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl;
+import org.junit.*;
 
 import it.polimi.ingsw.client.controller.Connection;
 import it.polimi.ingsw.common.TileType;
 import it.polimi.ingsw.common.messages.responses.SharedGameState;
 import it.polimi.ingsw.server.Server;
-import it.polimi.ingsw.server.controller.jrmi.PreGameStubImpl;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+
 public class GameStateTest {
+
     private static Registry registry;
 
     @BeforeClass
-    public static void setUpClass() throws RemoteException {
-        // setup PreGameStubImpl
-        registry = LocateRegistry.createRegistry(Server.JRMI_PORT);
-        PreGameStubImpl preGame = new PreGameStubImpl(registry);
-        registry.rebind("remotePreGame", preGame);
+    public static void setUpClass() {
+        // setup server, if not already online
+        try {
+            // setup PreGameStubImpl
+            GameStateTest.registry = LocateRegistry.createRegistry(Server.JRMI_PORT);
+            PreGameStubImpl preGame = new PreGameStubImpl(GameStateTest.registry);
+            GameStateTest.registry.rebind("remotePreGame", preGame);
+        } catch (RemoteException ex) {}
     }
 
     @Before
-    public void setUp() throws RemoteException {
+    public void setUp() {
         // create common and private cards in server
         Server.createCommonCards();
         Server.createPrivateCards();
         Server.GAMES.clear();
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+//        if (GameStateTest.registry != null) {
+//            try {
+//                GameStateTest.registry.unbind("remotePreGame");
+//            } catch (RemoteException | NotBoundException ex) {}
+//        }
+    }
+
+    @Test
+    public void setAllPlayersOffline_allPlayersJoined_noOnlinePlayers() {
+        GameState gameState = new GameState(Connection.generateGameID(), 2);
+
+        // Adding two players
+        gameState.addNewPlayerToGame(new Player("testPlayer1"));
+        gameState.addNewPlayerToGame(new Player("testPlayer2"));
+
+        assertEquals(gameState.remainingOnline(), 2);
+        gameState.setAllPlayersOffline();
+        assertEquals(gameState.remainingOnline(), 0);
+    }
+
+    @Test
+    public void setAllPlayersOffline_allPlayersJoined_gameIsSuspended() {
+        GameState gameState = new GameState(Connection.generateGameID(), 2);
+
+        // Adding two players
+        gameState.addNewPlayerToGame(new Player("testPlayer1"));
+        gameState.addNewPlayerToGame(new Player("testPlayer2"));
+
+        assertEquals(gameState.remainingOnline(), 2);
+        gameState.setAllPlayersOffline();
+        assertEquals(gameState.remainingOnline(), 0);
+        assertTrue(gameState.isSuspended());
+    }
+
+    @Test
+    public void setAllPlayersOffline_notAllPlayersJoined_oneOnlinePlayer() {
+        GameState gameState = new GameState(Connection.generateGameID(), 3);
+
+        // Adding two players
+        gameState.addNewPlayerToGame(new Player("testPlayer1"));
+        gameState.addNewPlayerToGame(new Player("testPlayer2"));
+
+        assertEquals(gameState.remainingOnline(), 3);
+        gameState.setAllPlayersOffline();
+        assertEquals(gameState.remainingOnline(), 1);
+    }
+
+    @Test
+    public void restoreRemotePlayers_twoPlayersInGame_twoPlayersRestored() {
+        GameState gameState = new GameState(Connection.generateGameID(), 2);
+
+        // Adding two players
+        gameState.addNewPlayerToGame(new Player("testPlayer1"));
+        gameState.addNewPlayerToGame(new Player("testPlayer2"));
+
+        gameState.restoreRemotePlayers();
     }
 
     @Test
@@ -50,9 +117,9 @@ public class GameStateTest {
         gameState2.addNewPlayerToGame(player1);
         gameState2.addNewPlayerToGame(player2);
         SharedGameState sharedGameState1 = gameState2.getSharedGameState(player1);
-        Assert.assertTrue(sharedGameState1.gameOngoing);
+        assertTrue(sharedGameState1.gameOngoing);
         SharedGameState sharedGameState2 = gameState2.getSharedGameState(player2);
-        Assert.assertTrue(sharedGameState2.gameOngoing);
+        assertTrue(sharedGameState2.gameOngoing);
     }
 
     @Test
@@ -73,7 +140,7 @@ public class GameStateTest {
                 }
             }
         }
-        Assert.assertTrue(board.shouldBeRefilled());
+        assertTrue(board.shouldBeRefilled());
         gameState.turnIsOver();
         Assert.assertFalse(board.shouldBeRefilled());
     }
@@ -109,9 +176,9 @@ public class GameStateTest {
         gameState.addNewPlayerToGame(player);
         gameState.addNewPlayerToGame(new Player("testPlayer2"));
         gameState.terminate();
-        Assert.assertTrue(gameState.isGameOver());
+        assertTrue(gameState.isGameOver());
         SharedGameState sharedGameState = gameState.getSharedGameState(player);
-        Assert.assertTrue(sharedGameState.gameOver);
+        assertTrue(sharedGameState.gameOver);
     }
 
     @Test
@@ -121,7 +188,7 @@ public class GameStateTest {
         Player player2 = new Player("testPlayer2");
         gameState.addNewPlayerToGame(player1);
         gameState.addNewPlayerToGame(player2);
-        Assert.assertTrue(gameState.actuallyIsPlayersTurn(player1) || gameState.actuallyIsPlayersTurn(player2));
+        assertTrue(gameState.actuallyIsPlayersTurn(player1) || gameState.actuallyIsPlayersTurn(player2));
         Assert.assertFalse(gameState.actuallyIsPlayersTurn(player1) && gameState.actuallyIsPlayersTurn(player2));
     }
 
@@ -137,7 +204,7 @@ public class GameStateTest {
         Player player = new Player("testPlayer");
         gameState.addNewPlayerToGame(player);
         Optional<Player> playerOptional = gameState.getUserByUsername("testPlayer");
-        Assert.assertTrue(playerOptional.isPresent());
+        assertTrue(playerOptional.isPresent());
         Assert.assertEquals(playerOptional.get(), player);
     }
 
@@ -162,7 +229,7 @@ public class GameStateTest {
         }
         gameState.turnIsOver();
         SharedGameState sharedGameState1 = gameState.getSharedGameState(player1);
-        Assert.assertTrue(sharedGameState1.isFinalRound);
+        assertTrue(sharedGameState1.isFinalRound);
     }
 
 }
