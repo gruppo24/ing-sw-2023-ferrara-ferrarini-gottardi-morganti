@@ -582,7 +582,7 @@ public class ServerTest {
         assertEquals(response, ResponseStatus.SELECTED_GAME_FULL);
     }
 
-    @Test (expected = NotBoundException.class)
+    @Test
     public void jRMIClient_rejoinWithWrongUsername_doesntRejoin() throws InterruptedException, IOException, NotBoundException {
         ResponseStatus response;
 
@@ -609,10 +609,11 @@ public class ServerTest {
         JRMIConnection thirdJRMIClient = new JRMIConnection("localhost", Server.JRMI_PORT);
         thirdJRMIClient.establishConnection();
         Thread.sleep(500);
-        thirdJRMIClient.connectToGame(gameId, "test3", true);
+        response = thirdJRMIClient.connectToGame(gameId, "test3", true);
+        assertEquals(response, ResponseStatus.INVALID_REQUEST);
     }
 
-    @Test (expected = NotBoundException.class)
+    @Test
     public void jRMIClient_rejoinWithNoGameId_doesntRejoin() throws InterruptedException, IOException, NotBoundException {
         ResponseStatus response;
 
@@ -639,7 +640,8 @@ public class ServerTest {
         JRMIConnection thirdJRMIClient = new JRMIConnection("localhost", Server.JRMI_PORT);
         thirdJRMIClient.establishConnection();
         Thread.sleep(500);
-        thirdJRMIClient.connectToGame("", "test2", true);
+        response = thirdJRMIClient.connectToGame("", "test2", true);
+        assertEquals(response, ResponseStatus.INVALID_REQUEST);
     }
 
     @Test

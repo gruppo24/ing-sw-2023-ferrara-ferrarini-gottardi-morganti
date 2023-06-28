@@ -8,6 +8,7 @@ import it.polimi.ingsw.server.controller.jrmi.GameActionStubImpl;
 import it.polimi.ingsw.server.exceptions.GameAlreadyFullException;
 
 import java.io.*;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -169,9 +170,11 @@ public class GameState implements Serializable {
 
         // Only if the game hasn't ended, update the current board-state
         if (!this.gameOver && !this.gameTerminated) {
-            if (this.board.shouldBeRefilled())
-                this.board.refillBoard(this.players.length);
-            this.board.definePickable();
+            if (this.gameOngoing) {
+                if (this.board.shouldBeRefilled())
+                    this.board.refillBoard(this.players.length);
+                this.board.definePickable();
+            }
         } else {
             // Forcing gameOver to true (in case game has been terminated)
             this.gameOver = true;
@@ -182,6 +185,18 @@ public class GameState implements Serializable {
             File backupFile = new File("backups/" + gameUniqueCode + ".back");
             if (backupFile.exists() && !backupFile.delete())
                 System.out.println("ERROR: something went wrong deleting the '" + gameUniqueCode + "' backup file...");
+
+            // Unbind all remote objects
+            if (registry != null) {
+                for (Player player : players) {
+                    try {
+                        // In case it is, unbind the remote object
+                        registry.unbind(this.getGameID() + "/" + player.nickname);
+                    } catch (NotBoundException | RemoteException ex) {
+                        System.out.println("* Remote object for player " + player.nickname + " already unbound!");
+                    }
+                }
+            }
         }
 
         // Finally, we awake all waiting threads. This will trigger a

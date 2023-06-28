@@ -30,7 +30,7 @@ public class Server implements Serializable {
     // Array containing the instantiation of CommonCards
     public static final CommonCard[] commonCards = new CommonCard[12];
 
-    private static Registry registry;
+    public static Registry registry;
 
     /**
      * Method that populates commonCards array

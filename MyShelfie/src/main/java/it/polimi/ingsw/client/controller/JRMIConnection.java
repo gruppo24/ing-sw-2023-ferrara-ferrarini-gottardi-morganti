@@ -114,11 +114,15 @@ public class JRMIConnection extends Connection{
                 this.startAsyncKeepAliveEcho();
             }
         } else {
-            this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
+            try {
+                this.gameAction = (GameActionStub) registry.lookup(gameID + "/" + username);
 
-            // Register connection and request latest game state
-            cache = gameAction.registerConnection();
-            this.startAsyncKeepAliveEcho();
+                // Register connection and request latest game state
+                cache = gameAction.registerConnection();
+                this.startAsyncKeepAliveEcho();
+            } catch (NotBoundException ex) {
+                status = ResponseStatus.INVALID_REQUEST;
+            }
         }
 
         return status;
